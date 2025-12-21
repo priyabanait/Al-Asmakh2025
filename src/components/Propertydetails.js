@@ -206,7 +206,7 @@ export default function PropertyDetails() {
                   )}
                 </button>
               </div>
-              <h2 className="text-lg sm:text-xl mx-4 sm:mx-10 font-semibold text-[#001730] mb-3">
+              <h2 className="text-lg sm:text-xl mx-4 sm:mx-10  text-[#001730] mb-3">
                 Description
               </h2>
 
@@ -382,16 +382,16 @@ export default function PropertyDetails() {
                   {/* Buttons */}
                   <div className="mt-4 flex flex-col gap-2">
                     <div className="flex flex-row gap-2">
-                      <button className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-md flex justify-between items-center px-3 sm:px-4 text-xs sm:text-sm font-medium hover:opacity-90 transition">
+                      <button className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-md flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
                         Call Agent
                         <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                       </button>
-                      <button className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-md flex justify-between items-center px-3 sm:px-4 text-xs sm:text-sm font-medium hover:opacity-90 transition">
+                      <button className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-md flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
                         Send email
                         <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                       </button>
                     </div>
-                    <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-md flex justify-between items-center px-3 sm:px-4 text-xs sm:text-sm font-medium hover:opacity-90 transition">
+                    <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-md flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
                       Schedule Viewing
                       <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                     </button>
@@ -402,25 +402,58 @@ export default function PropertyDetails() {
           </div>
         </div>
       </div>
-      <div className="relative w-full py-8 sm:py-12 px-4 lg:px-16 overflow-hidden">
-        <h2 className="text-xl sm:text-[27px] md:text-[36px] lg:text-[36px] font-semibold text-[#001730]  uppercase mb-2 text-center 3xl:mb-3 4xl:mb-4">
-          Related Listings
+      <div className="relative w-full h-screen py-6 lg:py-8 px-4 md:px-8 lg:px-16 xl:px-18 2xl:px-20 3xl:px-24 4xl:px-32 5xl:px-40 overflow-hidden">
+        <div className="max-w-[1500px] mx-auto">
+        <h2
+          id="my-heading"
+          className="text-2xl text-[#001730] uppercase mb-2  lg:mb-2 text-center"
+        >
+         Related Listings
         </h2>
-        <p className="text-gray-500 text-sm sm:text-base mx-auto mb-8 sm:mb-12 text-center px-4">
-          Discover similar properties that might interest you in the same area or with comparable features
+        <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2
+          mx-auto w-[60%] md:w-[40%] lg:w-[20%] "></div>
+        <p
+          id="desc"
+          className="
+    text-gray-500 
+    mx-auto text-center px-2 md:px-4 lg:px-0
+
+    max-w-xs md:max-w-xl lg:max-w-2xl 
+    xl:max-w-3xl 2xl:max-w-4xl 
+    3xl:max-w-5xl 
+    4xl:max-w-6xl 
+    5xl:max-w-7xl 
+
+    mb-6 md:mb-8 lg:mb-12 xl:mb-12 2xl:mb-14 3xl:mb-16 4xl:mb-20 5xl:mb-24
+ 
+  " style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
+        >
+           Discover similar properties that might interest you in the same area or with comparable features
+        
         </p>
 
         <div
           ref={scrollRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth pb-4"
+          className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto no-scrollbar scroll-smooth pb-4 lg:pb-6 "
         >
           {properties.map((property, index) => (
             <div
               key={index}
-              className="w-[250px] sm:w-[270px] md:w-[320px] lg:w-[350px] p-3 sm:p-4  bg-gray-200 border border-gray-200 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex-shrink-0"
+              className={`
+          w-[250px]  lg:w-[350px]
+          p-4
+          bg-[#E9E9E9] border border-gray-200 
+          rounded-md overflow-hidden shadow-md 
+          hover:shadow-xl transition-shadow duration-300 
+          flex-shrink-0
+          ${index === 0 || index === properties.length - 1
+                  ? 'scale-95'
+                  : 'scale-100'
+                }
+        `}
             >
               {/* Image Section */}
-              <div className="relative w-full h-[180px] sm:h-[200px] md:h-[220px]">
+              <div className="relative w-full h-[180px]  xl:h-[200px] ">
                 <Image
                   src={property.image}
                   alt={property.title}
@@ -430,81 +463,98 @@ export default function PropertyDetails() {
               </div>
 
               {/* Property Info */}
-              <div className="p-3 sm:p-4">
-                <h3 className="font-semibold text-[#001730] text-sm sm:text-base mb-1 leading-snug line-clamp-2">
+              <div className="py-2">
+                <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2">
                   {property.title}
                 </h3>
 
                 {/* Location */}
-                <div className="flex items-center text-[#001730] text-xs sm:text-sm mb-3">
-                  <Image
-                    src="/Vector.png"
-                    alt="Location"
-                    width={16}
-                    height={16}
-                    className="mr-2 w-3 h-3 sm:w-4 sm:h-4"
-                  />
-                  <span>{property.location}</span>
-                </div>
+                <div className="flex items-center text-[#001730] text-sm mb-3">
+                <MapPin size={12} className="mr-2" />
+  <span
+    className="line-clamp-1 text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base 3xl:text-lg 4xl:text-xl 5xl:text-2xl"
+    style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
+  >
+    {property.location}
+  </span>
+</div>
+
 
                 {/* Bed/Bath/Area Info */}
-                <div className="flex items-center justify-between text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4 gap-1">
-                  <div className="flex items-center gap-1 shadow p-1.5 lg:p-2 lg:px-6 px-2 rounded-md" style={{ backgroundColor: 'rgba(255, 255, 255, 0.30)' }}>
-                    <Image
-                      src="/Icon (1).png"
-                      alt="Beds"
-                      width={14}
-                      height={14}
-                      className="lg:w-[18px] lg:h-[18px]"
-                    />
-                    <span>{property.beds}</span>
-                  </div>
-                  <div className="flex items-center gap-1 shadow p-1.5 lg:p-2 lg:px-6 px-2 rounded-md" style={{ backgroundColor: 'rgba(255, 255, 255, 0.30)' }}>
-                    <Image
-                      src="/Icon.png"
-                      alt="Baths"
-                      width={14}
-                      height={14}
-                      className="lg:w-[18px] lg:h-[18px]"
-                    />
-                    <span>{property.baths}</span>
-                  </div>
-                  <div className="flex items-center gap-1 shadow p-1.5 lg:p-2 lg:px-6 px-2 rounded-md" style={{ backgroundColor: 'rgba(255, 255, 255, 0.30)' }}>
-                    <Image
-                      src="/Icon (2).png"
-                      alt="Area"
-                      width={14}
-                      height={14}
-                      className="lg:w-[18px] lg:h-[18px]"
-                    />
-                    <span>{property.area}</span>
-                  </div>
-                </div>
+            <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
+  
+  <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+    <Image
+      src="/Icon (1).png"
+      alt="Beds"
+      width={14}
+      height={14}
+      className="lg:w-[18px] lg:h-[18px]"
+    />
+    <span>{property.beds}</span>
+  </div>
 
-                <div className="w-[100%]  h-[0.2px] bg-[#A6A6A6]  my-3 " style={{ backgroundColor: '#A6A6A6' }}></div>
+  <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+    <Image
+      src="/Icon.png"
+      alt="Baths"
+      width={14}
+      height={14}
+      className="lg:w-[18px] lg:h-[18px]"
+    />
+    <span>{property.baths}</span>
+  </div>
+
+  <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+    <Image
+      src="/Icon (2).png"
+      alt="Area"
+      width={14}
+      height={14}
+      className="lg:w-[18px] lg:h-[18px]"
+    />
+    <span>{property.area}</span>
+  </div>
+
+</div>
+
+
+                <div
+                  className="w-[100%]  h-[0.5px] bg-gray-300  my-3 "
+                ></div>
 
                 {/* Price and Button */}
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[24px] lg:text-base font-bold text-[#001730]">
+                  <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
                     {property.price}
                   </p>
 
-                  <button className="bg-[#001730] text-white text-xs sm:text-sm font-semibold px-3 sm:px-5 py-1.5 sm:py-2 rounded flex items-center gap-2 transition hover:bg-[#1b3a70] w-full sm:w-auto justify-center sm:justify-start">
-                    <Link href="/propertydetails" className="flex items-center gap-2">
+                  <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                    <Link
+                      href="/propertydetails"
+                      className="flex items-center gap-2 w-full"
+                    >
                       <span>Details</span>
-                      <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px] sm:ml-6" />
+                      <FaArrowRight
+                        size={12}
+                        className="w-3 h-3  lg:w-[16px]  ml-10"
+                      />
                     </Link>
                   </button>
                 </div>
               </div>
-
             </div>
           ))}
         </div>
-        <div className="flex justify-center mt-4 sm:mt-6">
-          <button className="bg-[#001730] text-white text-xs sm:text-sm font-semibold px-4 sm:px-5 py-2 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
+        </div>
+
+        <div className="flex justify-center  ">
+          <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
             <span>View All</span>
-            <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px] sm:ml-20" />
+            <FaArrowRight
+              size={12}
+              className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
+            />
           </button>
         </div>
 
@@ -512,16 +562,15 @@ export default function PropertyDetails() {
         {showScrollButton && (
           <button
             onClick={scrollRight}
-            className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 
-                     bg-white border border-gray-300 rounded-md  p-2 sm:p-3 sm:px-6
+            className="absolute right-2 md:right-3 lg:right-4 xl:right-5 2xl:right-6 3xl:right-8 4xl:right-10 5xl:right-12 top-1/2 transform -translate-y-1/2 
+                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
                      shadow-md z-10 hover:shadow-lg transition"
           >
-            <FaArrowRight
-              className="text-[#001730] w-5 h-5 sm:w-6 sm:h-6"
-            />
+            <FaArrowRight className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
           </button>
         )}
       </div>
+     
     </div>
   );
 }
