@@ -1,0 +1,784 @@
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 248, 250, 252;
+  --background-end-rgb: 255, 255, 255;
+  /* Figma reference values for scaling */
+  --figma-scale: 1;
+  --figma-width: 1440px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  font-family: 'Mulish', sans-serif;
+  line-height: 1.6;
+  letter-spacing: 0.02em; /* Universal letter spacing for better text readability */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Enhanced glass morphism support */
+@supports (backdrop-filter: blur(10px)) {
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(10px)) {
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-blue-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-[#17395e] transition-colors duration-300;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-blue-600 border border-blue-600 font-medium py-2 px-6 rounded-lg hover:bg-gray-50 transition-colors duration-300;
+  }
+
+  .container-custom {
+    @apply mx-auto;
+    /* Responsive padding */
+    padding-left: clamp(0.5rem, 2vw, 2rem);
+    padding-right: clamp(0.5rem, 2vw, 2rem);
+    /* Responsive max-width that scales with screen size */
+    max-width: min(95%, 1280px);
+  }
+  
+  /* Large screens (1440px+) */
+  @media screen and (min-width: 1440px) {
+    .container-custom {
+      max-width: min(90%, 1440px);
+      padding-left: clamp(1rem, 3vw, 3rem);
+      padding-right: clamp(1rem, 3vw, 3rem);
+    }
+  }
+  
+  /* Extra large screens (1920px+) - Mac-like displays */
+  @media screen and (min-width: 1920px) {
+    .container-custom {
+      max-width: min(85%, 1600px);
+      padding-left: clamp(2rem, 4vw, 4rem);
+      padding-right: clamp(2rem, 4vw, 4rem);
+    }
+  }
+  
+  /* Ultra-wide screens (2560px+) */
+  @media screen and (min-width: 2560px) {
+    .container-custom {
+      max-width: min(80%, 1920px);
+      padding-left: clamp(3rem, 5vw, 6rem);
+      padding-right: clamp(3rem, 5vw, 6rem);
+    }
+  }
+  
+  /* 4K screens (3840px+) */
+  @media screen and (min-width: 3840px) {
+    .container-custom {
+      max-width: min(75%, 2560px);
+      padding-left: clamp(4rem, 6vw, 8rem);
+      padding-right: clamp(4rem, 6vw, 8rem);
+    }
+  }
+
+  /* Glass morphism utility classes */
+  .glass-header {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  }
+
+  .glass-button {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .glass-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
+  }
+
+  /* Glass effect utilities */
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Button hover effects */
+  .hover-glass:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  /* Smooth transitions */
+  .menu-transition {
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Universal Heading Text Class */
+  .heading {
+    @apply text-sm sm:text-2xl lg:mx-0 uppercase md:text-[30px] lg:text-[30px];
+  }
+
+  /* Universal Subheading Text Class */
+  .subheading {
+    font-size: clamp(13px, 0.8vw, 17px);
+  }
+
+  /* Universal Glass Effect Class */
+  .glass-effect {
+    @apply border border-white/10 backdrop-blur-sm bg-white/20;
+  }
+
+  /* Universal Button Design Class */
+  .btn-details {
+    @apply flex items-center justify-center gap-2 bg-[#001730] text-white px-4 md:px-6 py-2 md:py-3 rounded-lg hover:bg-[#022d5e] transition-all duration-300 shadow-md hover:shadow-lg text-sm md:text-base;
+    font-size: clamp(13px, 1.1vw, 16px);
+  }
+
+  /* Universal Button with Arrow Alignment Class */
+  .btn-with-arrow {
+    @apply flex items-center justify-between gap-2;
+  }
+  
+  .btn-with-arrow span {
+    @apply flex-shrink-0;
+  }
+  
+  .btn-with-arrow svg {
+    @apply flex-shrink-0;
+  }
+}
+
+/* Custom scrollbar with glass effect */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Figma-exact scaling system */
+.figma-scale {
+  /* This ensures elements match Figma design at both 90% and 100% zoom */
+  transform-origin: top left;
+  transform: scale(var(--figma-scale));
+  width: calc(100% / var(--figma-scale));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Universal container that maintains Figma proportions */
+.figma-container {
+  width: 100%;
+  max-width: var(--figma-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  position: relative;
+}
+
+/* HP Victus laptop optimization (1200px - 1600px) */
+@media screen and (min-width: 1200px) and (max-width: 1600px) {
+  :root {
+    --figma-scale: 0.95; /* Slightly better scaling for Victus laptop */
+  }
+}
+
+/* Large external monitor optimization (1601px - 1919px) */
+@media screen and (min-width: 1601px) and (max-width: 1919px) {
+  :root {
+    --figma-scale: 1; /* 100% scale for large monitors */
+  }
+  
+  .figma-container {
+    max-width: min(90%, 1440px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Very large screens (1920px+) - Mac-like displays */
+@media screen and (min-width: 1920px) {
+  :root {
+    --figma-scale: 1;
+    --figma-width: 1600px; /* Increased base width for large screens */
+  }
+  
+  .figma-container {
+    max-width: min(85%, 1600px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Ultra-wide screens (2560px+) */
+@media screen and (min-width: 2560px) {
+  :root {
+    --figma-scale: 1;
+    --figma-width: 1920px;
+  }
+  
+  .figma-container {
+    max-width: min(80%, 1920px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* 4K screens (3840px+) */
+@media screen and (min-width: 3840px) {
+  :root {
+    --figma-scale: 1;
+    --figma-width: 2560px;
+  }
+  
+  .figma-container {
+    max-width: min(75%, 2560px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Ensure pixel-perfect alignment with Figma at any screen size */
+.figma-perfect {
+  position: relative;
+  transform-origin: top left;
+  width: 100%;
+}
+
+/* Performance optimization for animations */
+.animate-pulse,
+.animate-ping,
+.animate-bounce {
+  will-change: transform, opacity;
+}
+
+/* Arabic font support */
+.arabic-font {
+  font-family: 'Tajawal', 'Mulish', sans-serif;
+}
+
+.arabic-font * {
+  font-family: 'Tajawal', 'Mulish', sans-serif;
+}
+
+/* RTL support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .container-custom {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (min-width: 640px) {
+  [dir="rtl"] .container-custom {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  [dir="rtl"] .container-custom {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* RTL specific adjustments for flex items */
+[dir="rtl"] .flex:not(.flex-col):not(.flex-col-reverse) {
+  flex-direction: row-reverse;
+}
+
+/* Mulish utility class */
+.mulish {
+  font-family: 'Mulish', sans-serif;
+  font-optical-sizing: auto;
+}
+
+/* Keep flex-col normal in RTL */
+[dir="rtl"] .flex-col {
+  flex-direction: column;
+}
+
+[dir="rtl"] .flex-col-reverse {
+  flex-direction: column-reverse;
+}
+
+[dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+  margin-right: calc(1.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(1.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+[dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+  margin-right: calc(1rem * var(--tw-space-x-reverse));
+  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+[dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+/* RTL adjustments for positioning */
+[dir="rtl"] .left-1\/2 {
+  left: auto;
+  right: 50%;
+}
+
+[dir="rtl"] .-translate-x-1\/2 {
+  --tw-translate-x: 50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+/* RTL text alignment */
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* RTL margin and padding adjustments */
+[dir="rtl"] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+[dir="rtl"] .ml-4 {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .mr-4 {
+  margin-right: 0;
+  margin-left: 1rem;
+}
+
+[dir="rtl"] .pl-4 {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+[dir="rtl"] .pr-4 {
+  padding-right: 0;
+  padding-left: 1rem;
+}
+
+[dir="rtl"] .pl-6 {
+  padding-left: 0;
+  padding-right: 1.5rem;
+}
+
+[dir="rtl"] .pr-6 {
+  padding-right: 0;
+  padding-left: 1.5rem;
+}
+
+/* RTL border radius adjustments */
+[dir="rtl"] .rounded-l-lg {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
+
+[dir="rtl"] .rounded-r-lg {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+/* Translation loading state */
+.translating {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.translation-loading {
+  position: relative;
+}
+
+.translation-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-ping,
+  .animate-bounce {
+    animation: none;
+  }
+  
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Victus laptop specific adjustments */
+@media screen and (min-width: 1200px) and (max-width: 1600px) {
+  .victus-adjust {
+    transform: scale(0.95);
+    transform-origin: center;
+  }
+  
+  .victus-container {
+    width: 105.26%; /* Compensate for the 0.95 scale */
+  }
+}
+
+/* Large screen adjustments - ensure proper centering and scaling */
+@media screen and (min-width: 1920px) {
+ 
+  
+  /* Ensure images scale properly on large screens */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Better spacing on large screens */
+  .container-custom > * {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Ultra-wide screen adjustments */
+@media screen and (min-width: 2560px) {
+  
+}
+
+/* JavaScript detection for screen size adjustments */
+.js-scale-fix {
+  visibility: hidden;
+}
+
+html.js .js-scale-fix {
+  visibility: visible;
+}
+
+/* Fixed positioning for elements that need to maintain Figma exact positions */
+.figma-fixed-pos {
+  position: absolute;
+  transform-origin: top left;
+}
+
+/* Helper classes for exact Figma positioning */
+.exact-width {
+  width: var(--element-width);
+}
+
+.exact-height {
+  height: var(--element-height);
+}
+
+.exact-top {
+  top: var(--element-top);
+}
+
+.exact-left {
+  left: var(--element-left);
+}
+
+/* Prevent any scaling issues with images */
+.no-scale-img {
+  transform: none !important;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Universal responsive utilities */
+@media screen and (min-width: 1920px) {
+  /* Fluid typography for large screens */
+  /* h1, .text-4xl, .text-3xl {
+    font-size: clamp(2rem, 2.5vw, 3rem);
+  }
+  
+  h2, .text-3xl, .text-2xl {
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
+  }
+  
+  h3, .text-2xl, .text-xl {
+    font-size: clamp(1.25rem, 1.5vw, 2rem);
+  } */
+  
+  /* Better spacing on large screens */
+  .space-y-6 > * + * {
+    margin-top: clamp(1.5rem, 2vw, 2rem);
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: clamp(1rem, 1.5vw, 1.5rem);
+  }
+  
+  .gap-4 {
+    gap: clamp(1rem, 1.5vw, 1.5rem);
+  }
+  
+  .gap-6 {
+    gap: clamp(1.5rem, 2vw, 2rem);
+  }
+}
+
+/* Ensure proper viewport behavior on all screen sizes */
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  width: 100%;
+  position: relative;
+}
+
+/* Center content on large screens */
+@media screen and (min-width: 1920px) {
+  main {
+    max-width: 100vw;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+  
+  /* Ensure sections don't stretch beyond container */
+  section {
+    position: relative;
+  }
+  
+  /* Prevent any overflow issues */
+  .container-custom {
+    width: 100%;
+  }
+}
+
+/* Responsive max-width utility classes */
+.max-w-responsive {
+  max-width: min(95%, 1280px);
+}
+
+@media screen and (min-width: 1440px) {
+  .max-w-responsive {
+    max-width: min(90%, 1440px);
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .max-w-responsive {
+    max-width: min(85%, 1600px);
+  }
+}
+
+@media screen and (min-width: 2560px) {
+  .max-w-responsive {
+    max-width: min(80%, 1920px);
+  }
+}
+
+@media screen and (min-width: 3840px) {
+  .max-w-responsive {
+    max-width: min(75%, 2560px);
+  }
+}
+
+/* Infinite scroll animation for partner logos */
+@keyframes scrollPartners {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.partner-scroll-animation {
+  display: flex;
+  width: 100%;
+  animation: scrollPartners 40s linear infinite;
+  will-change: transform;
+}
+
+.partner-scroll-animation:hover {
+  animation-play-state: paused;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .partner-scroll-animation {
+    animation: none;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.menu-item {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.menu-backdrop {
+  will-change: opacity;
+  backface-visibility: hidden;
+}
+
+/* Smooth scrolling for the whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improve text legibility on glass backgrounds */
+.glass-text {
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  -webkit-font-smoothing: antialiased;
+}
+
+.card-animate {
+  opacity: 0;
+  transform: translateX(100px);
+  animation: slideInFromRight 1s ease forwards;
+}
+
+.content-animate {
+  opacity: 0;
+  transform: translateX(100px);
+  animation: slideInFromRight 1s ease forwards;
+  animation-delay: 0.3s; /* Slight delay for content */
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+
+
+/* my own css */
+
+#desc {
+  margin-bottom: 3rem;      /* mb-8 → 32px (but mb-3 also exists, see media queries) */
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  /* font-size: 10px;          text-[10px] */
+}
+
+
+#my-heading {
+  font-size: 23px;       /* text-sm */
+  text-transform: uppercase;
+  margin-left: 5rem;      /* mx-20 (80px) */
+  margin-right: 5rem;
+  margin-bottom: 0.5rem;  /* mb-2 */
+}
