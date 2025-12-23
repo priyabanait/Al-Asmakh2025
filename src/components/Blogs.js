@@ -75,7 +75,7 @@ export default function Buy() {
         <div className="absolute inset-0" />
 
         {/* 🔍 Search Bar (Half on BG, Half outside) - First - Centered */}
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-[50%] z-30 w-[70%] lg:w-[60%] hidden lg:block">
+        <div className="absolute left-1/2 bottom-20 lg:bottom-12 transform -translate-x-1/2 z-30 w-[70%] lg:w-[60%] hidden lg:block">
           <div className="border border-white/10 backdrop-blur-[10px] bg-white/30 rounded-md p-4 lg:p-6 shadow-lg">
             <p className="text-center font-semibold text-lg sm:text-base md:text-lg lg:text-xl text-[#001730]">Lets Learn More !</p>
           </div>
@@ -142,11 +142,10 @@ export default function Buy() {
         </div>
 
         {/* Desktop Filter Items - Second - Centered on image */}
-        <div className="hidden lg:flex absolute left-1/2  mt-20 top-1/2 transform -translate-x-1/2 translate-y-[50%] z-20 w-[90%] lg:w-[60%] px-4 lg:px-0">
+        <div className="hidden lg:flex absolute w-full justify-center bottom-14 lg:bottom-[-32px] z-20">
           <div
             className="
-      grid w-full border border-white/10 backdrop-blur-[10px] bg-white/20 p-4 rounded-md shadow-md gap-4
-      grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+      flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md gap-4 justify-center items-center
     "
           >
             {/* Filter Items */}
@@ -160,21 +159,21 @@ export default function Buy() {
               return (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-3 rounded-md shadow-lg hover:bg-[#001730] transition"
+                  className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[250px] rounded-md shadow-lg hover:bg-[#001730] transition"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     {/* Icon + Divider */}
                     <div className="flex items-center gap-2">
-                      <IconComponent className="w-4 h-4 sm:w-4 sm:h-4 lg:w-4 lg:h-4" />
+                      <IconComponent className="w-4 h-4" />
                       <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
                     </div>
 
                     {/* Label */}
-                    <span className="text-xs sm:text-sm font-medium">{item.label}</span>
+                    <span className="text-[13px]">{item.label}</span>
                   </div>
 
                   {/* Down Arrow */}
-                  <ArrowDown size={16} className="opacity-80 w-3 h-3 sm:w-4 sm:h-4" />
+                  <ArrowDown size={16} className="opacity-80" />
                 </div>
               );
             })}
@@ -184,26 +183,26 @@ export default function Buy() {
       </section>
 
       <div className="bg-white border-gray-200 px-2  lg:px-4">
-  <div className="hidden lg:flex max-w-full mb-2 bg-gray-50    mt-24 mx-auto items-center gap-4">
+        <div className="hidden lg:flex max-w-full mb-2 bg-gray-50    mt-24 mx-auto items-center gap-4">
 
-    {/* Showing Count (Left) */}
-    <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
-      Showing 10 of 50
-    </div>
+          {/* Showing Count (Left) */}
+          <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
+            Showing 10 of 50
+          </div>
 
-    {/* CENTER LINE */}
-    <div className="flex-1 h-[0.5px] bg-gray-300"></div>
+          {/* CENTER LINE */}
+          <div className="flex-1 h-[0.5px] bg-gray-300"></div>
 
-    {/* LIST / MAP Buttons (Right) */}
-    <div className="flex items-center gap-2">
+          {/* LIST / MAP Buttons (Right) */}
+          <div className="flex items-center gap-2">
 
 
-      {/* Divider */}
-     
-    </div>
+            {/* Divider */}
 
-  </div>
-</div>
+          </div>
+
+        </div>
+      </div>
       {/* ---------- READY TO FIND SECTION ---------- */}
 
 
@@ -215,7 +214,7 @@ export default function Buy() {
             className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
           >
             {/* Image Section with Overlapping Button and Text Overlay */}
-            <div className="relative w-full h-[300px] lg:h-[400px]">
+            <div className="relative w-full h-80 lg:h-80">
               <Link href={`/BlogsDetails`}>
                 <Image
                   src={blog.image}

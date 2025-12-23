@@ -540,13 +540,13 @@ export default function ContactHeadOffice() {
                   </label>
                 </div>
                 <button
-  type="submit"
-  className="bg-[#001730] text-white text-[12px] px-8 py-3 rounded-md   transition-colors flex items-center justify-between
+                  type="submit"
+                  className="bg-[#001730] text-white text-[12px] px-8 py-3 rounded-md   transition-colors flex items-center justify-between
     shadow-lg w-full max-w-[260px]"
->
-  <span>Submit</span>
-  <ArrowRight className="w-5 h-5" />
-</button>
+                >
+                  <span>Submit</span>
+                  <ArrowRight className="w-5 h-5" />
+                </button>
 
               </div>
             </form>
@@ -559,7 +559,7 @@ export default function ContactHeadOffice() {
         <div className="md:mx-10 mx-auto text-center lg:text-left">
           {/* Section Header */}
           <div className="mb-12">
-          <h1 className="text-xl lg:text-2xl   mb-2  lg:mb-4 ">
+            <h1 className="text-xl lg:text-2xl   mb-2  lg:mb-4 ">
               Discover Our Office Locations
             </h1>
             <p className="subheading text-gray-600">
@@ -645,18 +645,16 @@ export default function ContactHeadOffice() {
                     setCurrentOfficeIndex(index);
                     setTimeout(() => setIsPaused(false), 3000);
                   }}
-                  className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${
-                    currentOfficeIndex === index
+                  className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${currentOfficeIndex === index
                       ? "border-2 border-[#10284C] rounded-[2px] bg-white"
                       : "bg-transparent"
-                  }`}
+                    }`}
                 >
                   <span
-                    className={`block ${
-                      currentOfficeIndex === index
+                    className={`block ${currentOfficeIndex === index
                         ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
                         : "w-2 h-2 bg-gray-400 rounded-[2px]"
-                    }`}
+                      }`}
                   />
                 </button>
               ))}
@@ -733,27 +731,25 @@ export default function ContactHeadOffice() {
             </div>
 
             {/* Dots Navigation */}
-              <div className="flex justify-center mt-8 space-x-3">
-  {Array.from({ length: offices.length }).map((_, index) => (
-    <button
-      key={index}
-      onClick={() => setCurrentSlide(index)}
-      className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${
-        currentSlides === index
-          ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-          : "bg-transparent"
-      }`}
-    >
-      <span
-        className={`block ${
-          currentSlides === index
-            ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-            : "w-2 h-2 bg-gray-400 rounded-[2px]"
-        }`}
-      />
-    </button>
-  ))}
-</div>
+            <div className="flex justify-center mt-8 space-x-3">
+              {Array.from({ length: offices.length }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${currentSlides === index
+                      ? "border-2 border-[#10284C] rounded-[2px] bg-white"
+                      : "bg-transparent"
+                    }`}
+                >
+                  <span
+                    className={`block ${currentSlides === index
+                        ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
+                        : "w-2 h-2 bg-gray-400 rounded-[2px]"
+                      }`}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>

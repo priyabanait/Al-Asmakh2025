@@ -15,6 +15,7 @@
     "@azure/msal-browser": "^4.26.0",
     "@azure/msal-react": "^3.0.21",
     "@zxing/library": "^0.21.3",
+    "animate-ui": "^0.0.4",
     "framer-motion": "^12.23.24",
     "html2canvas": "^1.4.1",
     "html5-qrcode": "^2.3.8",

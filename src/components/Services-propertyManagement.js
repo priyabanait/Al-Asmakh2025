@@ -139,7 +139,7 @@ export default function Rent() {
               PROPERTY MANAGEMENT
             </h2>
             {/* Divider */}
-            <div className="w-full h-[0.5px] bg-gray-300 my-3 sm:my-4 lg:mr-40"></div>
+            <div className="w-[80%] h-[0.5px] bg-gray-300 my-3 sm:my-4 lg:mr-40"></div>
             {/* Subtitle */}
             <p className="subheading mb-10 font-semibold text-[#001730] lg:mr-40">
               We have pioneered property management across Qatar by applying world-class
@@ -209,7 +209,7 @@ export default function Rent() {
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  mx-auto">
           {/* Card 1 */}
-          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6">
+          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
@@ -231,7 +231,7 @@ export default function Rent() {
           </div>
 
           {/* Card 2 */}
-          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6">
+          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
@@ -253,7 +253,7 @@ export default function Rent() {
           </div>
 
           {/* Card 3 */}
-          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6">
+          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
@@ -272,7 +272,7 @@ export default function Rent() {
           </div>
 
           {/* Card 4 */}
-          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6">
+          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
@@ -294,7 +294,7 @@ export default function Rent() {
           </div>
 
           {/* Card 5 */}
-          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6">
+          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
@@ -315,7 +315,7 @@ export default function Rent() {
           </div>
 
           {/* Card 6 */}
-          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6">
+          <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img

@@ -13,10 +13,14 @@ export default function Header() {
   const [mobileOpenDropdown, setMobileOpenDropdown] = useState(null)
   const { language, switchLanguage, isTranslating } = useTranslation()
 
-  const handleNavigation = (path) => {
+  const handleNavigation = (path, external = false) => {
     setMobileMenuOpen(false)
     setMobileOpenDropdown(null)
-    router.push(path)
+    if (external) {
+      window.open(path, '_blank', 'noopener,noreferrer')
+    } else {
+      router.push(path)
+    }
   }
 
   useEffect(() => {
@@ -39,23 +43,26 @@ export default function Header() {
 
   // Dropdown menus
   const dropdowns = {
+    HOME: [
+      { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
+    ],
     LISTINGS: [
       { label: 'Rent', path: '/listings/rent' },
       // { label: 'Sale', path: '/listings/sale' },
-     { label: 'Sale', path: '/listings/listing-sale' },
-    
+      { label: 'Sale', path: '/listings/listing-sale' },
+
       // { label: 'Listing Rent', path: '/listings/listing-rent' },
-      
-      
-      
-     
+
+
+
+
     ],
     SERVICES: [
       { label: 'Lease', path: '/listings/services-lease' },
       { label: 'Sales', path: '/services/services-sales' },
       { label: 'Marketing', path: '/services/marketing' },
       { label: 'Property Management', path: '/services/propertyManagement' },
-     
+
     ],
     DEVELOPMENT: [
       { label: 'Luxury', path: '/listings/luxury' },
@@ -66,24 +73,23 @@ export default function Header() {
     ],
     MEDIA: [
       { label: 'Blogs', path: '/listings/blogs' },
-   
+
     ],
     CONTACT: [
       { label: 'Contact Agent', path: '/contact' },
       { label: 'Contact Head Office', path: '/contactheadoffice' },
     ],
-    
+
   }
 
   return (
     <header
       style={{ height: '52px', minHeight: '52px' }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border border-white/50 shadow-lg backdrop-blur-lg bg-white/50 ${
-        scrolled ? 'rounded-none' : 'rounded-[5px] mx-0 lg:mx-2 mt-1 lg:mt-4'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border border-white/20 shadow-lg backdrop-blur-lg bg-white/50 ${scrolled ? 'rounded-none' : 'rounded-[5px] mx-0 lg:mx-2 mt-1 lg:mt-4'
+        }`}
     >
-      <div className="w-full py-2 lg:py-0">
-        <div className="flex items-center justify-between h-full px-4">
+      <div className="w-full h-full flex items-center">
+        <div className="flex items-center justify-between w-full h-full px-4">
           {/* Mobile Logo */}
           <div className="flex lg:hidden order-1 relative w-36 h-10">
             <Image src="/images/Al-asmakh.png" alt="Al-Asmakh Logo" fill className="object-contain" />
@@ -110,7 +116,7 @@ export default function Header() {
           </div>
 
           {/* Desktop Logo */}
-          <div className="hidden lg:flex relative w-[80px] h-12 items-center">
+          <div className="hidden lg:flex relative w-[65px] h-14 items-center justify-center">
             <Image src="/images/Al-asmakh.png" alt="Al-Asmakh Logo" fill className="object-contain" priority />
           </div>
 
@@ -131,7 +137,7 @@ export default function Header() {
                 >
                   {item}
                   {dropdowns[item] && (
-                    <span 
+                    <span
                       className={`inline-block transition-transform duration-300 ${activeDropdown === item ? 'rotate-180' : ''}`}
                       style={{ width: '18px', height: '18px', marginLeft: '2px' }}
                     >
@@ -145,17 +151,16 @@ export default function Header() {
                 {/* Dropdown menu */}
                 {dropdowns[item] && (
                   <div
-                    className={`absolute left-0 mt-2 min-w-[200px] rounded-lg border border-white/20 backdrop-blur-lg bg-white/40 shadow-xl transition-all duration-300 ease-in-out transform ${
-                      activeDropdown === item
-                        ? 'opacity-100 translate-y-0 visible'
-                        : 'opacity-0 -translate-y-3 invisible'
-                    }`}
+                    className={`absolute left-0 mt-2 min-w-[200px] rounded-lg border border-white/20 backdrop-blur-lg bg-white/40 shadow-xl transition-all duration-300 ease-in-out transform ${activeDropdown === item
+                      ? 'opacity-100 translate-y-0 visible'
+                      : 'opacity-0 -translate-y-3 invisible'
+                      }`}
                   >
                     <ul className="py-2">
                       {dropdowns[item].map((sub, idx) => (
                         <li key={idx}>
                           <button
-                            onClick={() => handleNavigation(sub.path)}
+                            onClick={() => handleNavigation(sub.path, sub.external)}
                             className="block w-full text-left px-4 py-2 text-sm text-[#001730] hover:bg-white/60 transition-all duration-200"
                           >
                             {sub.label}
@@ -179,11 +184,10 @@ export default function Header() {
 
           {/* Mobile Menu */}
           <div
-            className={`lg:hidden fixed top-[52px] left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-white/20 shadow-xl z-50 transition-all duration-300 ease-in-out overflow-hidden ${
-              mobileMenuOpen
-                ? 'max-h-screen opacity-100'
-                : 'max-h-0 opacity-0 pointer-events-none'
-            }`}
+            className={`lg:hidden fixed top-[52px] left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-white/20 shadow-xl z-50 transition-all duration-300 ease-in-out overflow-hidden ${mobileMenuOpen
+              ? 'max-h-screen opacity-100'
+              : 'max-h-0 opacity-0 pointer-events-none'
+              }`}
           >
             <nav className="flex flex-col p-4 space-y-2 overflow-y-auto max-h-[calc(100vh-52px)]">
               {['HOME', 'LISTINGS', 'SERVICES', 'DEVELOPMENT', 'MEDIA', 'ABOUT US', 'CONTACT'].map((item) => (
@@ -201,7 +205,7 @@ export default function Header() {
                   >
                     <span>{item}</span>
                     {dropdowns[item] && (
-                      <span 
+                      <span
                         className={`inline-block transition-transform duration-300 ${mobileOpenDropdown === item ? 'rotate-180' : ''}`}
                         style={{ width: '18px', height: '18px', marginLeft: '2px' }}
                       >
@@ -214,15 +218,14 @@ export default function Header() {
                   {/* Mobile Dropdown - Collapsible */}
                   {dropdowns[item] && (
                     <div
-                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        mobileOpenDropdown === item ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                      }`}
+                      className={`overflow-hidden transition-all duration-300 ease-in-out ${mobileOpenDropdown === item ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                        }`}
                     >
                       <div className="pl-6 space-y-1 pt-2">
                         {dropdowns[item].map((sub, idx) => (
                           <button
                             key={idx}
-                            onClick={() => handleNavigation(sub.path)}
+                            onClick={() => handleNavigation(sub.path, sub.external)}
                             className="text-left px-4 py-2 text-xs text-[#001730] hover:bg-gray-100 rounded-lg transition-all duration-200 w-full"
                           >
                             {sub.label}
@@ -233,13 +236,12 @@ export default function Header() {
                   )}
                 </div>
               ))}
-              
+
               {/* Mobile Language Switcher */}
               <div className="pt-4 border-t border-gray-200 mt-4">
                 <div
-                  className={`flex items-center justify-center gap-1 whitespace-nowrap font-semibold rounded-lg px-4 py-2 ${
-                    isTranslating ? 'opacity-50 pointer-events-none' : ''
-                  }`}
+                  className={`flex items-center justify-center gap-1 whitespace-nowrap font-semibold rounded-lg px-4 py-2 ${isTranslating ? 'opacity-50 pointer-events-none' : ''
+                    }`}
                   style={{ fontSize: '14px', color: '#001730', letterSpacing: '0.1px' }}
                 >
                   <button onClick={() => switchLanguage('en')} disabled={isTranslating}>
@@ -275,22 +277,21 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-4">
             {/* Language Switcher */}
             <div
-              className={`flex items-center gap-1 whitespace-nowrap font-semibold rounded-lg px-3 py-1 ${
-                isTranslating ? 'opacity-50 pointer-events-none' : ''
-              }`}
-              style={{ fontSize: '14px', color: '#001730', letterSpacing: '0.1px' }}
+              className={`flex items-center gap-1 whitespace-nowrap font-semibold rounded-lg px-3 py-1 ${isTranslating ? 'opacity-50 pointer-events-none' : ''
+                }`}
+              style={{ fontSize: '12px', color: '#001730', letterSpacing: '0.1px' }}
             >
-              <button 
-                onClick={() => switchLanguage('en')} 
+              <button
+                onClick={() => switchLanguage('en')}
                 disabled={isTranslating}
                 className={`${language === 'en' ? 'font-bold' : ''}`}
               >
                 EN
               </button>
               <span className="text-[#001730]">|</span>
-              <button 
-                onClick={() => switchLanguage('ar')} 
-                disabled={isTranslating} 
+              <button
+                onClick={() => switchLanguage('ar')}
+                disabled={isTranslating}
                 className={`${language === 'ar' ? 'font-bold' : ''}`}
               >
                 AR
