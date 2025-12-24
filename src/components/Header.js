@@ -254,12 +254,12 @@ export default function Header() {
                   {/* Dropdown Menu */}
                   {hasDropdown && activeDropdown === item.key && (
                     <div
-                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 min-w-[200px] rounded-lg shadow-lg z-50 border border-white/10"
+                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 min-w-[200px] rounded-lg shadow-lg z-50 border border-white/20"
                       style={{
-                        backgroundColor: 'rgba(236, 233, 233, 0.1)',
-                        backdropFilter: 'blur(18px)',
-                        WebkitBackdropFilter: 'blur(18px)',
-                        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                        backdropFilter: 'blur(30px)',
+                        WebkitBackdropFilter: 'blur(20px)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
                       }}
                     >
                       <div className="py-2">

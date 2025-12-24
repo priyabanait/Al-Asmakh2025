@@ -75,7 +75,7 @@ export default function Buy() {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[80vh] lg:min-h-[80vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
           src="/images_pages/services lease.png"
@@ -99,7 +99,7 @@ export default function Buy() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center  border border-white/10 backdrop-blur-[4px] bg-white/10  rounded-md p-3  lg:p-6 text-white h-28 lg:h-32"
+                className="flex flex-col items-center  border border-white/10 backdrop-blur-[10px] bg-white/20  rounded-md p-3  lg:p-6 text-white h-28 lg:h-32"
               >
                 <h2 className="text-lg  lg:text-2xl font-semibold mb-2">
                   {item.value}
@@ -117,7 +117,7 @@ export default function Buy() {
 
 
         {/* Desktop Filter Items - Moved to bottom of hero */}
-        <div className="hidden lg:flex absolute w-full justify-center bottom-14 lg:bottom-[-32px] z-20">
+        <div className="hidden lg:flex absolute w-full justify-center bottom-10 lg:bottom-[-32px] z-20">
           <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md 
                   gap-4 justify-center items-center">
             {/* Filter Items */}
@@ -247,13 +247,13 @@ export default function Buy() {
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="hidden lg:block lg:py-10 py-4 ">
+      <div className="hidden lg:block lg:py-28 py-4">
 
 
 
         {/* Header Bar */}
-        <div className="bg-white border-gray-200 px-2  lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-2 bg-gray-50    mt-24 mx-auto items-center gap-4">
+        <div className="bg-white border-gray-200 px-2   lg:px-6">
+          <div className="hidden lg:flex max-w-full mb-6 bg-gray-50 mx-auto items-center gap-4">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
@@ -276,7 +276,7 @@ export default function Buy() {
 
         {/* Main Content: List and Map */}
         {viewMode === "LIST" ? (
-          <div className="grid grid-cols-1 mt-5 lg:mt-5 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 px-4   lg:px-10 xl:px-20 p-4 lg:p-6">
+          <div className="grid grid-cols-1 mt-5 lg:mt-5 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 px-4 lg:px-10 xl:px-20">
             {properties.map((property) => (
               <div
                 key={property.id}
@@ -485,7 +485,7 @@ export default function Buy() {
       </div>
 
 
-      
+
       <DreamPropertySection />
     </div>
   );

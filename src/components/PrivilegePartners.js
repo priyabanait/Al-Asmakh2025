@@ -328,13 +328,13 @@ export default function Profit() {
             {/* Heading */}
             <div>
               <h1 className="text-sm sm:text-base lg:text-2xl font-semibold leading-tight">
-                TURNING YOUR <br /> PROPERTY INTO PROFIT
+                Partnering to Grow the Value of Your Property
               </h1>
 
               <div className="h-[0.5px] bg-gray-300 my-3 lg:my-4" />
 
               <p className="text-[0.7rem] sm:text-xs lg:text-[0.8rem] text-white lg:text-gray-400">
-                Your complete real estate partner — from concept to completion, and beyond.
+                For owners and investors who want clarity, consistency, and care, we provide end-to-end support across Qatar's real estate market.
               </p>
             </div>
 
@@ -344,22 +344,22 @@ export default function Profit() {
                 {
                   title: "Expert Knowledge",
                   text:
-                    "Our development team transforms visionary ideas into architectural landmarks that define Qatar's urban landscape."
+                    "Our teams blend local insight with design, engineering, and leasing expertise to turn well-located sites into well-run assets."
                 },
                 {
-                  title: "Personalized Service",
+                  title: "Personalised Service",
                   text:
-                    "We take the time to understand your needs and offer personalized solutions to ensure a seamless real estate experience."
+                    "We listen closely, tailor our approach, and keep you informed so every decision feels considered and transparent."
                 },
                 {
                   title: "Trusted Partnerships",
                   text:
-                    "These prestigious partnerships underscore our capability to manage large-scale, complex projects."
+                    "Long-standing relationships with authorities, consultants, and service providers help projects move more smoothly from plan to reality."
                 },
                 {
                   title: "Comprehensive Support",
                   text:
-                    "From property search to finalizing the deal, we provide comprehensive support at every step."
+                    "From early studies to leasing, operations, and future upgrades, we provide continuous support at every stage of the journey."
                 }
               ].map((item, i) => (
                 <div
@@ -631,21 +631,36 @@ export default function Profit() {
 
 
           {/* Dots Navigation */}
-          <div className="flex justify-center mt-8 space-x-3">
+          <div className="flex justify-center mt-8 gap-2">
             {Array.from({ length: testimonials.length }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setStartIndex(index)}
-                className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${startIndex === index
-                  ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                  : "bg-transparent"
-                  }`}
+                className="relative flex items-center justify-center"
+                aria-label={`Go to slide ${index + 1}`}
               >
-                <span
-                  className={`block ${startIndex === index
-                    ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                    : "w-2 h-2 bg-gray-400 rounded-[2px]"
-                    }`}
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  initial={false}
+                  animate={{
+                    scale: index === startIndex ? 1.2 : 1,
+                    opacity: index === startIndex ? 1 : 0.5,
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+                <motion.span
+                  className={`
+                    block rounded-full
+                    ${index === startIndex
+                      ? "bg-[#001730]"
+                      : "bg-gray-400"
+                    }
+                  `}
+                  animate={{
+                    width: index === startIndex ? "24px" : "8px",
+                    height: index === startIndex ? "8px" : "8px",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                 />
               </button>
             ))}
@@ -759,6 +774,8 @@ export default function Profit() {
                         <h3 className="text-white font-semibold text-lg lg:text-xl mb-3">
                           {blog.title}
                         </h3>
+
+                        <div className="h-[0.3px] w-40 bg-gray-300 mb-3 lg:mb-4  w-full"></div>
                         <p className="text-white text-sm lg:text-base leading-relaxed opacity-90">
                           {blog.description}
                         </p>
@@ -771,21 +788,36 @@ export default function Profit() {
           </div>
 
           {/* Pagination Dots */}
-          <div className="flex justify-center mt-8 space-x-3">
+          <div className="flex justify-center mt-8 gap-2">
             {Array.from({ length: testimonials.length }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setStartIndex(index)}
-                className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${startIndex === index
-                  ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                  : "bg-transparent"
-                  }`}
+                className="relative flex items-center justify-center"
+                aria-label={`Go to slide ${index + 1}`}
               >
-                <span
-                  className={`block ${startIndex === index
-                    ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                    : "w-2 h-2 bg-gray-400 rounded-[2px]"
-                    }`}
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  initial={false}
+                  animate={{
+                    scale: index === startIndex ? 1.2 : 1,
+                    opacity: index === startIndex ? 1 : 0.5,
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+                <motion.span
+                  className={`
+                    block rounded-full
+                    ${index === startIndex
+                      ? "bg-[#001730]"
+                      : "bg-gray-400"
+                    }
+                  `}
+                  animate={{
+                    width: index === startIndex ? "24px" : "8px",
+                    height: index === startIndex ? "8px" : "8px",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                 />
               </button>
             ))}
@@ -975,21 +1007,36 @@ export default function Profit() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="flex justify-center mt-8 space-x-3">
+            <div className="flex justify-center mt-8 gap-2">
               {Array.from({ length: offices.length }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setMobileOfficeIndex(index)}
-                  className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${mobileOfficeIndex === index
-                    ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                    : "bg-transparent"
-                    }`}
+                  className="relative flex items-center justify-center"
+                  aria-label={`Go to slide ${index + 1}`}
                 >
-                  <span
-                    className={`block ${mobileOfficeIndex === index
-                      ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                      : "w-2 h-2 bg-gray-400 rounded-[2px]"
-                      }`}
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    initial={false}
+                    animate={{
+                      scale: index === mobileOfficeIndex ? 1.2 : 1,
+                      opacity: index === mobileOfficeIndex ? 1 : 0.5,
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  />
+                  <motion.span
+                    className={`
+                      block rounded-full
+                      ${index === mobileOfficeIndex
+                        ? "bg-[#001730]"
+                        : "bg-gray-400"
+                      }
+                    `}
+                    animate={{
+                      width: index === mobileOfficeIndex ? "24px" : "8px",
+                      height: index === mobileOfficeIndex ? "8px" : "8px",
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                   />
                 </button>
               ))}
@@ -1065,21 +1112,36 @@ export default function Profit() {
             </div>
 
             {/* Dots Navigation */}
-            <div className="flex justify-center mt-8 space-x-3">
+            <div className="flex justify-center mt-8 gap-2">
               {Array.from({ length: offices.length }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${currentSlides === index
-                    ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                    : "bg-transparent"
-                    }`}
+                  className="relative flex items-center justify-center"
+                  aria-label={`Go to slide ${index + 1}`}
                 >
-                  <span
-                    className={`block ${currentSlides === index
-                      ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                      : "w-2 h-2 bg-gray-400 rounded-[2px]"
-                      }`}
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    initial={false}
+                    animate={{
+                      scale: index === currentSlides ? 1.2 : 1,
+                      opacity: index === currentSlides ? 1 : 0.5,
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  />
+                  <motion.span
+                    className={`
+                      block rounded-full
+                      ${index === currentSlides
+                        ? "bg-[#001730]"
+                        : "bg-gray-400"
+                      }
+                    `}
+                    animate={{
+                      width: index === currentSlides ? "24px" : "8px",
+                      height: index === currentSlides ? "8px" : "8px",
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                   />
                 </button>
               ))}

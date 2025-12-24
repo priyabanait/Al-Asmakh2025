@@ -136,7 +136,7 @@ export default function Sale() {
         </div>
 
         {/* Desktop Version */}
-        <div className="absolute left-1/2 bottom-20 mb-[6%]  transform -translate-x-1/2 translate-y-1/2 z-20 w-[70%] lg:w-[60%] hidden lg:block">
+        <div className="absolute left-1/2 bottom-10 mb-[6%]  transform -translate-x-1/2 translate-y-1/2 z-20 w-[70%] lg:w-[60%] hidden lg:block">
           <div className="border border-white/10 backdrop-blur-[10px] bg-white/30 rounded-md p-4 lg:p-6 shadow-lg">
             {/* Buttons Section */}
             <div className="flex justify-center gap-4 mb-4">
@@ -255,7 +255,7 @@ export default function Sale() {
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="hidden lg:block lg:py-10  py-4">
+      <div className="hidden lg:block lg:py-4 py-4">
 
 
 

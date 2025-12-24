@@ -59,7 +59,7 @@ export default function Sale() {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[80vh] lg:min-h-[80vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
           src="/images_pages/listings.png"
@@ -130,7 +130,7 @@ export default function Sale() {
         </div>
 
         {/* Desktop Version */}
-        <div className="absolute left-1/2 bottom-20 mb-[6%]  transform -translate-x-1/2 translate-y-1/2 z-20 w-[70%] lg:w-[60%] hidden lg:block">
+        <div className="absolute left-1/2 bottom-10 mb-[6%]  transform -translate-x-1/2 translate-y-1/2 z-20 w-[70%] lg:w-[60%] hidden lg:block">
           <div className="border border-white/10 backdrop-blur-[10px] bg-white/30 rounded-md p-4 lg:p-6 shadow-lg">
             {/* Buttons Section */}
             <div className="flex justify-center gap-4 mb-4">
@@ -294,13 +294,13 @@ export default function Sale() {
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="hidden lg:block lg:py-10 py-4 ">
+      <div className="hidden lg:block lg:py-4 py-4">
 
 
 
         {/* Header Bar */}
-        <div className="bg-white border-gray-200 px-2 lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-5 bg-gray-50 mx-auto items-center gap-4">
+        <div className="bg-white border-gray-200 px-2   lg:px-4">
+          <div className="hidden lg:flex max-w-full mb-4 bg-gray-50 mx-auto items-center gap-4">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
@@ -349,7 +349,7 @@ export default function Sale() {
         {/* Main Content: List and Map */}
         {viewMode === "LIST" ? (
           <div
-            className="grid gap-6 px-20 bg-[#F9F9F9] lg:grid-cols-3 xl:grid-cols-4 "
+            className="grid gap-6 px-4 lg:px-20 bg-[#F9F9F9] lg:grid-cols-3 xl:grid-cols-4 "
           >
             {properties.map((property, index) => (
               <div
@@ -408,17 +408,17 @@ export default function Sale() {
                     <p className="text-base font-bold text-[#001730]">{property.price} QAR</p>
 
                     <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <Link
-                      href="/propertydetails"
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <span>Details</span>
-                      <FaArrowRight
-                        size={12}
-                        className="w-3 h-3  lg:w-[16px]  ml-10"
-                      />
-                    </Link>
-                  </button>
+                      <Link
+                        href="/propertydetails"
+                        className="flex items-center gap-2 w-full"
+                      >
+                        <span>Details</span>
+                        <FaArrowRight
+                          size={12}
+                          className="w-3 h-3  lg:w-[16px]  ml-10"
+                        />
+                      </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -476,19 +476,19 @@ export default function Sale() {
                             {property.price} QAR
                           </p>
 
-                        
-  <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <Link
-                      href="/propertydetails"
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <span>Details</span>
-                      <FaArrowRight
-                        size={12}
-                        className="w-3 h-3  lg:w-[16px]  ml-10"
-                      />
-                    </Link>
-                  </button>
+
+                          <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                            <Link
+                              href="/propertydetails"
+                              className="flex items-center gap-2 w-full"
+                            >
+                              <span>Details</span>
+                              <FaArrowRight
+                                size={12}
+                                className="w-3 h-3  lg:w-[16px]  ml-10"
+                              />
+                            </Link>
+                          </button>
                         </div>
                       </div>
                     </div>

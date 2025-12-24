@@ -74,7 +74,7 @@ export default function Commercial() {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[80vh] lg:min-h-[80vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
           src="/images_pages/luxury.png"
@@ -98,7 +98,7 @@ export default function Commercial() {
             ].map((item, index) => (
               <div
                 key={index}
-                className="flex flex-col items-center  border border-white/10 backdrop-blur-[4px] bg-white/10  rounded-md p-3  lg:p-6 text-white h-28 lg:h-32"
+                className="flex flex-col items-center  border border-white/10 backdrop-blur-[10px] bg-white/20  rounded-md p-3  lg:p-6 text-white h-28 lg:h-32"
               >
                 <h2 className="text-lg  lg:text-2xl font-semibold mb-2">
                   {item.value}
@@ -116,7 +116,7 @@ export default function Commercial() {
 
 
         {/* Desktop Filter Items - Moved to bottom of hero */}
-        <div className="hidden lg:flex absolute w-full justify-center bottom-14 lg:bottom-[-32px] z-20">
+        <div className="hidden lg:flex absolute w-full justify-center bottom-10 lg:bottom-[-32px] z-20">
           <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md 
                   gap-4 justify-center items-center">
             {/* Filter Items */}
@@ -246,13 +246,13 @@ export default function Commercial() {
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="hidden lg:block lg:py-10 py-4 ">
+      <div className="hidden lg:block lg:py-28 py-4">
 
 
 
         {/* Header Bar */}
-        <div className="bg-white border-gray-200 px-2  lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-2 bg-gray-50    mt-24 mx-auto items-center gap-4">
+        <div className="bg-white border-gray-200 px-2   lg:px-6">
+          <div className="hidden lg:flex max-w-full mb-6 bg-gray-50 mx-auto items-center gap-4">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
@@ -267,7 +267,7 @@ export default function Commercial() {
 
 
               {/* Divider */}
-             
+
             </div>
 
           </div>
@@ -439,8 +439,8 @@ export default function Commercial() {
                     </p>
                   </div>
 
-                  
-  <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+
+                  <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
                     <Link
                       href="/propertydetails"
                       className="flex items-center gap-2 w-full"

@@ -102,7 +102,7 @@ export default function ContactHeadOffice() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative w-full min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <Image
           src="/WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"

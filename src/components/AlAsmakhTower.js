@@ -31,22 +31,33 @@ export default function AlAsmakhTower() {
     {
       title: "AL ASMAKH TOWER",
       location: "West Bay",
+      subheading: "A Future-Focused Tower with Heritage at Its Core.",
       description:
-        "The flagship corporate headquarters features an iconic design on Doha’s skyline, offering premium smart office spaces and sustainability excellence, proudly achieving GSAS 4-star certification for innovation and environmental performance.",
+        "An iconic GSAS 4-star certified office tower in West Bay that brings together ARDEC's legacy, sustainable design, and smart technology to create a long-term base for leading organisations in Qatar. Al Asmakh Tower reflects how ARDEC thinks about commercial real estate: combine architectural presence with spaces that work in real life. Positioned along Doha's business skyline, the tower offers flexible floorplates and 40 commercial units that can adapt as companies grow, restructure, or expand regional teams.",
       img: "/407.png",
     },
     {
-      title: "MARINA SKY RESIDENCES",
-      location: "Dubai Marina",
+      title: "BEVERLY HILLS TOWER",
+      location: "West Bay",
+      subheading: "Serviced City Living, with Hotel-Style Comfort Every Day.",
       description:
-        "Premium waterfront living with world-class amenities and exceptional marina views.",
+        "A 30-storey residential tower in West Bay offering 318 fully furnished apartments, premium wellness facilities, and 24-hour concierge services in one centrally connected address. Beverly Hills Tower is designed for those who want hotel-style ease without losing the feeling of home. From the moment you arrive, a staffed lobby, round-the-clock concierge, and secure access create a sense of being looked after, whether you are staying for a year or a longer assignment in Doha.",
       img: "https://media.istockphoto.com/id/175767618/photo/modern-townhouse-complex.jpg?s=612x612&w=0&k=20&c=ltPDM5QTC1a4cdr7Fjvct-KNlNCUPC_IyNC2f93eJ84=",
     },
     {
-      title: "THE ROYAL HEIGHTS",
-      location: "Business Bay",
+      title: "FLORESTA TOWER, THE PEARL",
+      location: "The Pearl",
+      subheading: "Sea Views, Smart Living, and a Private Beach Below.",
       description:
-        "Contemporary design combined with smart living for the modern urban lifestyle.",
+        "A waterfront tower on The Pearl offering 102 luxury apartments, panoramic sea views, smart home technology, and private beach access in one of Qatar's most recognisable island settings. Floresta Tower is designed for those who crave the calm of a private shoreline with the convenience of tower living. Residences open out to sweeping views of the sea and marina, creating a daily connection to the water that is rare even on The Pearl. At ground level, residents enjoy direct access to a private beach area, turning early morning swims and sunset walks into a natural part of life at home.",
+      img: "https://images.pexels.com/photos/358636/pexels-photo-358636.jpeg?cs=srgb&dl=pexels-pixabay-358636.jpg&fm=jpg",
+    },
+    {
+      title: "LES MAISONS BLANCHES",
+      location: "Lusail",
+      subheading: "A Neighbourhood Feel, with City Life on Your Doorstep.",
+      description:
+        "An exclusive compound of villas and apartments, thoughtfully planned around a central clubhouse, with everyday services, and easy access to Lusail's key destinations. Les Maisons Blanches is for residents who want the feel of a neighbourhood, without losing the benefits of a central Lusail location. Inside the gates, the focus is on quiet streets, defined entrances, and homes that feel spacious and private. Outside, the city's newest retail and entertainment districts are only a short drive away.",
       img: "https://images.pexels.com/photos/358636/pexels-photo-358636.jpeg?cs=srgb&dl=pexels-pixabay-358636.jpg&fm=jpg",
     },
   ];
@@ -135,6 +146,14 @@ export default function AlAsmakhTower() {
                 >
                   {projects[activeSlide].title}
                 </h2>
+
+                {/* SUBHEADING */}
+                {projects[activeSlide].subheading && (
+                  <p className="text-[#001730] text-sm md:text-base font-medium mb-2 md:mb-3 italic">
+                    {projects[activeSlide].subheading}
+                  </p>
+                )}
+
                 <div className="w-[90%] h-[1px] bg-gray-300 mx-auto my-2"></div>
                 {/* SEPARATOR LINE */}
 
@@ -252,6 +271,14 @@ export default function AlAsmakhTower() {
           >
             {projects[activeSlide].title}
           </h2>
+
+          {/* SUBHEADING */}
+          {projects[activeSlide].subheading && (
+            <p className="text-[#00254D] text-[15px] md:text-[17px] font-medium mb-3 italic">
+              {projects[activeSlide].subheading}
+            </p>
+          )}
+
           <div className="w-[30%] h-[1px]  bg-gray-300  my-4 "></div>
           <div className="flex items-center gap-2 mb-4 md:mb-5">
             <MapPin
