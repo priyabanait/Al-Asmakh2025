@@ -180,35 +180,39 @@ export default function AlAsmakhTower() {
             </div>
           </motion.div>
 
-          {/* NAVIGATION DOTS - Below the card */}
-          <div className="absolute bottom-4 md:bottom-6 left-0 right-0 flex items-center justify-center gap-1.5 md:gap-2">
+          {/* NAVIGATION DOTS - Pill Style Below the card */}
+          <div className="absolute bottom-4 md:bottom-6 left-0 right-0 flex items-center justify-center gap-2">
             {projects.map((_, index) => (
-              <div key={index} className="flex items-center">
-                <button
-                  onClick={() => setActiveSlide(index)}
+              <button
+                key={index}
+                onClick={() => setActiveSlide(index)}
+                className="relative flex items-center justify-center"
+                aria-label={`Go to slide ${index + 1}`}
+              >
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  initial={false}
+                  animate={{
+                    scale: index === activeSlide ? 1.2 : 1,
+                    opacity: index === activeSlide ? 1 : 0.5,
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+                <motion.span
                   className={`
-                    transition-all duration-300 flex items-center justify-center
+                    block rounded-full
                     ${index === activeSlide
-                      ? "w-4 h-4 md:w-5 md:h-5 border-2 border-[#001730] rounded-sm"
-                      : "w-2.5 h-2.5 md:w-3 md:h-3"
+                      ? "bg-[#001730]"
+                      : "bg-gray-400"
                     }
                   `}
-                  aria-label={`Go to slide ${index + 1}`}
-                >
-                  <span
-                    className={`
-                      block
-                      ${index === activeSlide
-                        ? "w-2 h-2 md:w-2.5 md:h-2.5 bg-[#001730] rounded-sm"
-                        : "w-2.5 h-2.5 md:w-3 md:h-3 bg-gray-400"
-                      }
-                    `}
-                  ></span>
-                </button>
-                {/* {index < projects.length - 1 && (
-                  <div className="w-px h-3 bg-gray-300 mx-2"></div>
-                )} */}
-              </div>
+                  animate={{
+                    width: index === activeSlide ? "24px" : "8px",
+                    height: index === activeSlide ? "8px" : "8px",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+              </button>
             ))}
           </div>
         </motion.div>
@@ -270,12 +274,12 @@ export default function AlAsmakhTower() {
             {projects[activeSlide].description}
           </p>
 
-<div className="flex justify-center md:justify-start">
-  <button className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md text-[12px] hover:bg-[#002d52] transition-colors">
-    <span>Details</span>
-    <FaArrowRight size={12} className="md:w-[12px] md:h-[12px] ml-4 lg:ml-32" />
-  </button>
-</div>
+          <div className="flex justify-center md:justify-start">
+            <button className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md text-[12px] hover:bg-[#002d52] transition-colors">
+              <span>Details</span>
+              <FaArrowRight size={12} className="md:w-[12px] md:h-[12px] ml-4 lg:ml-32" />
+            </button>
+          </div>
 
 
           {/* <button
@@ -286,31 +290,39 @@ export default function AlAsmakhTower() {
             <FaArrowRight size={16} className="ml-16" />
           </button> */}
 
-            <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
+          {/* PILL STYLE NAVIGATION DOTS */}
+          <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
             {projects.map((_, index) => (
-              <div key={index} className="flex items-center">
-                <button
-                  onClick={() => setActiveSlide(index)}
+              <button
+                key={index}
+                onClick={() => setActiveSlide(index)}
+                className="relative flex items-center justify-center"
+                aria-label={`Go to slide ${index + 1}`}
+              >
+                <motion.div
+                  className="absolute inset-0 rounded-full"
+                  initial={false}
+                  animate={{
+                    scale: index === activeSlide ? 1.2 : 1,
+                    opacity: index === activeSlide ? 1 : 0.5,
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+                <motion.span
                   className={`
-                    transition-all duration-300 flex items-center justify-center
-                    ${index === activeSlide 
-                      ? "w-6 h-6 border-2 border-[#001730] rounded-sm" 
-                      : "w-2 h-2"
+                    block rounded-full
+                    ${index === activeSlide
+                      ? "bg-[#001730]"
+                      : "bg-gray-400"
                     }
                   `}
-                  aria-label={`Go to slide ${index + 1}`}
-                >
-                  <span
-                    className={`
-                      block
-                      ${index === activeSlide 
-                        ? "w-2 h-2 bg-[#001730] rounded-sm" 
-                        : "w-2 h-2 bg-gray-400"
-                      }
-                    `}
-                  ></span>
-                </button>
-              </div>
+                  animate={{
+                    width: index === activeSlide ? "32px" : "8px",
+                    height: index === activeSlide ? "8px" : "8px",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                />
+              </button>
             ))}
           </div>
 

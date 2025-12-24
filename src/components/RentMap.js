@@ -59,7 +59,7 @@ export default function Sale() {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[80vh] lg:min-h-[80vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
           src="/images_pages/listings.png"
@@ -261,7 +261,7 @@ export default function Sale() {
 
         {/* Header Bar */}
         <div className="bg-white border-gray-200 px-2   lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-5 bg-gray-50 mx-auto items-center gap-4">
+          <div className="hidden lg:flex max-w-full mb-4 bg-gray-50 mx-auto items-center gap-4">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
@@ -334,9 +334,9 @@ export default function Sale() {
                   </h3>
 
                   {/* Location */}
-                 
-<div className="flex items-center text-[#001730] text-sm mb-3">
-                        <MapPin size={12} className="mr-2" />
+
+                  <div className="flex items-center text-[#001730] text-sm mb-3">
+                    <MapPin size={12} className="mr-2" />
                     <span>{property.location}</span>
                   </div>
 
@@ -388,17 +388,17 @@ export default function Sale() {
                     <p className="text-base font-bold text-[#001730]">{property.price} QAR</p>
 
                     <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <Link
-                      href="/propertydetails"
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <span>Details</span>
-                      <FaArrowRight
-                        size={12}
-                        className="w-3 h-3  lg:w-[16px]  ml-10"
-                      />
-                    </Link>
-                  </button>
+                      <Link
+                        href="/propertydetails"
+                        className="flex items-center gap-2 w-full"
+                      >
+                        <span>Details</span>
+                        <FaArrowRight
+                          size={12}
+                          className="w-3 h-3  lg:w-[16px]  ml-10"
+                        />
+                      </Link>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -435,9 +435,9 @@ export default function Sale() {
                           <h3 className="text-lg font-bold text-[#001730] mb-1">
                             {property.title}
                           </h3>
-                         
-<div className="flex items-center text-[#001730] text-sm mb-3">
-                        <MapPin size={12} className="mr-2" />
+
+                          <div className="flex items-center text-[#001730] text-sm mb-3">
+                            <MapPin size={12} className="mr-2" />
                             <span>{property.location}</span>
                           </div>
                           <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
@@ -486,17 +486,17 @@ export default function Sale() {
                             {property.price} QAR
                           </p>
                           <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <Link
-                      href="/propertydetails"
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <span>Details</span>
-                      <FaArrowRight
-                        size={12}
-                        className="w-3 h-3  lg:w-[16px]  ml-10"
-                      />
-                    </Link>
-                  </button>
+                            <Link
+                              href="/propertydetails"
+                              className="flex items-center gap-2 w-full"
+                            >
+                              <span>Details</span>
+                              <FaArrowRight
+                                size={12}
+                                className="w-3 h-3  lg:w-[16px]  ml-10"
+                              />
+                            </Link>
+                          </button>
                         </div>
 
 

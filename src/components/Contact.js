@@ -68,7 +68,7 @@ export default function MeetOurAgents() {
         <div className="relative z-10 flex flex-col items-center justify-center text-center w-full px-4 md:px-8 mt-10 md:mt-36">
           {/* Transparent Box for Heading */}
           <div className="glass-effect rounded-md px-4 sm:px-6 md:px-10 py-6 sm:py-8 md:py-10 shadow-lg max-w-[900px] mx-auto w-[90%] sm:w-[80%]">
-            <h1 className="heading text-white font-semibold mb-2">
+            <h1 className="heading text-white  mb-2">
               MEET OUR EXPERT AGENTS
             </h1>
             <div className="w-[40%]  lg:w-[40%] h-[0.5px] mt-2 bg-gray-300 mb-3 md:mb-4 mx-auto"></div>
@@ -90,7 +90,7 @@ export default function MeetOurAgents() {
                 key={index}
                 className="glass-effect flex flex-col items-center rounded-md p-3 sm:p-4 md:p-6 md:px-14 text-white h-28 sm:h-32 md:h-auto"
               >
-                <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-1">
+                <h2 className="text-lg sm:text-xl md:text-2xl  mb-1">
                   {item.value}
                 </h2>
                 <div className="w-[60%] sm:w-[70%] md:w-[60%] lg:w-[90%] h-[0.5px] bg-gray-300 my-2 sm:my-3 md:mb-4 mx-auto"></div>
@@ -224,7 +224,7 @@ export default function MeetOurAgents() {
 
 
               {/* Divider */}
-             
+
             </div>
 
           </div>
@@ -252,7 +252,7 @@ export default function MeetOurAgents() {
 
                   {/* Name + Title - Absolute positioned over image */}
                   <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-3 lg:p-4">
-                    <h3 className="text-base sm:text-lg font-semibold text-[#001730]">
+                    <h3 className="text-base sm:text-lg  text-[#001730]">
                       {agent.name}
                     </h3>
                     <p className="text-[#001730] text-xs sm:text-sm">{agent.title}</p>
@@ -266,7 +266,7 @@ export default function MeetOurAgents() {
                 <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-3 sm:mb-4">
                   {/* Box 1 */}
                   <div className="glass-effect shadow-md p-2 px-4 sm:px-6 md:px-8 rounded-md ">
-                    <p className="font-semibold text-[#001730] text-base sm:text-lg">
+                    <p className=" text-[#001730] text-base sm:text-lg">
                       {agent.properties}
                     </p>
                     <div className="h-[0.5px] bg-gray-300 my-1 sm:my-2 md:my-2 mx-auto"></div>
@@ -275,7 +275,7 @@ export default function MeetOurAgents() {
 
                   {/* Box 2 */}
                   <div className="glass-effect shadow-md p-2 px-4 sm:px-6 md:px-4 rounded-md ">
-                    <p className="font-semibold text-[#001730] text-base sm:text-lg">
+                    <p className=" text-[#001730] text-base sm:text-lg">
                       {agent.clients}
                     </p>
                     <div className="h-[0.5px] bg-gray-300 my-1 sm:my-2 md:my-2 "></div>
@@ -297,25 +297,25 @@ export default function MeetOurAgents() {
 
                 {/* Buttons */}
                 <div className="flex flex-row gap-2">
-                <button
-  className="flex-1 flex items-center justify-between
+                  <button
+                    className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white py-2 rounded-md
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition"
->
-  <span>Call Agent</span>
-  <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-</button>
+                  >
+                    <span>Call Agent</span>
+                    <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                  </button>
 
-<button
-  className="flex-1 flex items-center justify-between
+                  <button
+                    className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white rounded-md
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition"
->
-  <span>Send Email</span>
-  <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-</button>
+                  >
+                    <span>Send Email</span>
+                    <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                  </button>
 
                 </div>
               </div>

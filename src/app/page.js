@@ -1,4 +1,4 @@
-  'use client'
+'use client'
 
 import Header from '../components/Header'
 import Hero from '../components/Hero'
@@ -7,17 +7,17 @@ import AlAsmakhTower from '../components/AlAsmakhTower'
 import PrivilegePartners from '../components/PrivilegePartners'
 import SignIn from '../components/SignIn'
 import Footer from '../components/Footer'
-import {useEffect} from 'react'
+import { useEffect } from 'react'
 export default function Home() {
   // Add script to detect screen size and apply appropriate scaling
   useEffect(() => {
     // Add 'js' class to html element to enable JS-dependent styles
     document.documentElement.classList.add('js');
-    
+
     // Function to set CSS variables based on screen size
     const setFigmaScale = () => {
       const width = window.innerWidth;
-      
+
       // For HP Victus laptop (1200px - 1600px)
       if (width >= 1200 && width <= 1600) {
         document.documentElement.style.setProperty('--figma-scale', '0.95');
@@ -49,19 +49,19 @@ export default function Home() {
         document.documentElement.style.setProperty('--figma-width', '1440px');
       }
     };
-    
+
     // Set initial scale
     setFigmaScale();
-    
+
     // Update on resize with debounce for performance
     let resizeTimer;
     const handleResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(setFigmaScale, 100);
     };
-    
+
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       window.removeEventListener('resize', handleResize);
       clearTimeout(resizeTimer);

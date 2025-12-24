@@ -129,25 +129,25 @@ export default function Rent() {
 
             {/* Stats Section */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:mr-40 text-center">
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">500+</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Increase in Property Views</p>
               </div>
 
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[140px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">60%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Faster Luxury Sale Times</p>
               </div>
 
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[140px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">25%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Higher Sale Prices Achieved</p>
               </div>
 
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[140px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">98%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Elite Client Satisfaction Rate</p>
@@ -312,7 +312,7 @@ export default function Rent() {
               className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
             >
               {/* Image Section with Overlapping Button and Text Overlay */}
-              <div className="relative w-full h-[400px] md:h-[500px]">
+              <div className="relative w-full h-[300px] md:h-[400px]">
                 <Image
                   src={blog.image}
                   alt={blog.title}

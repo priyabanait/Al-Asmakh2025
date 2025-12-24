@@ -381,8 +381,8 @@ export default function Profit() {
 
 
       {/* Section Title + Cards */}
-      <div className="relative w-full h-screen py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-32 5xl:px-4 overflow-hidden">
-        <div className="max-w-[1500px] mt-10 mx-auto">
+      <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-32 5xl:px-4">
+        <div className="max-w-[1500px] mt-10 mx-auto w-full">
           <h2
             id="my-heading"
             className="text-2xl text-[#001730] uppercase mb-2  lg:mb-2 text-center"
@@ -527,16 +527,17 @@ export default function Profit() {
               </div>
             ))}
           </div>
-        </div>
 
-        <div className="flex justify-center  ">
-          <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
-            <span>View All</span>
-            <FaArrowRight
-              size={12}
-              className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
-            />
-          </button>
+          {/* View All Button - Moved inside max-w container */}
+          <div className="flex justify-center mt-4 lg:mt-6 mb-5">
+            <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
+              <span>View All</span>
+              <FaArrowRight
+                size={12}
+                className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
+              />
+            </button>
+          </div>
         </div>
 
         {/* Scroll Button */}
@@ -740,7 +741,7 @@ export default function Profit() {
                     className="bg-white shadow-md rounded-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
                   >
                     {/* Image Section with Overlapping Button and Text Overlay */}
-                    <div className="relative w-full h-[250px] lg:h-[400px]">
+                    <div className="relative w-full h-[250px] lg:h-[300px]">
                       <Image
                         src={blog.image}
                         alt={blog.title}
@@ -801,99 +802,101 @@ export default function Profit() {
         />
 
         {/* Content Container */}
-        <div className="relative z-10 flex flex-col lg:flex-row w-full h-full px-4 lg:px-14 items-start justify-between py-6 lg:py-0">
-          {/* Left Side Title - Overlaid on background */}
-          <div className="text-white lg:w-1/2 flex flex-col mt-6 lg:mt-20 mb-4 lg:mb-0 h-full">
-            <h2 className="text-base lg:text-2xl text-center lg:text-left mb-2 lg:mb-3">
-              How Can We Help You Today?
-            </h2>
-            <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
-          </div>
-
-          {/* Right Side - Form Panel and Map */}
-          <div className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-20">
-            {/* Form Panel - Translucent */}
-            <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
-              {/* Form Header */}
-              <h3 className="text-[#001730] lg:px-10 text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
-                Fill out the form below and our experts will get back to you within 24 hour
-              </h3>
-              <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
-
-
-              <form className="space-y-3 lg:space-y-4">
-                {/* First Row: Name and Email */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                  <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
-                    <input
-                      type="text"
-                      placeholder="John Carter"
-                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
-                    <input
-                      type="email"
-                      placeholder="example@email.com"
-                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                    />
-                  </div>
-                </div>
-
-                {/* Second Row: Phone and Property Type */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                  <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
-                    <input
-                      type="text"
-                      placeholder="(123) 456 - 789"
-                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
-                    <select
-                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730]"
-                    >
-                      <option>Choose a Type</option>
-                      <option>Apartment</option>
-                      <option>Villa</option>
-                      <option>Commercial</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Message Textarea */}
-                <div>
-                  <label className="block text-[#001730] text-xs lg:text-sm mb-1.5 lg:mb-2">Message</label>
-                  <textarea
-                    placeholder="Tell us more about your requirement like budget ,area & others .."
-                    rows={3}
-                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
-                  ></textarea>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
-                >
-                  <span className="text-[12px]">Submit</span>
-                  <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
-                </button>
-              </form>
+        <div className="relative z-10 max-w-[1300px] mx-auto w-full h-full px-4 lg:px-4">
+          <div className="flex flex-col lg:flex-row w-full h-full items-start justify-between py-6 lg:py-0">
+            {/* Left Side Title - Overlaid on background */}
+            <div className="text-white lg:w-1/2 flex flex-col mt-6 lg:mt-20 mb-4 lg:mb-0 h-full">
+              <h2 className="text-base lg:text-2xl text-center lg:text-left mb-2 lg:mb-3">
+                How Can We Help You Today?
+              </h2>
+              <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
             </div>
 
-            {/* Map Section - Below the blur card */}
-            <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
-              <Image
-                src="/675.png"
-                alt="Map"
-                fill
-                className="object-cover rounded-md"
-              />
+            {/* Right Side - Form Panel and Map */}
+            <div className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-20">
+              {/* Form Panel - Translucent */}
+              <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
+                {/* Form Header */}
+                <h3 className="text-[#001730] lg:px-10 text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
+                  Fill out the form below and our experts will get back to you within 24 hour
+                </h3>
+                <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
+
+
+                <form className="space-y-3 lg:space-y-4">
+                  {/* First Row: Name and Email */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                    <div>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
+                      <input
+                        type="text"
+                        placeholder="John Carter"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
+                      <input
+                        type="email"
+                        placeholder="example@email.com"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Second Row: Phone and Property Type */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                    <div>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
+                      <input
+                        type="text"
+                        placeholder="(123) 456 - 789"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
+                      <select
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730]"
+                      >
+                        <option>Choose a Type</option>
+                        <option>Apartment</option>
+                        <option>Villa</option>
+                        <option>Commercial</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Message Textarea */}
+                  <div>
+                    <label className="block text-[#001730] text-xs lg:text-sm mb-1.5 lg:mb-2">Message</label>
+                    <textarea
+                      placeholder="Tell us more about your requirement like budget ,area & others .."
+                      rows={3}
+                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
+                    ></textarea>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
+                  >
+                    <span className="text-[12px]">Submit</span>
+                    <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
+                  </button>
+                </form>
+              </div>
+
+              {/* Map Section - Below the blur card */}
+              <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
+                <Image
+                  src="/675.png"
+                  alt="Map"
+                  fill
+                  className="object-cover rounded-md"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1002,7 +1005,7 @@ export default function Profit() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -50 }}
                   transition={{ duration: 0.5 }}
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full"
                 >
                   {visibleOffices.map((office, index) => (
                     <div

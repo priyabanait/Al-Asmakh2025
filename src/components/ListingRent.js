@@ -58,7 +58,7 @@ export default function Sale() {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[80vh] lg:min-h-[80vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
           src="/images_pages/listings.png"

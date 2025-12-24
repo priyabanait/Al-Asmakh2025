@@ -150,31 +150,45 @@ export default function Rent() {
             </p>
 
             {/* Stats Section */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:mr-[30%] text-center">
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+            {/* Stats Section */}
+            <div className="grid grid-cols-2 md:grid-cols-4 
+                gap-y-12 gap-x-14 
+                sm:gap-y-14 sm:gap-x-16
+                md:gap-y-16 md:gap-x-18
+                lg:gap-y-20 lg:gap-x-24
+                lg:mr-[30%] 
+                text-center">
+
+              {/* Card 1 */}
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">500+</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Properties Managed</p>
               </div>
 
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              {/* Card 2 */}
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">15%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Average ROI Increase</p>
               </div>
 
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              {/* Card 3 */}
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">98%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Client Satisfaction</p>
               </div>
 
-              <div className="glass-effect rounded-lg shadow p-3 sm:p-4">
+              {/* Card 4 */}
+              <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">24/7</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
                 <p className="subheading text-[#001730]">Emergency Support</p>
               </div>
+
             </div>
+
           </div>
 
           {/* Contact Team Button - Below the box */}

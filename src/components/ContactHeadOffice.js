@@ -118,7 +118,7 @@ export default function ContactHeadOffice() {
         {/* Content (Centered Box) */}
         <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 md:px-8">
           <div className="glass-effect rounded-md px-6 md:px-10 py-8 md:py-20 shadow-lg max-w-[900px] mx-auto text-center">
-            <h1 className="text-[26px] text-white font-semibold mb-2">
+            <h1 className="text-[26px] text-white  mb-2">
               CONTACT OUR HEAD OFFICE
             </h1>
             <div className="w-[40%] mt-5  lg:w-[40%] h-[0.5px]  bg-gray-300 mb-3 md:mb-4 mx-auto"></div>
@@ -150,7 +150,7 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base font-semibold mb-3 items-end text-right text-white">Send us an email anytime</h3>
+                  <h3 className="text-base  mb-3 items-end text-right text-white">Send us an email anytime</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <span className="text-sm text-white">Sales@aredc.qa</span>
@@ -176,7 +176,7 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base font-semibold mb-3 text-white items-end text-right">Call us during business hours</h3>
+                  <h3 className="text-base  mb-3 text-white items-end text-right">Call us during business hours</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <span className="text-sm text-white">+974 4444 5555</span>
@@ -202,7 +202,7 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base font-semibold mb-3 text-white items-end text-right">Visit our head office</h3>
+                  <h3 className="text-base  mb-3 text-white items-end text-right">Visit our head office</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-1 text-right">
                     <span className="text-sm text-white">Tower 1, Floor 15</span>
@@ -229,7 +229,7 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base font-semibold mb-3 text-white items-end text-right">Our Office Hours</h3>
+                  <h3 className="text-base  mb-3 text-white items-end text-right">Our Office Hours</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <div className="flex flex-col items-end">
@@ -263,7 +263,7 @@ export default function ContactHeadOffice() {
                   className="w-[62px] h-[62px] object-contain"
                 />
               </div>
-              <h3 className="text-lg font-semibold mb-4 text-gray-400">Send us an email anytime</h3>
+              <h3 className="text-lg  mb-4 text-gray-400">Send us an email anytime</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               <div className="flex items-center justify-center gap-10">
                 <span className="text-sm">Sales@aredc.go</span>
@@ -283,7 +283,7 @@ export default function ContactHeadOffice() {
                   className="w-[62px] h-[62px] object-contain"
                 />
               </div>
-              <h3 className="text-lg font-semibold mb-4 text-gray-400">Call us during business hours</h3>
+              <h3 className="text-lg  mb-4 text-gray-400">Call us during business hours</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               <div className="flex items-center justify-center gap-6">
                 <span className="text-sm">+974 4444 5555</span>
@@ -306,7 +306,7 @@ export default function ContactHeadOffice() {
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-semibold mb-4 text-gray-400 text-center">
+              <h3 className="text-lg  mb-4 text-gray-400 text-center">
                 Visit our head office
               </h3>
 
@@ -335,7 +335,7 @@ export default function ContactHeadOffice() {
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-semibold mb-6 text-gray-400">Our Office Hours</h3>
+              <h3 className="text-lg  mb-6 text-gray-400">Our Office Hours</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               {/* Horizontal Days */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
@@ -365,13 +365,13 @@ export default function ContactHeadOffice() {
   "
           >
             <p className="text-base md:text-lg text-center md:text-left leading-relaxed">
-              <span className="text-[#FF0000] font-semibold">Emergency Contact</span><br></br>
-              <span className="text-[#FF0000] font-semibold">
+              <span className="text-[#FF0000] ">Emergency Contact</span><br></br>
+              <span className="text-[#FF0000] ">
                 For urgent property-related emergencies outside business hours{" "}</span>
-              <span className="text-[#FF0000] font-semibold ml-0 md:ml-4 block md:inline">
+              <span className="text-[#FF0000]  ml-0 md:ml-4 block md:inline">
                 +974 5555 0000
               </span>
-              <span className="text-[#FF0000] font-semibold ml-0 md:ml-4 block md:inline">
+              <span className="text-[#FF0000]  ml-0 md:ml-4 block md:inline">
                 24/7 Emergency Line
               </span>
             </p>
@@ -380,13 +380,13 @@ export default function ContactHeadOffice() {
           {/* Emergency Contact Banner */}
           <div className=" hidden md:block bg-[#FFE0E0] rounded-lg p-6 text-center shadow-md">
             <p className="text-base md:text-lg">
-              <span className="text-[#FF0000] font-semibold">Emergency Contact</span>
+              <span className="text-[#FF0000] ">Emergency Contact</span>
               {" - "}
-              <span className="text-[#FF0000] font-semibold">
+              <span className="text-[#FF0000] ">
                 For urgent property-related emergencies outside business hours{" "}</span>
-              <span className="text-[#FF0000] font-semibold ml-4">+974 5555 0000</span>
+              <span className="text-[#FF0000]  ml-4">+974 5555 0000</span>
               {" "}
-              <span className="text-[#FF0000] font-semibold ml-4">24/7 Emergency Line</span>
+              <span className="text-[#FF0000]  ml-4">24/7 Emergency Line</span>
             </p>
           </div>
         </div>
@@ -646,14 +646,14 @@ export default function ContactHeadOffice() {
                     setTimeout(() => setIsPaused(false), 3000);
                   }}
                   className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${currentOfficeIndex === index
-                      ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                      : "bg-transparent"
+                    ? "border-2 border-[#10284C] rounded-[2px] bg-white"
+                    : "bg-transparent"
                     }`}
                 >
                   <span
                     className={`block ${currentOfficeIndex === index
-                        ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                        : "w-2 h-2 bg-gray-400 rounded-[2px]"
+                      ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
+                      : "w-2 h-2 bg-gray-400 rounded-[2px]"
                       }`}
                   />
                 </button>
@@ -737,14 +737,14 @@ export default function ContactHeadOffice() {
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${currentSlides === index
-                      ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                      : "bg-transparent"
+                    ? "border-2 border-[#10284C] rounded-[2px] bg-white"
+                    : "bg-transparent"
                     }`}
                 >
                   <span
                     className={`block ${currentSlides === index
-                        ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                        : "w-2 h-2 bg-gray-400 rounded-[2px]"
+                      ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
+                      : "w-2 h-2 bg-gray-400 rounded-[2px]"
                       }`}
                   />
                 </button>

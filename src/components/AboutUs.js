@@ -27,7 +27,7 @@ function AboutUs() {
         <div className="relative z-10 flex flex-col items-center justify-center text-center w-full px-4 md:px-8 mt-8 md:mt-36">
           {/* Transparent Box for Heading */}
           <div className="glass-effect rounded-md px-4 md:px-10 py-6 md:py-10 shadow-lg max-w-[900px] mx-auto">
-            <h1 className="heading text-[#001730] font-semibold mb-2">
+            <h1 className="heading text-[#001730]  mb-2">
               BUILDING LEGACY THAT LASTS
             </h1>
             <div className="w-[40%] sm:w-[40%] md:w-[40%] lg:w-[40%] h-[0.5px]  mt-8 bg-gray-300 mb-3 md:mb-4 mx-auto"></div>
@@ -222,7 +222,7 @@ function AboutUs() {
                 A New Era of Living
                 {/* Line directly below the heading */}
                 <span className="block lg:w-[60%] w-[100%] h-[0.5px] bg-gray-300 my-3  lg:ml-auto"></span>
-                </h2>
+              </h2>
 
               {/* Paragraph */}
               <p className="subheading text-gray-500 leading-relaxed">
@@ -288,7 +288,7 @@ function AboutUs() {
                   Expanding Leadership Horizons
                   {/* Line directly below the heading */}
                   <span className="block lg:w-[60%] w-[100%] h-[0.5px] bg-gray-300 my-3  lg:ml-auto"></span>
-                  </h2>
+                </h2>
 
                 {/* Paragraph */}
                 <p className="subheading text-gray-500  leading-relaxed">
@@ -367,7 +367,7 @@ function AboutUs() {
                 Regency Group Holding
                 {/* Line directly below the heading */}
                 <span className="block lg:w-[60%] w-[100%] h-[1px] bg-gray-300 my-3  lg:ml-auto"></span>
-                </h2>
+              </h2>
 
               {/* Paragraph */}
               <p className="subheading text-gray-500  leading-relaxed">
@@ -430,101 +430,101 @@ function AboutUs() {
 
         {/* Content Container */}
         <div className="relative z-10 flex flex-col lg:flex-row w-full h-full px-4 lg:px-14 items-center justify-between py-6 lg:py-0">
-        {/* Left Side Title - Overlaid on background */}
-        <div className="text-white lg:w-1/2 flex flex-col mt-6 lg:mt-40 mb-4 lg:mb-0 h-full">
-          <h2 className="text-base lg:text-2xl text-center lg:text-left mb-2 lg:mb-3">
-            How Can We Help You Today?
-          </h2>
-          <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
-        </div>
-
-        {/* Right Side - Form Panel and Map */}
-        <div className="lg:w-1/2 max-w-2xl w-full flex flex-col">
-          {/* Form Panel - Translucent */}
-          <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
-            {/* Form Header */}
-            <h3 className="text-[#001730] lg:px-10 text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
-              Fill out the form below and our experts will get back to you within 24 hour
-            </h3>
-            <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
-
-
-            <form className="space-y-3 lg:space-y-4">
-              {/* First Row: Name and Email */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                <div>
-                  <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
-                  <input
-                    type="text"
-                    placeholder="John Carter"
-                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
-                  <input
-                    type="email"
-                    placeholder="example@email.com"
-                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                  />
-                </div>
-              </div>
-
-              {/* Second Row: Phone and Property Type */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                <div>
-                  <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
-                  <input
-                    type="text"
-                    placeholder="(123) 456 - 789"
-                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
-                  <select
-                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730]"
-                  >
-                    <option>Choose a Type</option>
-                    <option>Apartment</option>
-                    <option>Villa</option>
-                    <option>Commercial</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Message Textarea */}
-              <div>
-                <label className="block text-[#001730] text-xs lg:text-sm mb-1.5 lg:mb-2">Message</label>
-                <textarea
-                  placeholder="Tell us more about your requirement like budget ,area & others .."
-                  rows={3}
-                  className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
-                ></textarea>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
-              >
-                <span className="text-[12px]">Submit</span>
-                <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
-              </button>
-            </form>
+          {/* Left Side Title - Overlaid on background */}
+          <div className="text-white lg:w-1/2 flex flex-col mt-6 lg:mt-40 mb-4 lg:mb-0 h-full">
+            <h2 className="text-base lg:text-2xl text-center lg:text-left mb-2 lg:mb-3">
+              How Can We Help You Today?
+            </h2>
+            <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
           </div>
 
-          {/* Map Section - Below the blur card */}
-          <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
-            <Image
-              src="/675.png"
-              alt="Map"
-              fill
-              className="object-cover rounded-md"
-            />
+          {/* Right Side - Form Panel and Map */}
+          <div className="lg:w-1/2 max-w-2xl w-full flex flex-col">
+            {/* Form Panel - Translucent */}
+            <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
+              {/* Form Header */}
+              <h3 className="text-[#001730] lg:px-10 text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
+                Fill out the form below and our experts will get back to you within 24 hour
+              </h3>
+              <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
+
+
+              <form className="space-y-3 lg:space-y-4">
+                {/* First Row: Name and Email */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                  <div>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
+                    <input
+                      type="text"
+                      placeholder="John Carter"
+                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
+                    <input
+                      type="email"
+                      placeholder="example@email.com"
+                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                    />
+                  </div>
+                </div>
+
+                {/* Second Row: Phone and Property Type */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                  <div>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
+                    <input
+                      type="text"
+                      placeholder="(123) 456 - 789"
+                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
+                    <select
+                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730]"
+                    >
+                      <option>Choose a Type</option>
+                      <option>Apartment</option>
+                      <option>Villa</option>
+                      <option>Commercial</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Message Textarea */}
+                <div>
+                  <label className="block text-[#001730] text-xs lg:text-sm mb-1.5 lg:mb-2">Message</label>
+                  <textarea
+                    placeholder="Tell us more about your requirement like budget ,area & others .."
+                    rows={3}
+                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
+                  ></textarea>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
+                >
+                  <span className="text-[12px]">Submit</span>
+                  <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
+                </button>
+              </form>
+            </div>
+
+            {/* Map Section - Below the blur card */}
+            <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
+              <Image
+                src="/675.png"
+                alt="Map"
+                fill
+                className="object-cover rounded-md"
+              />
+            </div>
           </div>
         </div>
-      </div>
       </section>
     </div>
   )
