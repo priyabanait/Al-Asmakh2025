@@ -251,7 +251,7 @@ export default function Header() {
                             : `/${item.key.toLowerCase().replace(' ', '-')}`
                         )
                     }
-                    className={`flex items-center   backdropFilter: 'blur(40px) saturate(180%)',
+                    className={`flex items-center whitespace-nowrap backdropFilter: 'blur(40px) saturate(180%)',
                           WebkitBackdropFilter: 'blur(40px) saturate(180%)', gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${activeDropdown === item.key
                         ? 'bg-white/20 text-[#001730]'
                         : 'hover:bg-white/10 text-[#001730]'
@@ -283,7 +283,7 @@ export default function Header() {
                           style={{
                             backdropFilter: 'blur(40px) saturate(180%)',
                             WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                            backgroundColor: 'rgba(241, 224, 224, 0.15)',
                           }}
                         />
 

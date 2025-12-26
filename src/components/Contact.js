@@ -251,7 +251,7 @@ export default function MeetOurAgents() {
                   />
 
                   {/* Name + Title - Absolute positioned over image */}
-                  <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-3 lg:p-4">
+                  <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-2 lg:p-3">
                     <h3 className="text-base sm:text-lg  text-[#001730]">
                       {agent.name}
                     </h3>
@@ -261,36 +261,36 @@ export default function MeetOurAgents() {
               </div>
 
               {/* Content */}
-              <div className="text-center mt-3 sm:mt-4 px-3 sm:px-4 pb-4 sm:pb-6">
+              <div className="text-center mt-2 sm:mt-3 px-3 sm:px-4 pb-3 sm:pb-4">
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-3 sm:mb-4">
+                <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-2 sm:mb-3">
                   {/* Box 1 */}
-                  <div className="glass-effect shadow-md p-2 px-4 sm:px-6 md:px-8 rounded-md ">
+                  <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-6 rounded-md ">
                     <p className=" text-[#001730] text-base sm:text-lg">
                       {agent.properties}
                     </p>
-                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-2 md:my-2 mx-auto"></div>
+                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 mx-auto"></div>
                     <p className="subheading text-[#001730]">Properties</p>
                   </div>
 
                   {/* Box 2 */}
-                  <div className="glass-effect shadow-md p-2 px-4 sm:px-6 md:px-4 rounded-md ">
+                  <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-3 rounded-md ">
                     <p className=" text-[#001730] text-base sm:text-lg">
                       {agent.clients}
                     </p>
-                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-2 md:my-2 "></div>
+                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 "></div>
                     <p className="subheading text-[#001730]">Clients Served</p>
                   </div>
                 </div>
 
 
                 {/* Info */}
-                <div className="glass-effect text-left text-xs sm:text-sm mb-2 shadow-md p-2 rounded-md">
+                <div className="glass-effect text-left text-xs sm:text-sm mb-1.5 shadow-md p-1.5 rounded-md">
                   <p className="text-gray-400">Specialities</p>
                   <p className="subheading text-gray-700 font-medium text-center">{agent.specialties}</p>
                 </div>
 
-                <div className="glass-effect text-left text-xs sm:text-sm mb-3 sm:mb-4 shadow-md p-2 rounded-md">
+                <div className="glass-effect text-left text-xs sm:text-sm mb-2 sm:mb-3 shadow-md p-1.5 rounded-md">
                   <p className="text-gray-400">Languages</p>
                   <p className="subheading text-gray-700 font-medium text-center">{agent.languages}</p>
                 </div>

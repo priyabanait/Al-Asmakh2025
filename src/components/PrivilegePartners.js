@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { FaArrowRight } from "react-icons/fa6";
+import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { ChevronRight } from "lucide-react";
 import { Quote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,7 +50,8 @@ export default function Profit() {
   ];
 
   const scrollRef = useRef(null);
-  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showScrollButtonRight, setShowScrollButtonRight] = useState(false);
+  const [showScrollButtonLeft, setShowScrollButtonLeft] = useState(false);
 
   const scrollRight = () => {
     if (scrollRef.current) {
@@ -58,18 +59,45 @@ export default function Profit() {
     }
   };
 
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const checkScrollButtons = () => {
+    const el = scrollRef.current;
+    if (el) {
+      const hasOverflow = el.scrollWidth > el.clientWidth;
+      const canScrollRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
+      const canScrollLeft = el.scrollLeft > 1;
+
+      setShowScrollButtonRight(hasOverflow && canScrollRight);
+      setShowScrollButtonLeft(hasOverflow && canScrollLeft);
+    }
+  };
+
   useEffect(() => {
     const el = scrollRef.current;
-    const checkOverflow = () => {
-      if (el && el.scrollWidth > el.clientWidth) {
-        setShowScrollButton(true);
-      } else {
-        setShowScrollButton(false);
-      }
+    if (!el) return;
+
+    checkScrollButtons();
+
+    const handleScroll = () => {
+      checkScrollButtons();
     };
-    checkOverflow();
-    window.addEventListener("resize", checkOverflow);
-    return () => window.removeEventListener("resize", checkOverflow);
+
+    const handleResize = () => {
+      checkScrollButtons();
+    };
+
+    el.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      el.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
   const testimonials = [
     {
@@ -379,7 +407,6 @@ export default function Profit() {
         </div>
       </section>
 
-
       {/* Section Title + Cards */}
       <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-4 5xl:px-4">
         <div className="max-w-[1500px] mt-10 mx-auto w-full">
@@ -538,8 +565,20 @@ export default function Profit() {
           </div>
         </div>
 
-        {/* Scroll Button */}
-        {showScrollButton && (
+        {/* Left Scroll Button */}
+        {showScrollButtonLeft && (
+          <button
+            onClick={scrollLeft}
+            className="absolute left-2 md:left-3 lg:left-4 xl:left-5 2xl:left-6 3xl:left-8 4xl:left-10 5xl:left-12 top-1/2 transform -translate-y-1/2 
+                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
+                     shadow-md z-10 hover:shadow-lg transition"
+          >
+            <FaArrowLeft className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
+          </button>
+        )}
+
+        {/* Right Scroll Button */}
+        {showScrollButtonRight && (
           <button
             onClick={scrollRight}
             className="absolute right-2 md:right-3 lg:right-4 xl:right-5 2xl:right-6 3xl:right-8 4xl:right-10 5xl:right-12 top-1/2 transform -translate-y-1/2 

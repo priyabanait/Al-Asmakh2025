@@ -6,6 +6,10 @@ import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding } from "react-icons/
 import Link from "next/link";
 
 export default function PropertyDetails() {
+
+  const [showScrollButtonRight, setShowScrollButtonRight] = useState(false);
+  const [showScrollButtonLeft, setShowScrollButtonLeft] = useState(false);
+
   const properties = [
     {
       title: "Floresta Tower Floresta Tower Les Maisons Blanches",
@@ -303,9 +307,11 @@ export default function PropertyDetails() {
 
                 {/* Box 1 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="break-words whitespace-normal">
-                    <span className="font-semibold text-[#001730]">Property ID:</span>{" "}
-                    PH-2024-001
+                  <p className="flex items-center whitespace-nowrap">
+                    <span className="font-semibold text-[#001730]">Property ID:</span>
+                    <br />
+                    {" "}
+                    <span className="ml-1">PH-2024-001</span>
                   </p>
                 </div>
 
@@ -319,9 +325,9 @@ export default function PropertyDetails() {
 
                 {/* Box 3 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="break-words whitespace-normal">
+                  <p className="flex items-center whitespace-nowrap">
                     <span className="font-semibold text-[#001730]">Year Built:</span>{" "}
-                    2023
+                    <span className="ml-1">2023</span>
                   </p>
                 </div>
               </div>
@@ -356,7 +362,7 @@ export default function PropertyDetails() {
                 className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
               >
                 {/* LEFT IMAGE */}
-                <div className="w-full lg:w-1/2 relative flex-shrink-0 h-80 lg:h-full min-h-[320px]">
+                <div className="w-full lg:w-1/2 relative flex-shrink-0 h-64 lg:h-full min-h-[260px]">
                   <Image
                     src={agent.image}
                     width={300}
@@ -382,18 +388,24 @@ export default function PropertyDetails() {
                         {agent.name}
                       </h3>
                       <div className="w-[30%] h-[0.2px] px-10 mt-2 3xl:mt-3 bg-gray-400 my-2 mx-auto"></div>
-                      <p className="text-gray-500 text-xs sm:text-sm mb-4">{agent.role}</p>
-
+                      <p className="text-gray-500 text-xs sm:text-sm mb-4">
+                        {agent.role}
+                      </p>
                     </div>
-                    <div className="relative mt-4 ">
-                      <p className=" absolute top-[-9px] text-xs text-gray-400 ml-2">Specialties:</p>
-                      <p className="bg-white p-3 sm:p-4 shadow-md  rounded-[5px] text-xs sm:text-sm text-gray-700">
+
+                    <div className="relative mt-4">
+                      <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                        Specialties:
+                      </p>
+                      <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
                         {agent.specialties}
                       </p>
                     </div>
 
-                    <div className="relative mt-4 ">
-                      <p className="absolute top-[-9px] text-xs text-gray-400 ml-2 ">Languages:</p>
+                    <div className="relative mt-4">
+                      <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                        Languages:
+                      </p>
                       <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
                         {agent.languages}
                       </p>
@@ -412,6 +424,7 @@ export default function PropertyDetails() {
                         <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                       </button>
                     </div>
+
                     <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
                       Schedule Viewing
                       <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
@@ -421,10 +434,13 @@ export default function PropertyDetails() {
               </div>
             ))}
           </div>
+
         </div>
       </div>
-      <div className="relative w-full h-screen py-6 lg:py-8 px-4 md:px-8 lg:px-16 xl:px-18 2xl:px-20 3xl:px-24 4xl:px-32 5xl:px-40 overflow-hidden">
-        <div className="max-w-[1500px] mx-auto">
+
+
+      <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-4 5xl:px-4">
+        <div className="max-w-[1500px] mt-10 mx-auto w-full">
           <h2
             id="my-heading"
             className="text-2xl text-[#001730] uppercase mb-2  lg:mb-2 text-center"
@@ -440,16 +456,15 @@ export default function PropertyDetails() {
     mx-auto text-center px-2 md:px-4 lg:px-0
 
     max-w-xs md:max-w-xl lg:max-w-2xl 
-    xl:max-w-3xl 2xl:max-w-4xl 
-    3xl:max-w-5xl 
-    4xl:max-w-6xl 
-    5xl:max-w-7xl 
+   
+   
 
     mb-6 md:mb-8 lg:mb-12 xl:mb-12 2xl:mb-14 3xl:mb-16 4xl:mb-20 5xl:mb-24
  
   " style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
           >
             Discover similar properties that might interest you in the same area or with comparable features
+
 
           </p>
 
@@ -464,7 +479,7 @@ export default function PropertyDetails() {
           w-[250px]  lg:w-[350px]
           p-4
           bg-[#E9E9E9] border border-gray-200 
-          rounded-[5px] overflow-hidden shadow-md 
+          rounded-md overflow-hidden shadow-md 
           hover:shadow-xl transition-shadow duration-300 
           flex-shrink-0
           ${index === 0 || index === properties.length - 1
@@ -479,7 +494,7 @@ export default function PropertyDetails() {
                     src={property.image}
                     alt={property.title}
                     fill
-                    className="object-fill rounded-[5px]"
+                    className="object-fill rounded-md"
                   />
                 </div>
 
@@ -504,7 +519,7 @@ export default function PropertyDetails() {
                   {/* Bed/Bath/Area Info */}
                   <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
 
-                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-[5px]">
+                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
                       <Image
                         src="/Icon (1).png"
                         alt="Beds"
@@ -515,7 +530,7 @@ export default function PropertyDetails() {
                       <span>{property.beds}</span>
                     </div>
 
-                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-[5px]">
+                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
                       <Image
                         src="/Icon.png"
                         alt="Baths"
@@ -526,7 +541,7 @@ export default function PropertyDetails() {
                       <span>{property.baths}</span>
                     </div>
 
-                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-[5px]">
+                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
                       <Image
                         src="/Icon (2).png"
                         alt="Area"
@@ -550,7 +565,7 @@ export default function PropertyDetails() {
                       {property.price}
                     </p>
 
-                    <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-[5px] flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                    <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
                       <Link
                         href="/propertydetails"
                         className="flex items-center gap-2 w-full"
@@ -567,30 +582,44 @@ export default function PropertyDetails() {
               </div>
             ))}
           </div>
+
+          {/* View All Button - Moved inside max-w container */}
+          <div className="flex justify-center mt-4 lg:mt-6 mb-5">
+            <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
+              <span>View All</span>
+              <FaArrowRight
+                size={12}
+                className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
+              />
+            </button>
+          </div>
         </div>
 
-        <div className="flex justify-center  ">
-          <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded-[5px] flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
-            <span>View All</span>
-            <FaArrowRight
-              size={12}
-              className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
-            />
+        {/* Left Scroll Button */}
+        {showScrollButtonLeft && (
+          <button
+            onClick={scrollLeft}
+            className="absolute left-2 md:left-3 lg:left-4 xl:left-5 2xl:left-6 3xl:left-8 4xl:left-10 5xl:left-12 top-1/2 transform -translate-y-1/2 
+                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
+                     shadow-md z-10 hover:shadow-lg transition"
+          >
+            <FaArrowLeft className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
           </button>
-        </div>
+        )}
 
-        {/* Scroll Button */}
-        {showScrollButton && (
+        {/* Right Scroll Button */}
+        {showScrollButtonRight && (
           <button
             onClick={scrollRight}
             className="absolute right-2 md:right-3 lg:right-4 xl:right-5 2xl:right-6 3xl:right-8 4xl:right-10 5xl:right-12 top-1/2 transform -translate-y-1/2 
-                     bg-white border border-gray-300 rounded-[5px] p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
+                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
                      shadow-md z-10 hover:shadow-lg transition"
           >
             <FaArrowRight className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
           </button>
         )}
       </div>
+
 
     </div>
   );

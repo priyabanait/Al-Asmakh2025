@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
@@ -11,6 +11,7 @@ export default function AlAsmakhTower() {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const areaCarouselRef = useRef(null);
+  const autoSlideIntervalRef = useRef(null);
 
   // Minimum swipe distance (in pixels)
   const minSwipeDistance = 50;
@@ -61,6 +62,35 @@ export default function AlAsmakhTower() {
       img: "https://images.pexels.com/photos/358636/pexels-photo-358636.jpeg?cs=srgb&dl=pexels-pixabay-358636.jpg&fm=jpg",
     },
   ];
+
+  // Function to reset auto-slide interval
+  const resetAutoSlide = () => {
+    if (autoSlideIntervalRef.current) {
+      clearInterval(autoSlideIntervalRef.current);
+    }
+    autoSlideIntervalRef.current = setInterval(() => {
+      setActiveSlide((prev) => (prev === projects.length - 1 ? 0 : prev + 1));
+    }, 5000); // 5 seconds
+  };
+
+  // Auto-advance slides every 5 seconds
+  useEffect(() => {
+    // Set up initial interval
+    resetAutoSlide();
+
+    // Cleanup on unmount
+    return () => {
+      if (autoSlideIntervalRef.current) {
+        clearInterval(autoSlideIntervalRef.current);
+      }
+    };
+  }, []); // Run only once on mount
+
+  // Function to handle manual slide change (resets the auto-slide timer)
+  const handleSlideChange = (index) => {
+    setActiveSlide(index);
+    resetAutoSlide(); // Reset the timer when user manually clicks
+  };
 
   const handleAreaTouchStart = (e) => {
     setTouchEnd(null);
@@ -204,7 +234,7 @@ export default function AlAsmakhTower() {
             {projects.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setActiveSlide(index)}
+                onClick={() => handleSlideChange(index)}
                 className="relative flex items-center justify-center"
                 aria-label={`Go to slide ${index + 1}`}
               >
@@ -318,11 +348,11 @@ export default function AlAsmakhTower() {
           </button> */}
 
           {/* PILL STYLE NAVIGATION DOTS */}
-          {/* <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
+          <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
             {projects.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setActiveSlide(index)}
+                onClick={() => handleSlideChange(index)}
                 className="relative flex items-center justify-center"
                 aria-label={`Go to slide ${index + 1}`}
               >
@@ -351,7 +381,7 @@ export default function AlAsmakhTower() {
                 />
               </button>
             ))}
-          </div> */}
+          </div>
 
         </motion.div>
       </div>
