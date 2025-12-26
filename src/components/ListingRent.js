@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Search, Mic, MapPin, ArrowDown, Bed, Bath, Square, ArrowRight, Leaf, Home, Map as MapIcon, SlidersHorizontal } from "lucide-react";
+import ShareButton from "./ShareButton";
 import { FaArrowRight } from "react-icons/fa6";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { FaList } from "react-icons/fa";
@@ -176,12 +177,20 @@ export default function Sale() {
             >
               {/* Image Section */}
               <div className="relative w-full h-[200px]">
-                <Image
+                {/* <Image
                   src={property.image}
                   alt={property.title}
                   fill
                   className="object-fill rounded-md"
-                />
+                /> */}
+                {/* Share Button Overlay */}
+                <div className="absolute top-2 right-2 z-10">
+                  <ShareButton
+                    propertyTitle={property.title}
+                    propertyLocation={property.location}
+                    propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                  />
+                </div>
               </div>
 
               {/* Property Info */}
@@ -361,6 +370,14 @@ export default function Sale() {
                     fill
                     className="object-fill rounded-md"
                   />
+                  {/* Share Button Overlay */}
+                  <div className="absolute top-2 right-2 z-10">
+                    <ShareButton
+                      propertyTitle={property.title}
+                      propertyLocation={property.location}
+                      propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                    />
+                  </div>
                 </div>
 
                 {/* Property Info */}

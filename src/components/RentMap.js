@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Search, Mic, MapPin, ArrowDown, Bed, Bath, Square, ArrowRight, Leaf, Home, Map as MapIcon, SlidersHorizontal } from "lucide-react";
+import ShareButton from "./ShareButton";
+import MoreFiltersModal from "./MoreFiltersModal";
 import { FaArrowRight } from "react-icons/fa6";
 import { FaMapLocationDot } from "react-icons/fa6";
 import Link from "next/link";
@@ -12,6 +14,7 @@ import DreamPropertySection from "./DreamPropertySection";
 
 export default function Sale() {
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const properties = [
     {
@@ -242,7 +245,9 @@ export default function Sale() {
             );
           })}
           {/* More Filters Button */}
-          <button className="flex text-[13px] items-center 
+          <button
+            onClick={() => setShowMoreFilters(true)}
+            className="flex text-[13px] items-center 
           justify-center  bg-[#0B1F3A]/40 text-white px-6 py-2 
           rounded-md  font-medium shadow-lg hover:bg-[#5c1eff] transition">
             <span className="text-[13px]">+ More Filters</span>
@@ -325,6 +330,14 @@ export default function Sale() {
                     fill
                     className="object-fill rounded-md"
                   />
+                  {/* Share Button Overlay */}
+                  <div className="absolute bottom-2 right-2 z-10">
+                    <ShareButton
+                      propertyTitle={property.title}
+                      propertyLocation={property.location}
+                      propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                    />
+                  </div>
                 </div>
 
                 {/* Property Info */}
@@ -425,7 +438,14 @@ export default function Sale() {
                           fill
                           className="object-cover rounded-md"
                         />
-
+                        {/* Share Button Overlay */}
+                        <div className="absolute bottom-2 right-2 z-10">
+                          <ShareButton
+                            propertyTitle={property.title}
+                            propertyLocation={property.location}
+                            propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                          />
+                        </div>
                       </div>
 
 
@@ -548,6 +568,17 @@ export default function Sale() {
           </div>
         )}
       </div>
+
+      {/* More Filters Modal */}
+      <MoreFiltersModal
+        isOpen={showMoreFilters}
+        onClose={() => setShowMoreFilters(false)}
+        onShowResults={() => {
+          // Handle show results action
+          console.log("Show results clicked");
+        }}
+      />
+
       <DreamPropertySection />
     </div>
   );

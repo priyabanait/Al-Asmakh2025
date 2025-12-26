@@ -75,7 +75,6 @@ export default function Home() {
       <PrivilegeProgram />
       <AlAsmakhTower />
       <PrivilegePartners />
-      {/* <SignIn /> */}
       <Footer />
     </main>
   )

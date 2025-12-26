@@ -1,7 +1,12 @@
+"use client";
+import { useState } from "react";
 import { Search, Mic, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
+import MoreFiltersModal from "./MoreFiltersModal";
 
 export default function Hero() {
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+
   return (
     <div>
 
@@ -87,6 +92,7 @@ export default function Hero() {
             </button>
 
             <button
+              onClick={() => setShowMoreFilters(true)}
               style={{ borderRadius: "3px", height: "35px" }}
               className="flex items-center justify-center gap-2
                      w-[150px] sm:w-[160px] md:w-[170px] lg:w-[190px]
@@ -271,6 +277,16 @@ export default function Hero() {
         </div>
 
       </section>
+
+      {/* More Filters Modal */}
+      <MoreFiltersModal
+        isOpen={showMoreFilters}
+        onClose={() => setShowMoreFilters(false)}
+        onShowResults={() => {
+          // Handle show results action
+          console.log("Show results clicked");
+        }}
+      />
     </div>
   );
 }
