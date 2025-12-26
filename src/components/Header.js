@@ -228,19 +228,34 @@ export default function Header() {
           </div>
 
           {/* Desktop Center Navigation Menu */}
-          <div className="hidden md:flex items-center gap-2 flex-1 justify-center" ref={dropdownRef}>
+          <div
+            ref={dropdownRef}
+            className="hidden md:flex items-center gap-2 absolute left-1/2 -translate-x-1/2"
+          >
             {menuItems.map((item) => {
-              const hasDropdown = dropdowns[item.key] && dropdowns[item.key].length > 0
+              const hasDropdown =
+                dropdowns[item.key] && dropdowns[item.key].length > 0
 
               return (
                 <div key={item.key} className="relative">
                   <button
-                    onClick={() => hasDropdown ? toggleDropdown(item.key) : router.push(item.key === 'HOME' ? '/' : `/${item.key.toLowerCase().replace(' ', '-')}`)}
+                    onClick={() =>
+                      hasDropdown
+                        ? toggleDropdown(item.key)
+                        : router.push(
+                          item.key === 'HOME'
+                            ? '/'
+                            : `/${item.key.toLowerCase().replace(' ', '-')}`
+                        )
+                    }
                     className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${activeDropdown === item.key
                       ? 'bg-white/20 text-[#001730]'
                       : 'hover:bg-white/10 text-[#001730]'
                       }`}
-                    style={{ fontSize: 'clamp(11px, 0.8vw, 14px)', fontWeight: '500' }}
+                    style={{
+                      fontSize: 'clamp(11px, 0.8vw, 14px)',
+                      fontWeight: '500',
+                    }}
                   >
                     <span>{item.label}</span>
                     {hasDropdown && (
@@ -251,23 +266,25 @@ export default function Header() {
                     )}
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {/* Dropdown */}
                   {hasDropdown && activeDropdown === item.key && (
                     <div
-                      className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 min-w-[200px] rounded-lg shadow-lg z-50 border border-white/20"
+                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[200px] rounded-[5px] shadow-lg z-50 border border-white/20"
                       style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                        backdropFilter: 'blur(30px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+                        backgroundColor: 'rgba(255,255,255,0.25)',
+                        backdropFilter: 'blur(60px)',
+                        WebkitBackdropFilter: 'blur(60px)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
                       }}
                     >
                       <div className="py-2">
                         {dropdowns[item.key].map((dropdownItem, index) => (
                           <button
                             key={index}
-                            onClick={() => handleDropdownItemClick(dropdownItem)}
-                            className="w-full text-left px-4 py-2 text-sm text-[#001730] hover:bg-white/20 transition-colors duration-200"
+                            onClick={() =>
+                              handleDropdownItemClick(dropdownItem)
+                            }
+                            className="w-full text-left px-4 py-2 text-sm text-[#001730] hover:bg-white/20 transition"
                           >
                             {dropdownItem.label}
                           </button>
@@ -279,6 +296,7 @@ export default function Header() {
               )
             })}
           </div>
+
 
           {/* Desktop End Section */}
           <div className="hidden md:flex items-center gap-4">

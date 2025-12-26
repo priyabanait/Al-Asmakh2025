@@ -64,87 +64,39 @@ export default function Hero() {
           {/* BUTTONS */}
           <div className="hidden lg:flex flex-wrap gap-2 md:gap-2 lg:gap-2 mt-4  lg:mt-6">
 
-            <motion.button
+            <button
               style={{ backgroundColor: "#001730", borderRadius: "3px", height: "35px" }}
               className="w-[120px] sm:w-[130px] md:w-[140px] lg:w-[160px]
                      px-2 py-2 text-white text-[11px] md:text-[12px] lg:text-[13px]
                      shadow-lg hover:bg-[#022d5e] text-center relative overflow-hidden"
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 10px 25px rgba(0, 23, 48, 0.4)"
-              }}
-              whileTap={{
-                scale: 0.95,
-                boxShadow: "0 5px 15px rgba(0, 23, 48, 0.3)"
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 17
-              }}
             >
-              <motion.span
-                className="relative z-10"
-                initial={false}
-                animate={{ opacity: 1 }}
-              >
+              <span className="relative z-10">
                 RENT
-              </motion.span>
-            </motion.button>
+              </span>
+            </button>
 
-            <motion.button
+            <button
               style={{ backgroundColor: "#001730", borderRadius: "3px", height: "35px" }}
               className="w-[120px] sm:w-[130px] md:w-[140px] lg:w-[160px] flex items-center justify-center 
                      px-2 py-2 text-white text-[11px] md:text-[12px] lg:text-[13px]
                      shadow-lg hover:bg-[#022d5e] text-center relative overflow-hidden"
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 10px 25px rgba(0, 23, 48, 0.4)"
-              }}
-              whileTap={{
-                scale: 0.95,
-                boxShadow: "0 5px 15px rgba(0, 23, 48, 0.3)"
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 17
-              }}
             >
-              <motion.span
-                className="relative z-10"
-                initial={false}
-                animate={{ opacity: 1 }}
-              >
+              <span className="relative z-10">
                 BUY
-              </motion.span>
-            </motion.button>
+              </span>
+            </button>
 
-            <motion.button
+            <button
               style={{ borderRadius: "3px", height: "35px" }}
               className="flex items-center justify-center gap-2
                      w-[150px] sm:w-[160px] md:w-[170px] lg:w-[190px]
                     text-[#001730]
                      text-[11px] md:text-[12px] lg:text-[13px]
                      shadow-md  backdrop-blur-md bg-white/10 border border-white/40 relative overflow-hidden"
-              whileHover={{
-                scale: 1.05,
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                boxShadow: "0 10px 25px rgba(255, 255, 255, 0.2)"
-              }}
-              whileTap={{
-                scale: 0.95,
-                boxShadow: "0 5px 15px rgba(255, 255, 255, 0.1)"
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 17
-              }}
             >
               <ArrowDown size={14} className="opacity-80 relative z-10" />
               <span className="relative z-10">View More Filters</span>
-            </motion.button>
+            </button>
 
           </div>
           <div className="w-[90%] h-[0.5px] bg-gray-300  bg my-2 "></div>
@@ -194,34 +146,17 @@ export default function Hero() {
             </div>
 
             {/* Search Button */}
-            <motion.button
+            <button
               className="w-full  lg:w-[210px]
                      text-white text-[11px] md:text-[12px] lg:text-[13px]
                      shadow-lg hover:bg-[#022d5e]
                      bg-[#001730] rounded-[3px]
                      h-[40px] md:h-[45px] relative overflow-hidden"
-              whileHover={{
-                scale: 1.02,
-                boxShadow: "0 10px 25px rgba(0, 23, 48, 0.4)"
-              }}
-              whileTap={{
-                scale: 0.98,
-                boxShadow: "0 5px 15px rgba(0, 23, 48, 0.3)"
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 400,
-                damping: 17
-              }}
             >
-              <motion.span
-                className="relative z-10"
-                initial={false}
-                animate={{ opacity: 1 }}
-              >
+              <span className="relative z-10">
                 Search
-              </motion.span>
-            </motion.button>
+              </span>
+            </button>
 
           </div>
 
@@ -270,54 +205,20 @@ export default function Hero() {
           {/* BUTTONS */}
           <div className="bg-white/20 rounded-[3px] mt-2 p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
             <div className="flex gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-center">
-              <motion.button
+              <button
                 className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 2xl:px-20 py-2 sm:py-2.5 md:py-3 lg:py-4 xl:py-5 bg-[#0A2A4C] text-white text-[11px] sm:text-xs md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg rounded-[3px] font-semibold shadow-md relative overflow-hidden"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 25px rgba(10, 42, 76, 0.4)"
-                }}
-                whileTap={{
-                  scale: 0.95,
-                  boxShadow: "0 5px 15px rgba(10, 42, 76, 0.3)"
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 17
-                }}
               >
-                <motion.span
-                  className="relative z-10"
-                  initial={false}
-                  animate={{ opacity: 1 }}
-                >
+                <span className="relative z-10">
                   RENT
-                </motion.span>
-              </motion.button>
-              <motion.button
+                </span>
+              </button>
+              <button
                 className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 2xl:px-20 py-2 sm:py-2.5 md:py-3 lg:py-4 xl:py-5 bg-[#0A2A4C] text-white text-[11px] sm:text-xs md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg rounded-[3px] font-semibold shadow-md relative overflow-hidden"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 10px 25px rgba(10, 42, 76, 0.4)"
-                }}
-                whileTap={{
-                  scale: 0.95,
-                  boxShadow: "0 5px 15px rgba(10, 42, 76, 0.3)"
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 17
-                }}
               >
-                <motion.span
-                  className="relative z-10"
-                  initial={false}
-                  animate={{ opacity: 1 }}
-                >
+                <span className="relative z-10">
                   BUY
-                </motion.span>
-              </motion.button>
+                </span>
+              </button>
             </div>
           </div>
 
@@ -339,21 +240,8 @@ export default function Hero() {
         </div>
 
         {/* FILTER BUTTON */}
-        <motion.div
+        <div
           className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 bg-white/20 rounded-[3px] p-3 sm:p-4 md:p-5 lg:p-6 px-8 sm:px-10 md:px-12 lg:px-14 xl:px-16 2xl:px-20 shadow-lg border border-white/10 backdrop-blur-sm z-50 cursor-pointer"
-          whileHover={{
-            scale: 1.05,
-            boxShadow: "0 15px 35px rgba(10, 42, 76, 0.3)"
-          }}
-          whileTap={{
-            scale: 0.95,
-            boxShadow: "0 8px 20px rgba(10, 42, 76, 0.2)"
-          }}
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 17
-          }}
         >
           <div className="flex w-full bg-[#0A2A4C] text-white px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-2.5 md:py-3 lg:py-4 rounded-[3px] shadow-md items-center relative overflow-hidden">
 
@@ -375,22 +263,12 @@ export default function Hero() {
             </div>
 
             {/* ARROW ICON */}
-            <motion.div
-              className="ml-12 sm:ml-16 md:ml-20 lg:ml-24 xl:ml-32 2xl:ml-40 relative z-10"
-              animate={{
-                y: [0, 3, 0]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
+            <div className="ml-12 sm:ml-16 md:ml-20 lg:ml-24 xl:ml-32 2xl:ml-40 relative z-10">
               <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
-            </motion.div>
+            </div>
 
           </div>
-        </motion.div>
+        </div>
 
       </section>
     </div>

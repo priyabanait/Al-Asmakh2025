@@ -381,7 +381,7 @@ export default function Profit() {
 
 
       {/* Section Title + Cards */}
-      <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-32 5xl:px-4">
+      <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-4 5xl:px-4">
         <div className="max-w-[1500px] mt-10 mx-auto w-full">
           <h2
             id="my-heading"

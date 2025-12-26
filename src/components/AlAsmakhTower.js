@@ -142,14 +142,14 @@ export default function AlAsmakhTower() {
                 {/* TITLE */}
                 <h2
                   id="my-heading"
-                  className=" text-[#001730] mb-2 md:mb-4 uppercase tracking-wide"
+                  className=" text-[#001730] mb-2 md:mb-4 uppercase "
                 >
                   {projects[activeSlide].title}
                 </h2>
 
                 {/* SUBHEADING */}
                 {projects[activeSlide].subheading && (
-                  <p className="text-[#001730] text-sm md:text-base font-medium mb-2 md:mb-3 italic">
+                  <p className="text-[#001730] text-xs md:text-sm font-light mb-2 md:mb-3">
                     {projects[activeSlide].subheading}
                   </p>
                 )}
@@ -274,7 +274,7 @@ export default function AlAsmakhTower() {
 
           {/* SUBHEADING */}
           {projects[activeSlide].subheading && (
-            <p className="text-[#00254D] text-[15px] md:text-[17px] font-medium mb-3 italic">
+            <p className="text-gray text-xs md:text-sm font-light mb-3 ">
               {projects[activeSlide].subheading}
             </p>
           )}
