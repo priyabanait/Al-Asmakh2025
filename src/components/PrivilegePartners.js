@@ -824,7 +824,7 @@ export default function Profit() {
           </div>
         </div>
       </section>
-      <section className="relative w-full h-auto lg:h-screen flex items-center py-6 lg:py-0">
+      <section className="relative w-full h-auto lg:min-h-screen flex items-center py-8 lg:py-12 xl:py-16 2xl:py-20 overflow-hidden">
         {/* Background Image */}
         <Image
           src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
@@ -834,22 +834,22 @@ export default function Profit() {
         />
 
         {/* Content Container */}
-        <div className="relative z-10 max-w-[1300px] mx-auto w-full h-full px-4 lg:px-4">
-          <div className="flex flex-col lg:flex-row w-full h-full items-start justify-between py-6 lg:py-0">
+        <div className="relative z-10 max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1920px] 4xl:max-w-[2560px] mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
+          <div className="flex flex-col lg:flex-row w-full items-start justify-between gap-6 lg:gap-8 xl:gap-12">
             {/* Left Side Title - Overlaid on background */}
-            <div className="text-white lg:w-1/2 flex flex-col mt-6 lg:mt-20 mb-4 lg:mb-0 h-full">
-              <h2 className="text-base lg:text-2xl text-center lg:text-left mb-2 lg:mb-3">
+            <div className="text-white lg:w-1/2 flex flex-col justify-center lg:mt-0">
+              <h2 className="text-base lg:text-2xl xl:text-3xl 2xl:text-4xl text-center lg:text-left mb-2 lg:mb-3">
                 How Can We Help You Today?
               </h2>
               <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
             </div>
 
             {/* Right Side - Form Panel and Map */}
-            <div className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-20">
+            <div className="lg:w-1/2 w-full flex flex-col">
               {/* Form Panel - Translucent */}
-              <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
+              <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 xl:p-8 lg:px-8 xl:px-12 2xl:px-16 rounded-md shadow-xl relative overflow-hidden">
                 {/* Form Header */}
-                <h3 className="text-[#001730] lg:px-10 text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
+                <h3 className="text-[#001730] text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
                   Fill out the form below and our experts will get back to you within 24 hour
                 </h3>
                 <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
@@ -921,7 +921,7 @@ export default function Profit() {
               </div>
 
               {/* Map Section - Below the blur card */}
-              <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
+              <div className="mt-4 lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
                 <Image
                   src="/675.png"
                   alt="Map"
