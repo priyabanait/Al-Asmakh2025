@@ -102,7 +102,7 @@ export default function ContactHeadOffice() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex items-center justify-center overflow-hidden">
+      <section className="relative w-full min-h-screen lg:min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <Image
           src="/WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"
@@ -150,11 +150,11 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base  mb-3 items-end text-right text-white">Send us an email anytime</h3>
+                  <h3 className="text-sm font-light mb-3 items-end text-right text-white">Send us an email anytime</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
-                    <span className="text-sm text-white">Sales@aredc.qa</span>
-                    <span className="text-sm text-white">Info@aredc.qa</span>
+                    <span className="text-xs font-light text-white">Sales@aredc.qa</span>
+                    <span className="text-xs font-light text-white">Info@aredc.qa</span>
                   </div>
                 </div>
               </div>
@@ -176,11 +176,11 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base  mb-3 text-white items-end text-right">Call us during business hours</h3>
+                  <h3 className="text-sm font-light mb-3 text-white items-end text-right">Call us during business hours</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
-                    <span className="text-sm text-white">+974 4444 5555</span>
-                    <span className="text-sm text-white">+974 4444 5556</span>
+                    <span className="text-xs font-light text-white">+974 4444 5555</span>
+                    <span className="text-xs font-light text-white">+974 4444 5556</span>
                   </div>
                 </div>
               </div>
@@ -202,12 +202,12 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base  mb-3 text-white items-end text-right">Visit our head office</h3>
+                  <h3 className="text-sm font-light mb-3 text-white items-end text-right">Visit our head office</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-1 text-right">
-                    <span className="text-sm text-white">Tower 1, Floor 15</span>
-                    <span className="text-sm text-white">West Bay Business District</span>
-                    <span className="text-sm text-white">Doha, Qatar</span>
+                    <span className="text-xs font-light text-white">Tower 1, Floor 15</span>
+                    <span className="text-xs font-light text-white">West Bay Business District</span>
+                    <span className="text-xs font-light text-white">Doha, Qatar</span>
                   </div>
                 </div>
               </div>
@@ -229,20 +229,20 @@ export default function ContactHeadOffice() {
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col">
-                  <h3 className="text-base  mb-3 text-white items-end text-right">Our Office Hours</h3>
+                  <h3 className="text-sm font-light mb-3 text-white items-end text-right">Our Office Hours</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <div className="flex flex-col items-end">
-                      <span className="text-sm font-medium text-white">Friday</span>
-                      <span className="text-xs text-white/70">7:00 AM - 4:00 PM</span>
+                      <span className="text-xs font-light text-white">Friday</span>
+                      <span className="text-xs font-light text-white/70">7:00 AM - 4:00 PM</span>
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className="text-sm font-medium text-white">Sunday - Thursday</span>
-                      <span className="text-xs text-white/70">8:00 AM - 5:00 PM</span>
+                      <span className="text-xs font-light text-white">Sunday - Thursday</span>
+                      <span className="text-xs font-light text-white/70">8:00 AM - 5:00 PM</span>
                     </div>
                     <div className="flex flex-col items-end">
-                      <span className="text-sm font-medium text-white">Saturday</span>
-                      <span className="text-xs text-white/70">Closed</span>
+                      <span className="text-xs font-light text-white">Saturday</span>
+                      <span className="text-xs font-light text-white/70">Closed</span>
                     </div>
                   </div>
                 </div>
@@ -252,6 +252,7 @@ export default function ContactHeadOffice() {
 
           {/* Desktop Version - Four Cards Grid */}
           <div className="hidden lg:grid grid-cols-4 gap-2 mb-8">
+            {/* Card 1: Email Contact */}
             {/* Card 1: Email Contact */}
             <div className="bg-[#001730] rounded-lg p-6 text-center text-white shadow-lg">
               <div className="flex justify-center mb-4">
@@ -263,12 +264,12 @@ export default function ContactHeadOffice() {
                   className="w-[62px] h-[62px] object-contain"
                 />
               </div>
-              <h3 className="text-lg  mb-4 text-gray-400">Send us an email anytime</h3>
+              <h3 className="text-sm font-light mb-4 text-gray-400">Send us an email anytime</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               <div className="flex items-center justify-center gap-10">
-                <span className="text-sm">Sales@aredc.go</span>
+                <span className="text-xs font-light">Sales@aredc.go</span>
                 <div className="h-4 w-[1px] bg-white"></div>
-                <span className="text-sm">info@ared.qa</span>
+                <span className="text-xs font-light">info@ared.qa</span>
               </div>
             </div>
 
@@ -283,12 +284,12 @@ export default function ContactHeadOffice() {
                   className="w-[62px] h-[62px] object-contain"
                 />
               </div>
-              <h3 className="text-lg  mb-4 text-gray-400">Call us during business hours</h3>
+              <h3 className="text-sm font-light mb-4 text-gray-400">Call us during business hours</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               <div className="flex items-center justify-center gap-6">
-                <span className="text-sm">+974 4444 5555</span>
+                <span className="text-xs font-light">+974 4444 5555</span>
                 <div className="h-4 w-[1px] bg-white"></div>
-                <span className="text-sm">+974 4444 5556</span>
+                <span className="text-xs font-light">+974 4444 5556</span>
               </div>
             </div>
 
@@ -306,7 +307,7 @@ export default function ContactHeadOffice() {
               </div>
 
               {/* Title */}
-              <h3 className="text-lg  mb-4 text-gray-400 text-center">
+              <h3 className="text-sm font-light mb-4 text-gray-400 text-center">
                 Visit our head office
               </h3>
 
@@ -314,7 +315,7 @@ export default function ContactHeadOffice() {
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
 
               {/* Address aligned to start */}
-              <div className="text-sm text-center leading-relaxed pl-4">
+              <div className="text-xs font-light text-center leading-relaxed pl-4">
                 <p>Tower 1, Floor 15
                   West Bay Business District
                   Doha, Qatar</p>
@@ -335,23 +336,23 @@ export default function ContactHeadOffice() {
               </div>
 
               {/* Title */}
-              <h3 className="text-lg  mb-6 text-gray-400">Our Office Hours</h3>
+              <h3 className="text-sm font-light mb-6 text-gray-400">Our Office Hours</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               {/* Horizontal Days */}
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
                 <div className="flex flex-col items-center">
-                  <div className="font-medium text-sm">Friday</div>
-                  <div className="text-white/70 text-xs">7:00 AM - 4:00 PM</div>
+                  <div className="font-light text-xs">Friday</div>
+                  <div className="text-white/70 text-xs font-light">7:00 AM - 4:00 PM</div>
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <div className="font-medium text-sm">Sunday - Thursday</div>
-                  <div className="text-white/70 text-xs">8:00 AM - 5:00 PM</div>
+                  <div className="font-light text-xs">Sunday - Thursday</div>
+                  <div className="text-white/70 text-xs font-light">8:00 AM - 5:00 PM</div>
                 </div>
 
                 <div className="flex flex-col items-center">
-                  <div className="font-medium text-sm">Saturday</div>
-                  <div className="text-white/70 text-xs">Closed</div>
+                  <div className="font-light text-xs">Saturday</div>
+                  <div className="text-white/70 text-xs font-light">Closed</div>
                 </div>
               </div>
             </div>
@@ -364,7 +365,7 @@ export default function ContactHeadOffice() {
     items-center md:items-start
   "
           >
-            <p className="text-base md:text-lg text-center md:text-left leading-relaxed">
+            <p className="text-sm md:text-base font-light text-center md:text-left leading-relaxed">
               <span className="text-[#FF0000] ">Emergency Contact</span><br></br>
               <span className="text-[#FF0000] ">
                 For urgent property-related emergencies outside business hours{" "}</span>
@@ -379,7 +380,7 @@ export default function ContactHeadOffice() {
 
           {/* Emergency Contact Banner */}
           <div className=" hidden md:block bg-[#FFE0E0] rounded-lg p-6 text-center shadow-md">
-            <p className="text-base md:text-lg">
+            <p className="text-sm md:text-base font-light">
               <span className="text-[#FF0000] ">Emergency Contact</span>
               {" - "}
               <span className="text-[#FF0000] ">
@@ -730,22 +731,37 @@ export default function ContactHeadOffice() {
               </AnimatePresence>
             </div>
 
-            {/* Dots Navigation */}
-            <div className="flex justify-center mt-8 space-x-3">
-              {Array.from({ length: offices.length }).map((_, index) => (
+            {/* Animated Dots Navigation */}
+            <div className="flex items-center justify-center gap-2 mt-8">
+              {offices.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-5 h-5 flex items-center justify-center transition-all duration-300 ${currentSlides === index
-                    ? "border-2 border-[#10284C] rounded-[2px] bg-white"
-                    : "bg-transparent"
-                    }`}
+                  className="relative flex items-center justify-center"
+                  aria-label={`Go to slide ${index + 1}`}
                 >
-                  <span
-                    className={`block ${currentSlides === index
-                      ? "w-2 h-2 bg-[#10284C] rounded-[2px]"
-                      : "w-2 h-2 bg-gray-400 rounded-[2px]"
-                      }`}
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    initial={false}
+                    animate={{
+                      scale: index === currentSlides ? 1.2 : 1,
+                      opacity: index === currentSlides ? 1 : 0.5,
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  />
+                  <motion.span
+                    className={`
+                      block rounded-full
+                      ${index === currentSlides
+                        ? "bg-[#001730]"
+                        : "bg-gray-400"
+                      }
+                    `}
+                    animate={{
+                      width: index === currentSlides ? "32px" : "8px",
+                      height: index === currentSlides ? "8px" : "8px",
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                   />
                 </button>
               ))}

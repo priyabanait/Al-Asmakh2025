@@ -303,7 +303,7 @@ export default function PropertyDetails() {
 
                 {/* Box 1 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p>
+                  <p className="break-words whitespace-normal">
                     <span className="font-semibold text-[#001730]">Property ID:</span>{" "}
                     PH-2024-001
                   </p>
@@ -319,7 +319,7 @@ export default function PropertyDetails() {
 
                 {/* Box 3 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p>
+                  <p className="break-words whitespace-normal">
                     <span className="font-semibold text-[#001730]">Year Built:</span>{" "}
                     2023
                   </p>

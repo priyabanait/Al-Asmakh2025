@@ -398,10 +398,8 @@ export default function Profit() {
     mx-auto text-center px-2 md:px-4 lg:px-0
 
     max-w-xs md:max-w-xl lg:max-w-2xl 
-    xl:max-w-3xl 2xl:max-w-4xl 
-    3xl:max-w-5xl 
-    4xl:max-w-6xl 
-    5xl:max-w-7xl 
+   
+   
 
     mb-6 md:mb-8 lg:mb-12 xl:mb-12 2xl:mb-14 3xl:mb-16 4xl:mb-20 5xl:mb-24
  
@@ -841,7 +839,7 @@ export default function Profit() {
               <h2 className="text-base lg:text-2xl xl:text-3xl 2xl:text-4xl text-center lg:text-left mb-2 lg:mb-3">
                 How Can We Help You Today?
               </h2>
-              <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
+              <div className="h-[0.5px] w-[75%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
             </div>
 
             {/* Right Side - Form Panel and Map */}

@@ -51,7 +51,7 @@ export default function MeetOurAgents() {
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[80vh] lg:min-h-[80vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
           src="/WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"
@@ -105,7 +105,7 @@ export default function MeetOurAgents() {
 
 
         {/* Desktop Filter Items - Moved to bottom of hero */}
-        <div className="hidden lg:flex absolute w-full justify-center bottom-14 lg:bottom-[-32px] z-20">
+        <div className="hidden lg:flex absolute w-full justify-center bottom-10 lg:bottom-[-32px] z-20">
           <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md 
                   gap-4 justify-center items-center">
             {/* Filter Items */}
@@ -152,8 +152,8 @@ export default function MeetOurAgents() {
         </div>
 
         {/* Mobile Filters Button - Absolute positioned in hero section */}
-        <div className="absolute left-1/2 bottom-[-45px] mb-4 transform -translate-x-1/2 z-20 w-[90%] px-4 md:hidden">
-          <div ref={filtersRef} className="glass-effect flex flex-col gap-3 p-3 px-10 rounded-md shadow-md">
+        <div className="absolute left-1/2 bottom-[50px] mb-4 transform -translate-x-1/2 z-20 w-[100%] px-4 lg:hidden">
+          <div ref={filtersRef} className="flex flex-col gap-3 bg-white/20 backdrop-blur-[10px] border border-white/10 p-3 px-10 rounded-md shadow-md">
             {/* Single Filters Button for Mobile */}
             <div
               onClick={() => setShowFilters(!showFilters)}
@@ -205,11 +205,11 @@ export default function MeetOurAgents() {
       </section>
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="hidden lg:block  ">
+      <div className="hidden lg:block py-4">
 
         {/* Header Bar */}
         <div className="bg-white border-gray-200 px-2  lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-2 bg-gray-50    mt-24 mx-auto items-center gap-4">
+          <div className="hidden lg:flex max-w-full mb-1 bg-gray-50    mt-14 mx-auto items-center gap-2">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">

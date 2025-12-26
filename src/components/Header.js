@@ -80,6 +80,7 @@ export default function Header() {
   // Dropdown menus
   const dropdowns = {
     HOME: [
+      { label: 'Home', path: '/', external: true },
       { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
     ],
     LISTINGS: [
@@ -103,6 +104,8 @@ export default function Header() {
     ],
     MEDIA: [
       { label: 'Blogs', path: '/listings/blogs' },
+      { label: 'Articles', path: '/listings/blogs' },
+
     ],
     CONTACT: [
       { label: 'Contact Agent', path: '/contact' },
@@ -248,9 +251,10 @@ export default function Header() {
                             : `/${item.key.toLowerCase().replace(' ', '-')}`
                         )
                     }
-                    className={`flex items-center gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${activeDropdown === item.key
-                      ? 'bg-white/20 text-[#001730]'
-                      : 'hover:bg-white/10 text-[#001730]'
+                    className={`flex items-center   backdropFilter: 'blur(40px) saturate(180%)',
+                          WebkitBackdropFilter: 'blur(40px) saturate(180%)', gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${activeDropdown === item.key
+                        ? 'bg-white/20 text-[#001730]'
+                        : 'hover:bg-white/10 text-[#001730]'
                       }`}
                     style={{
                       fontSize: 'clamp(11px, 0.8vw, 14px)',
@@ -268,30 +272,40 @@ export default function Header() {
 
                   {/* Dropdown */}
                   {hasDropdown && activeDropdown === item.key && (
-                    <div
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[200px] rounded-[5px] shadow-lg z-50 border border-white/20"
-                      style={{
-                        backgroundColor: 'rgba(255,255,255,0.25)',
-                        backdropFilter: 'blur(60px)',
-                        WebkitBackdropFilter: 'blur(60px)',
-                        boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                      }}
-                    >
-                      <div className="py-2">
-                        {dropdowns[item.key].map((dropdownItem, index) => (
-                          <button
-                            key={index}
-                            onClick={() =>
-                              handleDropdownItemClick(dropdownItem)
-                            }
-                            className="w-full text-left px-4 py-2 text-sm text-[#001730] hover:bg-white/20 transition"
-                          >
-                            {dropdownItem.label}
-                          </button>
-                        ))}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[220px] z-[999]">
+
+                      {/* GLASS CONTAINER */}
+                      <div className="relative rounded-[6px] overflow-hidden border border-white/30">
+
+                        {/* 🔥 BLUR LAYER (SEPARATE PLANE) */}
+                        <div
+                          className="absolute inset-0"
+                          style={{
+                            backdropFilter: 'blur(40px) saturate(180%)',
+                            WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                          }}
+                        />
+
+                        {/* CONTENT (SHARP TEXT) */}
+                        <div className="relative py-2">
+                          {dropdowns[item.key].map((dropdownItem, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleDropdownItemClick(dropdownItem)}
+                              className="w-full text-left px-4 py-2 text-sm font-medium
+                       text-[#001730] hover:bg-white/30 transition"
+                            >
+                              {dropdownItem.label}
+                            </button>
+                          ))}
+                        </div>
+
                       </div>
                     </div>
                   )}
+
+
                 </div>
               )
             })}

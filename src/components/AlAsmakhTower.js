@@ -318,7 +318,7 @@ export default function AlAsmakhTower() {
           </button> */}
 
           {/* PILL STYLE NAVIGATION DOTS */}
-          <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
+          {/* <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
             {projects.map((_, index) => (
               <button
                 key={index}
@@ -351,7 +351,7 @@ export default function AlAsmakhTower() {
                 />
               </button>
             ))}
-          </div>
+          </div> */}
 
         </motion.div>
       </div>
