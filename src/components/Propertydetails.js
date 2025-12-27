@@ -1,56 +1,134 @@
+"use client";
 import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import { ArrowLeft, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaArrowRight, FaArrowLeft, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
 import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding } from "react-icons/fa";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { fetchPropertyById, fetchProperties } from "../utils/propertyapi";
 
 export default function PropertyDetails() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const propertyId = searchParams.get("id");
 
+  const [property, setProperty] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [relatedProperties, setRelatedProperties] = useState([]);
   const [showScrollButtonRight, setShowScrollButtonRight] = useState(false);
   const [showScrollButtonLeft, setShowScrollButtonLeft] = useState(false);
 
-  const properties = [
-    {
-      title: "Floresta Tower Floresta Tower Les Maisons Blanches",
-      location: "The Pearl Island, Doha",
-      price: "280,000 QAR",
-      beds: 4,
-      baths: 2,
-      area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
-    },
-    {
-      title: "Floresta Tower Floresta Tower Les Maisons Blanches",
-      location: "The Pearl Island, Doha",
-      price: "280,000 QAR",
-      beds: 4,
-      baths: 2,
-      area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
-    },
-    {
-      title: "Floresta Tower Floresta Tower Les Maisons Blanches",
-      location: "The Pearl Island, Doha",
-      price: "280,000 QAR",
-      beds: 4,
-      baths: 2,
-      area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
-    },
-    {
-      title: "Floresta Tower Floresta Tower Les Maisons Blanches",
-      location: "The Pearl Island, Doha",
-      price: "280,000 QAR",
-      beds: 4,
-      baths: 2,
-      area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
-    },
-  ];
   const scrollRef = useRef(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Fetch property details
+  useEffect(() => {
+    const loadProperty = async () => {
+      if (!propertyId) {
+        setError("Property ID is required");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        // Fetch property details
+        const propertyData = await fetchPropertyById(propertyId);
+        setProperty(propertyData);
+
+        // Fetch related properties (same category or location)
+        try {
+          const relatedResult = await fetchProperties({
+            page: 1,
+            limit: 10,
+            status: "published",
+          });
+
+          let relatedData = [];
+          if (relatedResult.properties && Array.isArray(relatedResult.properties)) {
+            relatedData = relatedResult.properties
+              .filter(p => p.id !== propertyId)
+              .slice(0, 4); // Get 4 related properties
+          }
+          setRelatedProperties(relatedData);
+        } catch (err) {
+          console.error("Error fetching related properties:", err);
+        }
+
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching property:", err);
+        setError(err.message || "Failed to load property details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProperty();
+  }, [propertyId]);
+
+  // Helper function to format property data
+  const formatProperty = (property) => {
+    if (!property) return null;
+
+    // Get images
+    const images = property.images && Array.isArray(property.images) && property.images.length > 0
+      ? property.images.map(img => img.url || img.thumbnailUrl).filter(Boolean)
+      : ["/div.property-thumbnail-wrapper.png"];
+
+    // Format location
+    let location = "Location not specified";
+    if (property.locationLevel1) {
+      location = property.locationLevel1;
+      if (property.locationLevel2) location += `, ${property.locationLevel2}`;
+      if (property.locationLevel3) location += `, ${property.locationLevel3}`;
+    } else if (property.address) {
+      location = property.address;
+    }
+
+    // Format price
+    let price = "Price on request";
+    let priceLabel = "";
+    if (property.priceAmount) {
+      const currency = property.priceCurrency || "QAR";
+      const frequency = property.priceFrequency ? `/${property.priceFrequency}` : "";
+      price = `${property.priceAmount.toLocaleString()} ${currency}${frequency}`;
+      priceLabel = property.priceFrequency === "monthly" ? "Per Month" :
+        property.priceFrequency === "weekly" ? "Per Week" :
+          property.priceFrequency === "daily" ? "Per Day" : "";
+    }
+
+    return {
+      id: property.id,
+      title: property.titleEn || property.title || "Property",
+      location: location,
+      price: price,
+      priceLabel: priceLabel,
+      priceType: property.priceType || "rent",
+      beds: property.bedrooms || property.beds || 0,
+      baths: property.bathrooms || property.baths || 0,
+      area: property.size || property.area || 0,
+      plotSize: property.plotSize || 0,
+      parking: property.parkingSlots || 0,
+      furnishing: property.furnishingType || "Unfurnished",
+      images: images,
+      description: property.descriptionEn || property.description || "",
+      type: property.type || "apartment",
+      category: property.category || "residential",
+      reference: property.reference || "",
+      yearBuilt: property.age || null,
+      floors: property.numberOfFloors || null,
+      unitNumber: property.unitNumber || null,
+      amenities: property.amenities || [],
+    };
+  };
+
+  const formattedProperty = formatProperty(property);
 
   const scrollRight = () => {
     if (scrollRef.current) {
@@ -58,26 +136,109 @@ export default function PropertyDetails() {
     }
   };
 
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const checkScrollButtons = () => {
+    const el = scrollRef.current;
+    if (el) {
+      const hasOverflow = el.scrollWidth > el.clientWidth;
+      const canScrollRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
+      const canScrollLeft = el.scrollLeft > 1;
+
+      setShowScrollButtonRight(hasOverflow && canScrollRight);
+      setShowScrollButtonLeft(hasOverflow && canScrollLeft);
+    }
+  };
+
   useEffect(() => {
     const el = scrollRef.current;
-    const checkOverflow = () => {
-      if (el && el.scrollWidth > el.clientWidth) {
-        setShowScrollButton(true);
-      } else {
-        setShowScrollButton(false);
-      }
+    if (!el) return;
+
+    if (relatedProperties.length > 0) {
+      setTimeout(checkScrollButtons, 100);
+    }
+
+    const handleScroll = () => checkScrollButtons();
+    const handleResize = () => checkScrollButtons();
+
+    el.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      el.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
-    checkOverflow();
-    window.addEventListener("resize", checkOverflow);
-    return () => window.removeEventListener("resize", checkOverflow);
-  }, []);
+  }, [relatedProperties]);
+
+  // Format related property for display
+  const formatRelatedProperty = (property) => {
+    let imageUrl = "/div.property-thumbnail-wrapper.png";
+    if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+      imageUrl = property.images[0].url || property.images[0].thumbnailUrl || imageUrl;
+    }
+
+    let location = "Location not specified";
+    if (property.locationLevel1) {
+      location = property.locationLevel1;
+      if (property.locationLevel2) location += `, ${property.locationLevel2}`;
+    } else if (property.address) {
+      location = property.address;
+    }
+
+    let price = "Price on request";
+    if (property.priceAmount) {
+      const currency = property.priceCurrency || "QAR";
+      const frequency = property.priceFrequency ? `/${property.priceFrequency}` : "";
+      price = `${property.priceAmount.toLocaleString()} ${currency}${frequency}`;
+    }
+
+    return {
+      id: property.id,
+      title: property.titleEn || property.title || "Property",
+      location: location,
+      price: price,
+      beds: property.bedrooms || property.beds || 0,
+      baths: property.bathrooms || property.baths || 0,
+      area: property.size || property.area || 0,
+      image: imageUrl,
+    };
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full bg-[#F5F7FA] p-4 sm:p-6 mt-20 min-h-screen flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          <p className="text-xl">Loading property details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !formattedProperty) {
+    return (
+      <div className="w-full bg-[#F5F7FA] p-4 sm:p-6 mt-20 min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-500">
+          <p className="text-xl mb-4">{error || "Property not found"}</p>
+          <Link href="/" className="text-[#001730] underline">Go back to home</Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
 
       <div className="w-full  bg-[#F5F7FA] p-4 sm:p-6 mt-20">
         {/* Back Button */}
         <div className="bg-gray-200 text-sm flex items-center w-32 sm:w-40 p-2 sm:p-3 mb-4 rounded-[5px] cursor-pointer">
-          <button className="flex items-center gap-2 text-[#001730] font-semibold">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-[#001730] font-semibold"
+          >
             <ArrowLeft size={18} className="mr-4 sm:mr-10" />
             <span className="ml-2 sm:ml-8">Back</span>
           </button>
@@ -86,26 +247,26 @@ export default function PropertyDetails() {
         {/* Title + Price + Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
-            <h1 className="text-xl sm:text-2xl font-bold">Luxury Penthouse in West Bay</h1>
+            <h1 className="text-xl sm:text-2xl font-bold">{formattedProperty.title}</h1>
             <div className="w-[50%] h-[0.2px] px-10  mt-2 3xl:mt-3 bg-gray-400 my-2 "></div>
             <div className="flex items-center text-gray-200 text-xs sm:text-sm mt-2">
-              <MapPin size={16} className="mr-1" /> West Bay, Doha, Qatar
+              <MapPin size={16} className="mr-1" /> {formattedProperty.location}
             </div>
           </div>
 
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
-            <p className="text-xs sm:text-sm opacity-80 mb-1">Per Month</p>
-            <h2 className="text-xl sm:text-2xl font-bold">QAR 24,000</h2>
+            <p className="text-xs sm:text-sm opacity-80 mb-1">{formattedProperty.priceLabel || "Price"}</p>
+            <h2 className="text-xl sm:text-2xl font-bold">{formattedProperty.price}</h2>
           </div>
 
           <div className="bg-[#001730] p-4 sm:p-6 rounded-[5px] shadow-md flex items-center justify-center">
             <div className="flex gap-2 sm:gap-4 w-full">
               <button className="w-1/2 bg-gray-400 text-[#001730] rounded-[5px] font-semibold py-2 text-xs sm:text-base shadow">
-                For Rent
+                {formattedProperty.priceType === "rent" ? "For Rent" : "For Sale"}
               </button>
 
               <button className="w-1/2 bg-gray-400 text-[#001730] rounded-[5px] font-semibold py-2 text-xs sm:text-base shadow">
-                Featured
+                {formattedProperty.category === "commercial" ? "Commercial" : "Residential"}
               </button>
             </div>
           </div>
@@ -114,35 +275,73 @@ export default function PropertyDetails() {
         <div className="bg-white shadow-md p-4 sm:p-6">
 
           {/* Thumbnail Images */}
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-              <div key={n} className="min-w-[100px] sm:min-w-[120px] lg:min-w-[150px] h-[60px] sm:h-[75px] lg:h-[90px] rounded-[5px] overflow-hidden shadow">
-                <Image src={`/Image (6).png`} alt="thumb" width={150} height={90} className="object-cover w-full h-full" />
-              </div>
-            ))}
-          </div>
+          {formattedProperty.images.length > 0 && (
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3">
+              {formattedProperty.images.map((img, index) => (
+                <div
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`min-w-[100px] sm:min-w-[120px] lg:min-w-[150px] h-[60px] sm:h-[75px] lg:h-[90px] rounded-[5px] overflow-hidden shadow cursor-pointer border-2 ${currentImageIndex === index ? 'border-[#001730]' : 'border-transparent'}`}
+                >
+                  <Image
+                    src={img}
+                    alt={`thumb ${index + 1}`}
+                    width={150}
+                    height={90}
+                    className="object-cover w-full h-full"
+                    unoptimized={img.startsWith('http')}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Main Images */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-            <div className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[420px] rounded-[5px] overflow-hidden shadow-lg">
-              <Image src="/Image (7).png" alt="main" width={800} height={800} className="object-cover w-full h-full" />
+          {formattedProperty.images.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+              {formattedProperty.images.slice(currentImageIndex, currentImageIndex + 2).map((img, index) => (
+                <div key={index} className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[420px] rounded-[5px] overflow-hidden shadow-lg">
+                  <Image
+                    src={img}
+                    alt={`main ${index + 1}`}
+                    width={800}
+                    height={800}
+                    className="object-cover w-full h-full"
+                    unoptimized={img.startsWith('http')}
+                  />
+                </div>
+              ))}
             </div>
-
-            <div className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[420px] rounded-[5px] overflow-hidden shadow-lg">
-              <Image src="/Image (8).png" alt="main" width={800} height={800} className="object-cover w-full h-full" />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+              <div className="w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[420px] rounded-[5px] overflow-hidden shadow-lg">
+                <Image src="/div.property-thumbnail-wrapper.png" alt="main" width={800} height={800} className="object-cover w-full h-full" />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Slider Arrows */}
-          <div className="flex justify-center items-center gap-4 sm:gap-6 mt-4 sm:mt-6">
-            <button className="bg-white p-2 sm:p-3 rounded-[5px] shadow-md border border-gray-500">
-              <FaArrowLeft size={18} className="sm:w-[22px] sm:h-[22px] text-[#001730]" />
-            </button>
-            <div className="text-[#001730] tracking-widest text-sm sm:text-lg">- - - - -</div>
-            <button className="bg-white p-2 sm:p-3 rounded-[5px] shadow-md border border-gray-500">
-              <FaArrowRight size={18} className="sm:w-[22px] sm:h-[22px] text-[#001730]" />
-            </button>
-          </div>
+          {formattedProperty.images.length > 2 && (
+            <div className="flex justify-center items-center gap-4 sm:gap-6 mt-4 sm:mt-6">
+              <button
+                onClick={() => setCurrentImageIndex(Math.max(0, currentImageIndex - 2))}
+                disabled={currentImageIndex === 0}
+                className="bg-white p-2 sm:p-3 rounded-[5px] shadow-md border border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FaArrowLeft size={18} className="sm:w-[22px] sm:h-[22px] text-[#001730]" />
+              </button>
+              <div className="text-[#001730] tracking-widest text-sm sm:text-lg">
+                {Math.floor(currentImageIndex / 2) + 1} / {Math.ceil(formattedProperty.images.length / 2)}
+              </div>
+              <button
+                onClick={() => setCurrentImageIndex(Math.min(formattedProperty.images.length - 2, currentImageIndex + 2))}
+                disabled={currentImageIndex >= formattedProperty.images.length - 2}
+                className="bg-white p-2 sm:p-3 rounded-[5px] shadow-md border border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FaArrowRight size={18} className="sm:w-[22px] sm:h-[22px] text-[#001730]" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <div className="w-full bg-gray-100 p-4 sm:p-6">
@@ -157,11 +356,11 @@ export default function PropertyDetails() {
             <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
                 {[
-                  { icon: "bed", label: "03" },
-                  { icon: "bath", label: "02" },
-                  { icon: "area", label: "450" },
-                  { icon: "car", label: "02" },
-                  { icon: "furnished", label: "Furnished" },
+                  { icon: "bed", label: formattedProperty.beds || "0" },
+                  { icon: "bath", label: formattedProperty.baths || "0" },
+                  { icon: "area", label: formattedProperty.area ? `${formattedProperty.area} m²` : "N/A" },
+                  { icon: "car", label: formattedProperty.parking || "0" },
+                  { icon: "furnished", label: formattedProperty.furnishing || "Unfurnished" },
                 ].map((item, idx) => (
                   <div
                     key={idx}
@@ -227,36 +426,22 @@ export default function PropertyDetails() {
                 Description
               </h2>
 
-              <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                West Bay Plaza represents the pinnacle of commercial real estate
-                development in Doha’s prestigious financial district. This
-                state-of-the-art complex combines premium office spaces with
-                high-end retail outlets, creating a dynamic business environment
-                in the heart of Qatar’s economic center.
-              </p>
-
-              <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                The development features cutting-edge architecture with sustainable
-                design principles, smart building technology, and world-class
-                amenities. Located strategically in West Bay, the plaza offers
-                unparalleled connectivity to major business hubs, government
-                offices, and luxury hotels.
-              </p>
-
-              <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                With 80 premium units ranging from compact offices to expansive
-                commercial spaces, West Bay Plaza caters to businesses of all sizes.
-                The project is designed to achieve LEED Gold certification,
-                emphasizing our commitment to environmental sustainability and
-                energy efficiency.
-              </p>
+              {formattedProperty.description ? (
+                <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4 whitespace-pre-line">
+                  {formattedProperty.description}
+                </div>
+              ) : (
+                <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                  No description available for this property.
+                </p>
+              )}
               <div className="w-[90%] h-[0.2px] px-10 mx-4 sm:mx-10  mt-2 3xl:mt-3 bg-gray-400 mb-3 md:mb-4 3xl:mb-5"></div>
               {/* Bottom stats */}
               <div className="grid grid-cols-3 mx-4 sm:mx-10 pt-4 mt-4">
                 {[
-                  { title: "Total Area", value: "8080", icon: "area" },
-                  { title: "Floors", value: "25", icon: "floors" },
-                  { title: "Parking Spaces", value: "02", icon: "parking" },
+                  { title: "Total Area", value: formattedProperty.area ? `${formattedProperty.area} m²` : "N/A", icon: "area" },
+                  { title: "Floors", value: formattedProperty.floors || "N/A", icon: "floors" },
+                  { title: "Parking Spaces", value: formattedProperty.parking || "0", icon: "parking" },
                 ].map((item, i) => (
                   <div
                     key={i}
@@ -311,7 +496,7 @@ export default function PropertyDetails() {
                     <span className="font-semibold text-[#001730]">Property ID:</span>
                     <br />
                     {" "}
-                    <span className="ml-1">PH-2024-001</span>
+                    <span className="ml-1">{formattedProperty.reference || formattedProperty.id}</span>
                   </p>
                 </div>
 
@@ -319,7 +504,7 @@ export default function PropertyDetails() {
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
                   <p>
                     <span className="font-semibold text-[#001730]">Property Type:</span>{" "}
-                    Penthouse
+                    {formattedProperty.type ? formattedProperty.type.charAt(0).toUpperCase() + formattedProperty.type.slice(1) : "N/A"}
                   </p>
                 </div>
 
@@ -327,7 +512,7 @@ export default function PropertyDetails() {
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
                   <p className="flex items-center whitespace-nowrap">
                     <span className="font-semibold text-[#001730]">Year Built:</span>{" "}
-                    <span className="ml-1">2023</span>
+                    <span className="ml-1">{formattedProperty.yearBuilt || "N/A"}</span>
                   </p>
                 </div>
               </div>
@@ -337,102 +522,129 @@ export default function PropertyDetails() {
 
           {/* RIGHT SIDE - AGENT CARDS */}
           <div className="col-span-1 flex flex-col gap-4 sm:gap-6">
+            {/* Agent Card Component - Only show if agent exists */}
+            {property?.agent && (() => {
+              const agent = property.agent;
+              const agentName = `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.email || 'Agent';
 
-            {/* Agent Card Component */}
-            {[
-              {
-                name: "Sarah Johnson",
-                role: "Luxury Property Specialist",
-                specialties: "West Bay, Commercial, Penthouse",
-                languages: "English, Spanish, Arabic",
-                image: "/div.png",
-                logo: "/Frame 74.png",
-              },
-              {
-                name: "Mohammed Al-Thani",
-                role: "Luxury Property Specialist",
-                specialties: "West Bay, Commercial, Penthouse",
-                languages: "English, Spanish, Arabic",
-                image: "/div (2).png",
-                logo: "/Frame 74.png",
-              },
-            ].map((agent, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
-              >
-                {/* LEFT IMAGE */}
-                <div className="w-full lg:w-1/2 relative flex-shrink-0 h-64 lg:h-full min-h-[260px]">
-                  <Image
-                    src={agent.image}
-                    width={300}
-                    height={300}
-                    alt="agent"
-                    className="h-full w-full object-cover"
-                  />
+              // Format agent location
+              let agentLocation = 'Location not specified';
+              if (agent.location) {
+                const parts = [];
+                if (agent.location.city) parts.push(agent.location.city);
+                if (agent.location.district && agent.location.district !== agent.location.city) {
+                  parts.push(agent.location.district);
+                }
+                if (parts.length > 0) {
+                  agentLocation = parts.join(', ');
+                } else if (agent.location.address) {
+                  agentLocation = agent.location.address;
+                }
+              }
 
-                  <Image
-                    src={agent.logo}
-                    width={50}
-                    height={50}
-                    alt="logo"
-                    className="absolute top-2 left-2 sm:top-3 sm:left-3 w-8 h-8 sm:w-[50px] sm:h-[50px]"
-                  />
-                </div>
+              return (
+                <div
+                  key={agent.id || agent.userId}
+                  className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
+                >
+                  {/* LEFT IMAGE */}
+                  <div className="w-full lg:w-1/2 relative flex-shrink-0 h-64 lg:h-full min-h-[260px]">
+                    {agent.profilePicture ? (
+                      <Image
+                        src={agent.profilePicture}
+                        width={300}
+                        height={300}
+                        alt={agentName}
+                        className="h-full w-full object-cover"
+                        unoptimized={agent.profilePicture?.startsWith('http')}
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+                        <div className="w-24 h-24 rounded-full bg-[#001730] flex items-center justify-center">
+                          <span className="text-white text-3xl font-semibold">
+                            {agentName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
-                {/* RIGHT DETAILS */}
-                <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col justify-between">
-                  <div>
-                    <div className="shadow-md bg-white text-center p-4 sm:p-8 rounded-[5px]">
-                      <h3 className="text-base sm:text-lg font-semibold text-center text-[#001730] mb-1">
-                        {agent.name}
-                      </h3>
-                      <div className="w-[30%] h-[0.2px] px-10 mt-2 3xl:mt-3 bg-gray-400 my-2 mx-auto"></div>
-                      <p className="text-gray-500 text-xs sm:text-sm mb-4">
-                        {agent.role}
-                      </p>
-                    </div>
-
-                    <div className="relative mt-4">
-                      <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                        Specialties:
-                      </p>
-                      <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
-                        {agent.specialties}
-                      </p>
-                    </div>
-
-                    <div className="relative mt-4">
-                      <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                        Languages:
-                      </p>
-                      <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
-                        {agent.languages}
-                      </p>
-                    </div>
+                    <Image
+                      src="/Frame 74.png"
+                      width={50}
+                      height={50}
+                      alt="logo"
+                      className="absolute top-2 left-2 sm:top-3 sm:left-3 w-8 h-8 sm:w-[50px] sm:h-[50px]"
+                    />
                   </div>
 
-                  {/* Buttons */}
-                  <div className="mt-4 flex flex-col gap-2">
-                    <div className="flex flex-row gap-2">
-                      <button className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
-                        Call Agent
-                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                      </button>
-                      <button className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
-                        Send email
+                  {/* RIGHT DETAILS */}
+                  <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col justify-between">
+                    <div>
+                      <div className="shadow-md bg-white text-center p-4 sm:p-8 rounded-[5px]">
+                        <h3 className="text-base sm:text-lg font-semibold text-center text-[#001730] mb-1">
+                          {agentName}
+                        </h3>
+                        <div className="w-[30%] h-[0.2px] px-10 mt-2 3xl:mt-3 bg-gray-400 my-2 mx-auto"></div>
+                        <p className="text-gray-500 text-xs sm:text-sm mb-4">
+                          Property Agent
+                        </p>
+                      </div>
+
+                      {agentLocation && (
+                        <div className="relative mt-4">
+                          <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                            Location:
+                          </p>
+                          <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                            {agentLocation}
+                          </p>
+                        </div>
+                      )}
+
+                      {agent.email && (
+                        <div className="relative mt-4">
+                          <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                            Email:
+                          </p>
+                          <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                            {agent.email}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="mt-4 flex flex-col gap-2">
+                      <div className="flex flex-row gap-2">
+                        {agent.phone && (
+                          <a
+                            href={`tel:${agent.phone}`}
+                            className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
+                          >
+                            Call Agent
+                            <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                          </a>
+                        )}
+                        {agent.email && (
+                          <a
+                            href={`mailto:${agent.email}`}
+                            className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
+                          >
+                            Send email
+                            <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                          </a>
+                        )}
+                      </div>
+
+                      <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
+                        Schedule Viewing
                         <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                       </button>
                     </div>
-
-                    <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
-                      Schedule Viewing
-                      <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                    </button>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })()}
           </div>
 
         </div>
@@ -472,115 +684,123 @@ export default function PropertyDetails() {
             ref={scrollRef}
             className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto no-scrollbar scroll-smooth pb-4 lg:pb-6 "
           >
-            {properties.map((property, index) => (
-              <div
-                key={index}
-                className={`
+            {relatedProperties.length > 0 ? (
+              relatedProperties.map((property, index) => {
+                const formatted = formatRelatedProperty(property);
+                return (
+                  <div
+                    key={formatted.id || index}
+                    className={`
           w-[250px]  lg:w-[350px]
           p-4
           bg-[#E9E9E9] border border-gray-200 
           rounded-md overflow-hidden shadow-md 
           hover:shadow-xl transition-shadow duration-300 
           flex-shrink-0
-          ${index === 0 || index === properties.length - 1
-                    ? 'scale-95'
-                    : 'scale-100'
-                  }
+          ${index === 0 || index === relatedProperties.length - 1
+                        ? 'scale-95'
+                        : 'scale-100'
+                      }
         `}
-              >
-                {/* Image Section */}
-                <div className="relative w-full h-[180px]  xl:h-[200px] ">
-                  <Image
-                    src={property.image}
-                    alt={property.title}
-                    fill
-                    className="object-fill rounded-md"
-                  />
-                </div>
-
-                {/* Property Info */}
-                <div className="py-2">
-                  <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2">
-                    {property.title}
-                  </h3>
-
-                  {/* Location */}
-                  <div className="flex items-center text-[#001730] text-sm mb-3">
-                    <MapPin size={12} className="mr-2" />
-                    <span
-                      className="line-clamp-1 text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base 3xl:text-lg 4xl:text-xl 5xl:text-2xl"
-                      style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
-                    >
-                      {property.location}
-                    </span>
-                  </div>
-
-
-                  {/* Bed/Bath/Area Info */}
-                  <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
-
-                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                  >
+                    {/* Image Section */}
+                    <div className="relative w-full h-[180px]  xl:h-[200px] ">
                       <Image
-                        src="/Icon (1).png"
-                        alt="Beds"
-                        width={14}
-                        height={14}
-                        className="lg:w-[18px] lg:h-[18px]"
+                        src={formatted.image}
+                        alt={formatted.title}
+                        fill
+                        className="object-fill rounded-md"
+                        unoptimized={formatted.image?.startsWith('http')}
                       />
-                      <span>{property.beds}</span>
                     </div>
 
-                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                      <Image
-                        src="/Icon.png"
-                        alt="Baths"
-                        width={14}
-                        height={14}
-                        className="lg:w-[18px] lg:h-[18px]"
-                      />
-                      <span>{property.baths}</span>
+                    {/* Property Info */}
+                    <div className="py-2">
+                      <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2">
+                        {formatted.title}
+                      </h3>
+
+                      {/* Location */}
+                      <div className="flex items-center text-[#001730] text-sm mb-3">
+                        <MapPin size={12} className="mr-2" />
+                        <span
+                          className="line-clamp-1 text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base 3xl:text-lg 4xl:text-xl 5xl:text-2xl"
+                          style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
+                        >
+                          {formatted.location}
+                        </span>
+                      </div>
+
+
+                      {/* Bed/Bath/Area Info */}
+                      <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
+
+                        <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                          <Image
+                            src="/Icon (1).png"
+                            alt="Beds"
+                            width={14}
+                            height={14}
+                            className="lg:w-[18px] lg:h-[18px]"
+                          />
+                          <span>{formatted.beds}</span>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                          <Image
+                            src="/Icon.png"
+                            alt="Baths"
+                            width={14}
+                            height={14}
+                            className="lg:w-[18px] lg:h-[18px]"
+                          />
+                          <span>{formatted.baths}</span>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                          <Image
+                            src="/Icon (2).png"
+                            alt="Area"
+                            width={14}
+                            height={14}
+                            className="lg:w-[18px] lg:h-[18px]"
+                          />
+                          <span>{formatted.area}</span>
+                        </div>
+
+                      </div>
+
+
+                      <div
+                        className="w-[100%]  h-[0.5px] bg-gray-300  my-3 "
+                      ></div>
+
+                      {/* Price and Button */}
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
+                          {formatted.price}
+                        </p>
+
+                        <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                          <Link
+                            href={`/propertydetails?id=${formatted.id}`}
+                            className="flex items-center gap-2 w-full"
+                          >
+                            <span>Details</span>
+                            <FaArrowRight
+                              size={12}
+                              className="w-3 h-3  lg:w-[16px]  ml-10"
+                            />
+                          </Link>
+                        </button>
+                      </div>
                     </div>
-
-                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                      <Image
-                        src="/Icon (2).png"
-                        alt="Area"
-                        width={14}
-                        height={14}
-                        className="lg:w-[18px] lg:h-[18px]"
-                      />
-                      <span>{property.area}</span>
-                    </div>
-
                   </div>
-
-
-                  <div
-                    className="w-[100%]  h-[0.5px] bg-gray-300  my-3 "
-                  ></div>
-
-                  {/* Price and Button */}
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
-                      {property.price}
-                    </p>
-
-                    <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                      <Link
-                        href="/propertydetails"
-                        className="flex items-center gap-2 w-full"
-                      >
-                        <span>Details</span>
-                        <FaArrowRight
-                          size={12}
-                          className="w-3 h-3  lg:w-[16px]  ml-10"
-                        />
-                      </Link>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            ) : (
+              <div className="text-center text-gray-500 py-8 w-full">No related properties available</div>
+            )}
           </div>
 
           {/* View All Button - Moved inside max-w container */}

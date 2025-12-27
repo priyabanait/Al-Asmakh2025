@@ -17,8 +17,9 @@ import { FaDollarSign } from "react-icons/fa";
 import { TbHomeCog } from "react-icons/tb";
 import DreamPropertySection from "./DreamPropertySection";
 
-export default function Sale() {
+export default function Sale({ priceType: initialPriceType = "sale" }) {
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
+  const [priceType, setPriceType] = useState(initialPriceType); // "rent" or "sale"
 
   const properties = [
     {
@@ -353,7 +354,7 @@ export default function Sale() {
                           {property.title}
                         </h3>
                         <div className="flex items-center text-[#001730] text-sm mb-3">
-                        <MapPin size={12} className="mr-2" />
+                          <MapPin size={12} className="mr-2" />
                           <span>{property.location}</span>
                         </div>
                         <div className="flex items-center justify-between text-[#001730] text-xs lg:text-sm mb-3 lg:mb-0 mt-4 gap-1">
@@ -390,17 +391,17 @@ export default function Sale() {
                         </p>
 
                         <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <Link
-                      href="/propertydetails"
-                      className="flex items-center gap-2 w-full"
-                    >
-                      <span>Details</span>
-                      <FaArrowRight
-                        size={12}
-                        className="w-3 h-3  lg:w-[16px]  ml-10"
-                      />
-                    </Link>
-                  </button>
+                          <Link
+                            href="/propertydetails"
+                            className="flex items-center gap-2 w-full"
+                          >
+                            <span>Details</span>
+                            <FaArrowRight
+                              size={12}
+                              className="w-3 h-3  lg:w-[16px]  ml-10"
+                            />
+                          </Link>
+                        </button>
                       </div>
 
 

@@ -6,10 +6,39 @@ import { Search, Mic, MapPin, ArrowDown, SlidersHorizontal, Tag, Star, Globe } f
 import { Phone, Mail } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa6";
 import DreamPropertySection from "./DreamPropertySection";
+import { fetchAgents } from "../utils/propertyapi";
 
 export default function MeetOurAgents() {
   const [showFilters, setShowFilters] = useState(false); // Toggle for mobile filters
   const filtersRef = useRef(null); // Ref for filter container
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalAgents, setTotalAgents] = useState(0);
+
+  // Fetch agents on component mount
+  useEffect(() => {
+    const loadAgents = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchAgents({
+          page: 1,
+          limit: 50,
+          status: "active",
+        });
+        setAgents(response.agents || []);
+        setTotalAgents(response.totalAgents || 0);
+      } catch (error) {
+        console.error("Error loading agents:", error);
+        // Keep empty array on error - component will show no agents
+        setAgents([]);
+        setTotalAgents(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAgents();
+  }, []);
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -27,27 +56,6 @@ export default function MeetOurAgents() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showFilters]);
-
-  const agents = [
-    {
-      name: "Sarah Johnson",
-      title: "Luxury Property Specialist",
-      properties: 45,
-      clients: 127,
-      specialties: "West Bay, Commercial, Penthouse",
-      languages: "English, Spanish, Arabic",
-      image: "/div.png", // replace with your actual image path
-    },
-    {
-      name: "Mohammed Al-Thani",
-      title: "Luxury Property Specialist",
-      properties: 45,
-      clients: 127,
-      specialties: "West Bay, Commercial, Penthouse",
-      languages: "English, Spanish, Arabic",
-      image: "/div (2).png", // replace with your actual image path
-    },
-  ];
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
@@ -81,7 +89,7 @@ export default function MeetOurAgents() {
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-6 lg:mt-4 w-[90%] sm:w-[80%] md:w-auto px-4">
             {[
-              { value: "50+", label: "Expert Agents" },
+              { value: totalAgents > 0 ? `${totalAgents}+` : "50+", label: "Expert Agents" },
               { value: "1,200+", label: "Properties Sold" },
               { value: "98%", label: "Client Satisfaction" },
               { value: "15+", label: "Years Experience" },
@@ -213,7 +221,7 @@ export default function MeetOurAgents() {
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
-              Showing 10 of 50
+              {loading ? "Loading..." : `Showing ${agents.length} of ${totalAgents || agents.length}`}
             </div>
 
             {/* CENTER LINE */}
@@ -233,96 +241,133 @@ export default function MeetOurAgents() {
 
       {/* ---------- AGENTS SECTION ---------- */}
       <section className="py-12 sm:py-16 md:py-24 lg:py-10">
-        <div className="container mx-auto px-4 sm:px-6 md:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-          {agents.concat(agents).map((agent, index) => (
-            <div
-              key={index}
-              className="shadow-lg rounded-md overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 bg-gray-200"
-            >
-              {/* Combined Header Section (Image + Name + Title) */}
-              <div className="shadow-md bg-gray-100 rounded-md overflow-hidden mx-2 sm:mx-4 mt-2 sm:mt-4">
-                {/* Profile Image */}
-                <div className="relative w-full h-80">
-                  <Image
-                    src={agent.image}
-                    alt={agent.title}
-                    fill
-                    className="object-fill"
-                  />
+        {loading ? (
+          <div className="container mx-auto px-4 sm:px-6 md:px-6 text-center py-12">
+            <p className="text-gray-600">Loading agents...</p>
+          </div>
+        ) : agents.length === 0 ? (
+          <div className="container mx-auto px-4 sm:px-6 md:px-6 text-center py-12">
+            <p className="text-gray-600">No agents available at the moment.</p>
+          </div>
+        ) : (
+          <div className="container mx-auto px-4 sm:px-6 md:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            {agents.map((agent) => (
+              <div
+                key={agent.id || agent.name}
+                className="shadow-lg rounded-md overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 bg-gray-200"
+              >
+                {/* Combined Header Section (Image + Name + Title) */}
+                <div className="shadow-md bg-gray-100 rounded-md overflow-hidden mx-2 sm:mx-4 mt-2 sm:mt-4">
+                  {/* Profile Image */}
+                  <div className="relative w-full h-80">
+                    <Image
+                      src={agent.image || "/div.png"}
+                      alt={agent.name || agent.title || "Agent"}
+                      fill
+                      className="object-fill"
+                    />
 
-                  {/* Name + Title - Absolute positioned over image */}
-                  <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-2 lg:p-3">
-                    <h3 className="text-base sm:text-lg  text-[#001730]">
-                      {agent.name}
-                    </h3>
-                    <p className="text-[#001730] text-xs sm:text-sm">{agent.title}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="text-center mt-2 sm:mt-3 px-3 sm:px-4 pb-3 sm:pb-4">
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-2 sm:mb-3">
-                  {/* Box 1 */}
-                  <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-6 rounded-md ">
-                    <p className=" text-[#001730] text-base sm:text-lg">
-                      {agent.properties}
-                    </p>
-                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 mx-auto"></div>
-                    <p className="subheading text-[#001730]">Properties</p>
-                  </div>
-
-                  {/* Box 2 */}
-                  <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-3 rounded-md ">
-                    <p className=" text-[#001730] text-base sm:text-lg">
-                      {agent.clients}
-                    </p>
-                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 "></div>
-                    <p className="subheading text-[#001730]">Clients Served</p>
+                    {/* Name + Title - Absolute positioned over image */}
+                    <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-2 lg:p-3">
+                      <h3 className="text-base sm:text-lg  text-[#001730]">
+                        {agent.name}
+                      </h3>
+                      <p className="text-[#001730] text-xs sm:text-sm">{agent.title}</p>
+                    </div>
                   </div>
                 </div>
 
+                {/* Content */}
+                <div className="text-center mt-2 sm:mt-3 px-3 sm:px-4 pb-3 sm:pb-4">
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-2 sm:mb-3">
+                    {/* Box 1 */}
+                    <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-6 rounded-md ">
+                      <p className=" text-[#001730] text-base sm:text-lg">
+                        {agent.properties}
+                      </p>
+                      <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 mx-auto"></div>
+                      <p className="subheading text-[#001730]">Properties</p>
+                    </div>
 
-                {/* Info */}
-                <div className="glass-effect text-left text-xs sm:text-sm mb-1.5 shadow-md p-1.5 rounded-md">
-                  <p className="text-gray-400">Specialities</p>
-                  <p className="subheading text-gray-700 font-medium text-center">{agent.specialties}</p>
-                </div>
+                    {/* Box 2 */}
+                    <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-3 rounded-md ">
+                      <p className=" text-[#001730] text-base sm:text-lg">
+                        {agent.clients}
+                      </p>
+                      <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 "></div>
+                      <p className="subheading text-[#001730]">Clients Served</p>
+                    </div>
+                  </div>
 
-                <div className="glass-effect text-left text-xs sm:text-sm mb-2 sm:mb-3 shadow-md p-1.5 rounded-md">
-                  <p className="text-gray-400">Languages</p>
-                  <p className="subheading text-gray-700 font-medium text-center">{agent.languages}</p>
-                </div>
 
-                {/* Buttons */}
-                <div className="flex flex-row gap-2">
-                  <button
-                    className="flex-1 flex items-center justify-between
+                  {/* Info */}
+                  <div className="glass-effect text-left text-xs sm:text-sm mb-1.5 shadow-md p-1.5 rounded-md">
+                    <p className="text-gray-400">Specialities</p>
+                    <p className="subheading text-gray-700 font-medium text-center">{agent.specialties}</p>
+                  </div>
+
+                  <div className="glass-effect text-left text-xs sm:text-sm mb-2 sm:mb-3 shadow-md p-1.5 rounded-md">
+                    <p className="text-gray-400">Languages</p>
+                    <p className="subheading text-gray-700 font-medium text-center">{agent.languages}</p>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex flex-row gap-2">
+                    {agent.phone ? (
+                      <a
+                        href={`tel:${agent.phone}`}
+                        className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white py-2 rounded-md
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition"
-                  >
-                    <span>Call Agent</span>
-                    <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                  </button>
+                      >
+                        <span>Call Agent</span>
+                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                      </a>
+                    ) : (
+                      <button
+                        className="flex-1 flex items-center justify-between
+    p-2 px-4 bg-[#001730] text-white py-2 rounded-md
+    text-[12px] sm:text-[12px] font-medium
+    hover:bg-[#0d1f3a] transition opacity-50 cursor-not-allowed"
+                        disabled
+                      >
+                        <span>Call Agent</span>
+                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                      </button>
+                    )}
 
-                  <button
-                    className="flex-1 flex items-center justify-between
+                    {agent.email ? (
+                      <a
+                        href={`mailto:${agent.email}`}
+                        className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white rounded-md
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition"
-                  >
-                    <span>Send Email</span>
-                    <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                  </button>
+                      >
+                        <span>Send Email</span>
+                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                      </a>
+                    ) : (
+                      <button
+                        className="flex-1 flex items-center justify-between
+    p-2 px-4 bg-[#001730] text-white rounded-md
+    text-[12px] sm:text-[12px] font-medium
+    hover:bg-[#0d1f3a] transition opacity-50 cursor-not-allowed"
+                        disabled
+                      >
+                        <span>Send Email</span>
+                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                      </button>
+                    )}
 
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-
-        </div>
+            ))}
+          </div>
+        )}
       </section>
       <DreamPropertySection />
     </div>

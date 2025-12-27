@@ -6,6 +6,12 @@ const nextConfig = {
   reactStrictMode: true,
   images: {
     unoptimized: true,  // ✅ Add this line
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "aredcsa.blob.core.windows.net",
+      },
+    ],
   },
 };
 
