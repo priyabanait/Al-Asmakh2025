@@ -2,10 +2,32 @@ import axios from "axios";
 
 // Production URLs - AKS LoadBalancer IP: 40.81.255.90
 // Services are accessed through nginx on port 80
-// Use environment variables for local development override
+// Use Next.js API proxy to avoid mixed content issues (HTTPS frontend -> HTTP backend)
 const PRODUCTION_BASE_URL = "http://40.81.255.90";
-const API_BASE_URL = `${PRODUCTION_BASE_URL}/api/v1`;
-const AUTH_API_BASE_URL = PRODUCTION_BASE_URL;
+
+// Helper function to get API base URL (called at runtime to detect HTTPS)
+const getApiBaseUrl = () => {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+        // On HTTPS (Vercel) - use proxy to avoid mixed content
+        return `${window.location.origin}/api/proxy/api/v1`;
+    }
+    // On HTTP (local dev) - use direct backend
+    return `${PRODUCTION_BASE_URL}/api/v1`;
+};
+
+// Helper function to get Auth base URL
+const getAuthBaseUrl = () => {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+        // On HTTPS (Vercel) - use proxy
+        return `${window.location.origin}/api/proxy`;
+    }
+    // On HTTP (local dev) - use direct backend
+    return PRODUCTION_BASE_URL;
+};
+
+// These will be set at runtime when functions are called
+let API_BASE_URL = `${PRODUCTION_BASE_URL}/api/v1`;
+let AUTH_API_BASE_URL = PRODUCTION_BASE_URL;
 
 /**
  * Format property data for PropertyListView component
@@ -66,6 +88,9 @@ export const formatProperty = (property) => {
  * @returns {Promise<Object>} Object containing properties array and pagination info
  */
 export const fetchProperties = async (params = {}) => {
+    // Update URLs at runtime to handle HTTPS proxy
+    API_BASE_URL = getApiBaseUrl();
+
     try {
         const {
             priceType = "rent",
@@ -150,6 +175,9 @@ export const fetchProperties = async (params = {}) => {
  * @returns {Promise<Object>} Property object with agent info
  */
 export const fetchPropertyById = async (propertyId) => {
+    // Update URLs at runtime to handle HTTPS proxy
+    API_BASE_URL = getApiBaseUrl();
+
     try {
         const response = await axios.get(`${API_BASE_URL}/properties/${propertyId}`);
 
@@ -248,6 +276,9 @@ export const formatAgent = (agent) => {
  * @returns {Promise<Object>} Object containing agents array and pagination info
  */
 export const fetchAgents = async (params = {}) => {
+    // Update URLs at runtime to handle HTTPS proxy
+    AUTH_API_BASE_URL = getAuthBaseUrl();
+
     try {
         const {
             page = 1,
