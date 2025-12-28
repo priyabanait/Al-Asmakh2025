@@ -8,7 +8,7 @@ export default function ListingSalePage() {
   return (
     <main className="min-h-screen relative">
       <Header />
-      <Rent priceType="sales" />
+      <Rent priceType="sale" />
 
       <Footer />
     </main>

@@ -8,7 +8,7 @@ export default function ListingSalePage() {
   return (
     <main className="min-h-screen relative">
       <Header />
-      <Services />
+      <Services offeringType="lease" />
       <Footer />
     </main>
   )

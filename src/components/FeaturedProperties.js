@@ -21,7 +21,7 @@ export default function FeaturedProperties() {
         setLoading(true);
         // Use proxy in production to avoid mixed content issues
         const isProduction = typeof window !== 'undefined' && window.location.protocol === 'https:';
-        const BASE_URL = isProduction ? window.location.origin : "http://40.81.255.90";
+        const BASE_URL = isProduction ? window.location.origin : "http://localhost:3002";
         const API_PATH = isProduction ? '/api/proxy/api/v1' : '/api/v1';
         const response = await axios.get(`${BASE_URL}${API_PATH}/properties/`);
 

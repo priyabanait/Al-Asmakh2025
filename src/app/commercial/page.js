@@ -1,14 +1,25 @@
 'use client'
 
 import Header from '../../components/Header'
-import Commercial from '../../components/Comm.js'
+import Services from '../../components/Services-lease'
 import Footer from '../../components/Footer'
 
-export default function ContactHeadOfficePage() {
+export default function CommercialPage() {
   return (
     <main className="min-h-screen relative">
       <Header />
-      <Commercial />
+      <Services 
+        offeringType="lease"
+        backgroundImage="/images_pages/services lease.png"
+        stats={[
+          { value: "34", label: "Total Projects" },
+          { value: "16", label: "Completed" },
+          { value: "02", label: "Ongoing" },
+          { value: "05", label: "Upcoming" },
+        ]}
+        filterButtons={["LUXURY", "COMMERCIAL", "INDUSTRIAL"]}
+        propertyType="commercial"
+      />
       <Footer />
     </main>
   )

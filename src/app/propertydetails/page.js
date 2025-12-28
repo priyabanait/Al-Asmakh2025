@@ -13,7 +13,7 @@ function PropertyDetailsContent() {
   return (
     <main className="min-h-screen relative">
       <Header />
-      <Propertydetails></Propertydetails>
+    <Propertydetails></Propertydetails>
       <Footer />
     </main>
   )

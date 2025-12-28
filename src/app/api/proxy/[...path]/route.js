@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 
 // Backend API base URL
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://40.81.255.90';
+// Use localhost:8080 for local development, production URL for deployed environments
+// Can be overridden with BACKEND_API_URL environment variable
+const BACKEND_URL = process.env.BACKEND_API_URL ||
+    (process.env.NODE_ENV === 'production' || process.env.VERCEL ? 'http://40.81.255.90' : 'http://localhost:3002');
 
 export async function GET(request, { params }) {
     return handleRequest(request, params, 'GET');

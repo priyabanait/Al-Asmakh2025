@@ -292,7 +292,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             <p className="text-red-500 text-lg mb-2">Error loading properties</p>
             <p className="text-gray-600">{error}</p>
           </div>
-        </div>
+                        </div>
       ) : properties.length === 0 ? (
         <div className="w-full py-20 flex items-center justify-center">
           <div className="text-center">
@@ -306,7 +306,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         </div>
       ) : (
         <PropertyListView properties={properties} totalProperties={totalProperties} />
-      )}
+        )}
 
       {/* More Filters Modal */}
       <MoreFiltersModal

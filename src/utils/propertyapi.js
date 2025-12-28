@@ -5,6 +5,9 @@ import axios from "axios";
 // Use Next.js API proxy to avoid mixed content issues (HTTPS frontend -> HTTP backend)
 const PRODUCTION_BASE_URL = "http://40.81.255.90";
 
+// Local development URL - NGINX gateway on port 8080
+// const PRODUCTION_BASE_URL = "http://localhost:3002";
+
 // Helper function to get API base URL (called at runtime to detect HTTPS)
 const getApiBaseUrl = () => {
     if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
@@ -92,7 +95,7 @@ export const fetchProperties = async (params = {}) => {
     API_BASE_URL = getApiBaseUrl();
 
     try {
-        const {
+        let {
             priceType = "rent",
             page = 1,
             limit = 50,
@@ -107,6 +110,11 @@ export const fetchProperties = async (params = {}) => {
             minPrice,
             maxPrice,
         } = params;
+
+        // Normalize priceType: "lease" -> "rent" (backend uses "rent")
+        if (priceType && priceType.toLowerCase() === "lease") {
+            priceType = "rent";
+        }
 
         // Build query parameters
         const queryParams = new URLSearchParams({
@@ -161,6 +169,151 @@ export const fetchProperties = async (params = {}) => {
         }
     } catch (error) {
         console.error("Error fetching properties:", error);
+        throw {
+            message: error.response?.data?.message || error.message || "Failed to load properties",
+            status: error.response?.status,
+            data: error.response?.data,
+        };
+    }
+};
+
+/**
+ * Fetch properties by offering type (Lease, Rent, Sale, Marketing)
+ * Maps offeringType to priceType and formats properties for Services components
+ * @param {string} offeringType - Offering type: "lease", "rent", "sale", "marketing"
+ * @param {Object} options - Additional options
+ * @param {number} options.page - Page number (default: 1)
+ * @param {number} options.limit - Items per page (default: 50)
+ * @returns {Promise<Array>} Array of formatted property objects
+ */
+export const fetchPropertiesByOfferingType = async (offeringType, options = {}) => {
+    // Update URLs at runtime to handle HTTPS proxy
+    API_BASE_URL = getApiBaseUrl();
+
+    // Normalize offeringType to priceType for API
+    // Convert "lease" to "rent" (backend uses "rent", frontend may use "lease")
+    const normalizedOfferingType = offeringType?.toLowerCase();
+    const validPriceTypes = ["lease", "rent", "sale", "marketing"];
+
+    // Normalize: "lease" -> "rent", otherwise use as-is if valid
+    let priceType = "rent"; // default
+    if (normalizedOfferingType && validPriceTypes.includes(normalizedOfferingType)) {
+        priceType = normalizedOfferingType === "lease" ? "rent" : normalizedOfferingType;
+    }
+
+    console.log(offeringType, "offeringType -> priceType:", priceType);
+    const {
+        page = 1,
+        limit = 50,
+        type, // Property type: "commercial", "industrial", "residential"
+        category, // Category: "luxury", "standard", "budget"
+        luxury, // Luxury filter: "true" or "false"
+        development, // Development filter: "true" or "false"
+    } = options;
+
+    try {
+        // Build query parameters
+        const queryParams = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString(),
+            priceType: priceType,
+        });
+
+        // Add optional filters
+        // Note: If category="luxury" is passed, we still pass luxury="true" to ensure
+        // the backend luxury filter (which checks priceAmount >= 5000000 OR category = 'luxury' OR type = 'luxury')
+        // works correctly. This ensures properties with high prices or luxury category/type are included.
+        if (type) queryParams.append("type", type);
+        if (category) queryParams.append("category", category);
+        // Always pass luxury filter if category is luxury or luxury is explicitly set
+        if (luxury || category === "luxury") {
+            queryParams.append("luxury", luxury || "true");
+        }
+        if (development) queryParams.append("development", development);
+
+        console.log("API Query Params:", queryParams.toString());
+
+        // Fetch raw data from API
+        const response = await axios.get(`${API_BASE_URL}/properties?${queryParams.toString()}`);
+
+        console.log("API Response:", {
+            totalProperties: response.data?.properties?.length || 0,
+            pagination: response.data?.pagination,
+            sampleProperty: response.data?.properties?.[0] ? {
+                id: response.data.properties[0].id,
+                titleEn: response.data.properties[0].titleEn,
+                category: response.data.properties[0].category,
+                type: response.data.properties[0].type,
+                priceType: response.data.properties[0].priceType,
+                priceAmount: response.data.properties[0].priceAmount,
+            } : null
+        });
+
+        if (response.data && response.data.properties) {
+            const propertiesData = response.data.properties || [];
+
+            // Map raw API response to component format
+            const mappedProperties = propertiesData.map((prop) => {
+                // Format location from raw API data
+                let location = "Location not specified";
+                if (prop.locationLevel1) {
+                    location = prop.locationLevel1;
+                    if (prop.locationLevel2) location += `, ${prop.locationLevel2}`;
+                    if (prop.locationLevel3) location += `, ${prop.locationLevel3}`;
+                } else if (prop.address) {
+                    location = prop.address;
+                }
+
+                // Format price from raw API data
+                let price = "Price on request";
+                if (prop.priceAmount) {
+                    price = `QAR ${prop.priceAmount.toLocaleString()}`;
+                }
+
+                // Get image from raw API data
+                let image = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80";
+                if (prop.images && Array.isArray(prop.images) && prop.images.length > 0) {
+                    image = prop.images[0].url || prop.images[0].thumbnailUrl || image;
+                }
+
+                // Get year from createdAt or use current year
+                const year = prop.createdAt
+                    ? new Date(prop.createdAt).getFullYear().toString()
+                    : new Date().getFullYear().toString();
+
+                // Determine status and statusType
+                let status = "100% Completed";
+                let statusType = "completed";
+
+                if (prop.projectStatus) {
+                    if (prop.projectStatus === "completed") {
+                        status = "100% Completed";
+                        statusType = "completed";
+                    } else if (prop.projectStatus === "off_plan" || prop.projectStatus === "ongoing") {
+                        status = "30% Ongoing";
+                        statusType = "ongoing";
+                    }
+                }
+
+                return {
+                    id: prop.id || prop._id,
+                    title: prop.titleEn || prop.title || "Untitled Property",
+                    location: location,
+                    year: year,
+                    units: prop.bedrooms || prop.units || "N/A",
+                    status: status,
+                    statusType: statusType,
+                    price: price,
+                    image: image,
+                };
+            });
+
+            return mappedProperties;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error("Error fetching properties by offering type:", error);
         throw {
             message: error.response?.data?.message || error.message || "Failed to load properties",
             status: error.response?.status,
