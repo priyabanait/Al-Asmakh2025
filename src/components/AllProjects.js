@@ -390,32 +390,40 @@ w-fit
 
 
                   {/* TAGS — GRID RESPONSIVE */}
-                  {/* TAGS — GRID RESPONSIVE */}
-                  <div className='p-2 shadow-md bg-gray-50 rounded-md mt-2'>
-                    <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-1 ">
 
-                      {/* Box 1 */}
-                      <div className="bg-gray-300 text-white flex items-center justify-center text-center flex-wrap border border-gray-200 shadow-sm rounded-md px-2 py-2 text-[0.6rem] font-semibold">
-                        Smart City
-                      </div>
+                  {/* <div className="p-1 shadow-md bg-gray-50 rounded-md mt-1">
+                    <div className="grid grid-cols-4 gap-1">
 
-                      {/* Box 2 */}
-                      <div className="bg-gray-300 text-white flex items-center justify-center text-center flex-wrap border border-gray-200 shadow-sm rounded-md px-2 py-2 text-[0.6rem] font-semibold">
-                        Private Beach Access
-                      </div>
-
-                      {/* Box 3 */}
-                      <div className="bg-gray-300 text-white flex items-center justify-center text-center flex-wrap border border-gray-200 shadow-sm rounded-md px-2 py-2 text-[0.6rem] font-semibold">
-                        Concierge Service
-                      </div>
-
-                      {/* Small +1 box */}
-                      <div className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md px-2 py-2 text-[0.6rem] font-semibold w-fit">
-                        +1
-                      </div>
+                      {[
+                        'Smart City',
+                        'Private Beach Access',
+                        'Concierge Service',
+                        'Premium Service',
+                        '+1',
+                      ].map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="
+          bg-gray-300 text-white
+          flex items-center justify-center
+          border border-gray-200
+          shadow-sm
+          rounded-md
+          h-10
+          text-[0.6rem] lg:text-sm
+          font-semibold
+          w-full
+          text-center
+          whitespace-nowrap
+        "
+                        >
+                          {item}
+                        </div>
+                      ))}
 
                     </div>
-                  </div>
+                  </div> */}
+
 
 
 

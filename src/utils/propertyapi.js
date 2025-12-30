@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// TEMPORARY: Use dummy data instead of API calls (set to false when Azure is available)
+const USE_DUMMY_DATA = true;
+
 // Production URLs - AKS LoadBalancer IP: 40.81.255.90
 // Services are accessed through nginx on port 80
 // Use Next.js API proxy to avoid mixed content issues (HTTPS frontend -> HTTP backend)
@@ -7,6 +10,311 @@ const PRODUCTION_BASE_URL = "http://40.81.255.90";
 
 // Local development URL - NGINX gateway on port 8080
 // const PRODUCTION_BASE_URL = "http://localhost:3002";
+
+// Dummy property data for testing when Azure subscription is unavailable
+const DUMMY_PROPERTIES = [
+    {
+        id: "1",
+        titleEn: "Luxury 3 Bedroom Apartment in The Pearl",
+        titleAr: "شقة فاخرة 3 غرف نوم في اللؤلؤة",
+        descriptionEn: "Beautiful modern apartment with stunning sea views. Features include spacious living areas, modern kitchen, and premium finishes throughout. Located in the prestigious Pearl Qatar area with easy access to amenities.",
+        descriptionAr: "شقة حديثة جميلة مع إطلالات بحرية خلابة",
+        priceAmount: 15000,
+        priceCurrency: "QAR",
+        priceFrequency: "monthly",
+        priceType: "rent",
+        bedrooms: 3,
+        bathrooms: 2,
+        beds: 3,
+        baths: 2,
+        size: 180,
+        area: 180,
+        parkingSlots: 2,
+        furnishingType: "Furnished",
+        type: "apartment",
+        category: "residential",
+        status: "published",
+        locationLevel1: "The Pearl",
+        locationLevel2: "Doha",
+        locationLevel3: "Qatar",
+        address: "The Pearl Island, Doha, Qatar",
+        reference: "PROP-001",
+        age: 5,
+        numberOfFloors: 15,
+        unitNumber: "1503",
+        amenities: ["Swimming Pool", "Gym", "Parking", "Security", "Balcony"],
+        images: [
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" }
+        ],
+        agent: {
+            id: "agent-1",
+            firstName: "Ahmed",
+            lastName: "Al-Sulaiti",
+            email: "ahmed.alsulaiti@alasmakh.com",
+            phone: "+974 1234 5678",
+            profilePicture: "/div.property-thumbnail-wrapper.png",
+            location: {
+                city: "Doha",
+                district: "West Bay",
+                address: "Doha, Qatar"
+            }
+        },
+        createdAt: "2024-01-15T10:00:00Z"
+    },
+    {
+        id: "2",
+        titleEn: "Spacious 4 Bedroom Villa in West Bay",
+        titleAr: "فيلا واسعة 4 غرف نوم في ويست باي",
+        descriptionEn: "Elegant villa with private garden and pool. Perfect for families seeking luxury living in the heart of Doha. Features include maid's room, study, and covered parking for 3 cars.",
+        descriptionAr: "فيلا أنيقة مع حديقة خاصة ومسبح",
+        priceAmount: 25000,
+        priceCurrency: "QAR",
+        priceFrequency: "monthly",
+        priceType: "rent",
+        bedrooms: 4,
+        bathrooms: 3,
+        beds: 4,
+        baths: 3,
+        size: 350,
+        area: 350,
+        plotSize: 500,
+        parkingSlots: 3,
+        furnishingType: "Semi-Furnished",
+        type: "villa",
+        category: "residential",
+        status: "published",
+        locationLevel1: "West Bay",
+        locationLevel2: "Doha",
+        locationLevel3: "Qatar",
+        address: "West Bay, Doha, Qatar",
+        reference: "PROP-002",
+        age: 8,
+        numberOfFloors: 2,
+        amenities: ["Private Pool", "Garden", "Maid's Room", "Study", "Parking"],
+        images: [
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" }
+        ],
+        agent: {
+            id: "agent-2",
+            firstName: "Fatima",
+            lastName: "Al-Thani",
+            email: "fatima.althani@alasmakh.com",
+            phone: "+974 2345 6789",
+            profilePicture: "/div.property-thumbnail-wrapper.png",
+            location: {
+                city: "Doha",
+                district: "West Bay",
+                address: "Doha, Qatar"
+            }
+        },
+        createdAt: "2024-02-20T10:00:00Z"
+    },
+    {
+        id: "3",
+        titleEn: "Modern 2 Bedroom Apartment in Lusail",
+        titleAr: "شقة حديثة غرفتين نوم في لوسيل",
+        descriptionEn: "Contemporary apartment in the new Lusail City. Features modern design, high-quality finishes, and access to world-class amenities. Perfect for professionals and small families.",
+        descriptionAr: "شقة معاصرة في مدينة لوسيل الجديدة",
+        priceAmount: 12000,
+        priceCurrency: "QAR",
+        priceFrequency: "monthly",
+        priceType: "rent",
+        bedrooms: 2,
+        bathrooms: 2,
+        beds: 2,
+        baths: 2,
+        size: 120,
+        area: 120,
+        parkingSlots: 1,
+        furnishingType: "Unfurnished",
+        type: "apartment",
+        category: "residential",
+        status: "published",
+        locationLevel1: "Lusail",
+        locationLevel2: "Doha",
+        locationLevel3: "Qatar",
+        address: "Lusail City, Doha, Qatar",
+        reference: "PROP-003",
+        age: 2,
+        numberOfFloors: 20,
+        unitNumber: "2005",
+        amenities: ["Swimming Pool", "Gym", "Parking", "Security", "Balcony", "Concierge"],
+        images: [
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" }
+        ],
+        agent: {
+            id: "agent-1",
+            firstName: "Ahmed",
+            lastName: "Al-Sulaiti",
+            email: "ahmed.alsulaiti@alasmakh.com",
+            phone: "+974 1234 5678",
+            profilePicture: "/div.property-thumbnail-wrapper.png",
+            location: {
+                city: "Doha",
+                district: "Lusail",
+                address: "Doha, Qatar"
+            }
+        },
+        createdAt: "2024-03-10T10:00:00Z"
+    },
+    {
+        id: "4",
+        titleEn: "Premium 5 Bedroom Villa in Al Waab",
+        titleAr: "فيلا متميزة 5 غرف نوم في الوعب",
+        descriptionEn: "Luxury villa with exceptional design and premium amenities. Features include private cinema, home office, and expansive outdoor entertainment areas. Ideal for large families.",
+        descriptionAr: "فيلا فاخرة بتصميم استثنائي ووسائل راحة متميزة",
+        priceAmount: 35000,
+        priceCurrency: "QAR",
+        priceFrequency: "monthly",
+        priceType: "rent",
+        bedrooms: 5,
+        bathrooms: 4,
+        beds: 5,
+        baths: 4,
+        size: 500,
+        area: 500,
+        plotSize: 800,
+        parkingSlots: 4,
+        furnishingType: "Furnished",
+        type: "villa",
+        category: "residential",
+        status: "published",
+        locationLevel1: "Al Waab",
+        locationLevel2: "Doha",
+        locationLevel3: "Qatar",
+        address: "Al Waab, Doha, Qatar",
+        reference: "PROP-004",
+        age: 3,
+        numberOfFloors: 2,
+        amenities: ["Private Pool", "Garden", "Cinema", "Home Office", "Maid's Room", "Parking"],
+        images: [
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" }
+        ],
+        agent: {
+            id: "agent-2",
+            firstName: "Fatima",
+            lastName: "Al-Thani",
+            email: "fatima.althani@alasmakh.com",
+            phone: "+974 2345 6789",
+            profilePicture: "/div.property-thumbnail-wrapper.png",
+            location: {
+                city: "Doha",
+                district: "Al Waab",
+                address: "Doha, Qatar"
+            }
+        },
+        createdAt: "2024-04-05T10:00:00Z"
+    },
+    {
+        id: "5",
+        titleEn: "Stylish Studio Apartment in Msheireb",
+        titleAr: "استوديو أنيق في مشيريب",
+        descriptionEn: "Compact and modern studio apartment in the heart of Msheireb Downtown. Perfect for singles or couples. Features include modern appliances and access to building amenities.",
+        descriptionAr: "استوديو مدمج وحديث في قلب مشيريب",
+        priceAmount: 8000,
+        priceCurrency: "QAR",
+        priceFrequency: "monthly",
+        priceType: "rent",
+        bedrooms: 0,
+        bathrooms: 1,
+        beds: 0,
+        baths: 1,
+        size: 45,
+        area: 45,
+        parkingSlots: 0,
+        furnishingType: "Furnished",
+        type: "studio",
+        category: "residential",
+        status: "published",
+        locationLevel1: "Msheireb",
+        locationLevel2: "Doha",
+        locationLevel3: "Qatar",
+        address: "Msheireb Downtown, Doha, Qatar",
+        reference: "PROP-005",
+        age: 1,
+        numberOfFloors: 25,
+        unitNumber: "1201",
+        amenities: ["Gym", "Security", "Concierge"],
+        images: [
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" }
+        ],
+        agent: {
+            id: "agent-1",
+            firstName: "Ahmed",
+            lastName: "Al-Sulaiti",
+            email: "ahmed.alsulaiti@alasmakh.com",
+            phone: "+974 1234 5678",
+            profilePicture: "/div.property-thumbnail-wrapper.png",
+            location: {
+                city: "Doha",
+                district: "Msheireb",
+                address: "Doha, Qatar"
+            }
+        },
+        createdAt: "2024-05-12T10:00:00Z"
+    },
+    {
+        id: "6",
+        titleEn: "Commercial Office Space in Business District",
+        titleAr: "مساحة مكتبية تجارية في الحي التجاري",
+        descriptionEn: "Prime commercial office space in the heart of Doha's business district. Ideal for businesses looking for a prestigious address. Features include modern facilities and excellent connectivity.",
+        descriptionAr: "مساحة مكتبية تجارية رئيسية في قلب الحي التجاري",
+        priceAmount: 20000,
+        priceCurrency: "QAR",
+        priceFrequency: "monthly",
+        priceType: "rent",
+        bedrooms: 0,
+        bathrooms: 2,
+        beds: 0,
+        baths: 2,
+        size: 200,
+        area: 200,
+        parkingSlots: 5,
+        furnishingType: "Unfurnished",
+        type: "office",
+        category: "commercial",
+        status: "published",
+        locationLevel1: "West Bay",
+        locationLevel2: "Doha",
+        locationLevel3: "Qatar",
+        address: "West Bay Business District, Doha, Qatar",
+        reference: "PROP-006",
+        age: 10,
+        numberOfFloors: 30,
+        unitNumber: "2801",
+        amenities: ["Parking", "Security", "Reception", "Meeting Rooms"],
+        images: [
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" },
+            { url: "/div.property-thumbnail-wrapper.png", thumbnailUrl: "/div.property-thumbnail-wrapper.png" }
+        ],
+        agent: {
+            id: "agent-2",
+            firstName: "Fatima",
+            lastName: "Al-Thani",
+            email: "fatima.althani@alasmakh.com",
+            phone: "+974 2345 6789",
+            profilePicture: "/div.property-thumbnail-wrapper.png",
+            location: {
+                city: "Doha",
+                district: "West Bay",
+                address: "Doha, Qatar"
+            }
+        },
+        createdAt: "2024-06-18T10:00:00Z"
+    }
+];
 
 // Helper function to get API base URL (called at runtime to detect HTTPS)
 const getApiBaseUrl = () => {
@@ -91,6 +399,102 @@ export const formatProperty = (property) => {
  * @returns {Promise<Object>} Object containing properties array and pagination info
  */
 export const fetchProperties = async (params = {}) => {
+    // If using dummy data, return it immediately
+    if (USE_DUMMY_DATA) {
+        let {
+            priceType = "rent",
+            page = 1,
+            limit = 50,
+            status,
+            type,
+            category,
+            locationLevel1,
+            locationLevel2,
+            locationLevel3,
+            bedrooms,
+            bathrooms,
+            minPrice,
+            maxPrice,
+        } = params;
+
+        // Normalize priceType: "lease" -> "rent"
+        if (priceType && priceType.toLowerCase() === "lease") {
+            priceType = "rent";
+        }
+
+        // Filter dummy properties based on params
+        let filteredProperties = [...DUMMY_PROPERTIES];
+
+        // Filter by priceType
+        if (priceType) {
+            filteredProperties = filteredProperties.filter(p =>
+                p.priceType?.toLowerCase() === priceType.toLowerCase()
+            );
+        }
+
+        // Filter by status
+        if (status) {
+            filteredProperties = filteredProperties.filter(p => p.status === status);
+        }
+
+        // Filter by type
+        if (type) {
+            filteredProperties = filteredProperties.filter(p => p.type === type);
+        }
+
+        // Filter by category
+        if (category) {
+            filteredProperties = filteredProperties.filter(p => p.category === category);
+        }
+
+        // Filter by location
+        if (locationLevel1) {
+            filteredProperties = filteredProperties.filter(p =>
+                p.locationLevel1?.toLowerCase().includes(locationLevel1.toLowerCase())
+            );
+        }
+
+        // Filter by bedrooms
+        if (bedrooms) {
+            filteredProperties = filteredProperties.filter(p => p.bedrooms >= parseInt(bedrooms));
+        }
+
+        // Filter by bathrooms
+        if (bathrooms) {
+            filteredProperties = filteredProperties.filter(p => p.bathrooms >= parseInt(bathrooms));
+        }
+
+        // Filter by price range
+        if (minPrice) {
+            filteredProperties = filteredProperties.filter(p =>
+                p.priceAmount >= parseInt(minPrice)
+            );
+        }
+        if (maxPrice) {
+            filteredProperties = filteredProperties.filter(p =>
+                p.priceAmount <= parseInt(maxPrice)
+            );
+        }
+
+        // Pagination
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedProperties = filteredProperties.slice(startIndex, endIndex);
+        const formattedProperties = paginatedProperties.map(formatProperty);
+
+        return {
+            properties: formattedProperties,
+            totalProperties: filteredProperties.length,
+            pagination: {
+                total: filteredProperties.length,
+                page: page,
+                limit: limit,
+                pages: Math.ceil(filteredProperties.length / limit),
+            },
+        };
+    }
+
+    // Original API call code
     // Update URLs at runtime to handle HTTPS proxy
     API_BASE_URL = getApiBaseUrl();
 
@@ -187,6 +591,101 @@ export const fetchProperties = async (params = {}) => {
  * @returns {Promise<Array>} Array of formatted property objects
  */
 export const fetchPropertiesByOfferingType = async (offeringType, options = {}) => {
+    // If using dummy data, return it immediately
+    if (USE_DUMMY_DATA) {
+        // Normalize offeringType to priceType
+        const normalizedOfferingType = offeringType?.toLowerCase();
+        const validPriceTypes = ["lease", "rent", "sale", "marketing"];
+
+        let priceType = "rent"; // default
+        if (normalizedOfferingType && validPriceTypes.includes(normalizedOfferingType)) {
+            priceType = normalizedOfferingType === "lease" ? "rent" : normalizedOfferingType;
+        }
+
+        const {
+            page = 1,
+            limit = 50,
+            type,
+            category,
+            luxury,
+            development,
+        } = options;
+
+        // Filter dummy properties
+        let filteredProperties = DUMMY_PROPERTIES.filter(p =>
+            p.priceType?.toLowerCase() === priceType.toLowerCase()
+        );
+
+        // Apply additional filters
+        if (type) {
+            filteredProperties = filteredProperties.filter(p => p.type === type);
+        }
+        if (category) {
+            filteredProperties = filteredProperties.filter(p => p.category === category);
+        }
+        if (luxury === "true" || category === "luxury") {
+            filteredProperties = filteredProperties.filter(p =>
+                p.priceAmount >= 5000000 || p.category === "luxury" || p.type === "luxury"
+            );
+        }
+
+        // Map to component format
+        const mappedProperties = filteredProperties.map((prop) => {
+            let location = "Location not specified";
+            if (prop.locationLevel1) {
+                location = prop.locationLevel1;
+                if (prop.locationLevel2) location += `, ${prop.locationLevel2}`;
+                if (prop.locationLevel3) location += `, ${prop.locationLevel3}`;
+            } else if (prop.address) {
+                location = prop.address;
+            }
+
+            let price = "Price on request";
+            if (prop.priceAmount) {
+                price = `QAR ${prop.priceAmount.toLocaleString()}`;
+            }
+
+            let image = "/div.property-thumbnail-wrapper.png";
+            if (prop.images && Array.isArray(prop.images) && prop.images.length > 0) {
+                image = prop.images[0].url || prop.images[0].thumbnailUrl || image;
+            }
+
+            const year = prop.createdAt
+                ? new Date(prop.createdAt).getFullYear().toString()
+                : new Date().getFullYear().toString();
+
+            let status = "100% Completed";
+            let statusType = "completed";
+            if (prop.projectStatus) {
+                if (prop.projectStatus === "completed") {
+                    status = "100% Completed";
+                    statusType = "completed";
+                } else if (prop.projectStatus === "off_plan" || prop.projectStatus === "ongoing") {
+                    status = "30% Ongoing";
+                    statusType = "ongoing";
+                }
+            }
+
+            return {
+                id: prop.id || prop._id,
+                title: prop.titleEn || prop.title || "Untitled Property",
+                location: location,
+                year: year,
+                units: prop.bedrooms || prop.units || "N/A",
+                status: status,
+                statusType: statusType,
+                price: price,
+                image: image,
+            };
+        });
+
+        // Pagination
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        return mappedProperties.slice(startIndex, endIndex);
+    }
+
+    // Original API call code
     // Update URLs at runtime to handle HTTPS proxy
     API_BASE_URL = getApiBaseUrl();
 
@@ -328,6 +827,22 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
  * @returns {Promise<Object>} Property object with agent info
  */
 export const fetchPropertyById = async (propertyId) => {
+    // If using dummy data, return it immediately
+    if (USE_DUMMY_DATA) {
+        const property = DUMMY_PROPERTIES.find(p => p.id === propertyId || p.id === String(propertyId));
+
+        if (property) {
+            // Return a copy to avoid mutations
+            return JSON.parse(JSON.stringify(property));
+        } else {
+            throw {
+                message: "Property not found",
+                status: 404,
+            };
+        }
+    }
+
+    // Original API call code
     // Update URLs at runtime to handle HTTPS proxy
     API_BASE_URL = getApiBaseUrl();
 

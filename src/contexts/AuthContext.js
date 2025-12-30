@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       try {
         setLoading(true);
         const token = localStorage.getItem("token");
-        
+
         if (!token) {
           setLoading(false);
           return;
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   const fetchUserData = async (token) => {
     try {
       // Try to fetch user data first
-      const userResponse = await fetch("https://albackend.x-360.ai/api/users/me", {
+      const userResponse = await fetch("http://localhost:3002/api/users/me", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // If not a user, try partner endpoint
-      const partnerResponse = await fetch("https://albackend.x-360.ai/api/partners/me", {
+      const partnerResponse = await fetch("http://localhost:3002/api/partners/me", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -97,9 +97,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials, isPartner = false) => {
     try {
       setLoading(true);
-      const endpoint = isPartner 
-        ? "https://albackend.x-360.ai/api/partners/login" 
-        : "https://albackend.x-360.ai/api/users/login";
+      const endpoint = isPartner
+        ? "http://localhost:3002/api/partners/login"
+        : "http://localhost:3002/api/users/login";
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
       // Store token and user/partner data
       localStorage.setItem("token", data.token);
-      
+
       if (isPartner) {
         setPartner(data.data);
         localStorage.setItem("partnerData", JSON.stringify(data.data));
@@ -143,7 +143,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`https://albackend.x-360.ai/api/users/oauth/${provider}`, {
+      const response = await fetch(`http://localhost:3002/api/users/oauth/${provider}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +161,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("token", data.token);
       setUser(data.data);
       localStorage.setItem("userData", JSON.stringify(data.data));
-      
+
       // Redirect to dashboard
       navigate("/dashboard");
 

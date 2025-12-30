@@ -309,7 +309,7 @@ export default function Rent() {
           {blogs.map((blog, i) => (
             <div
               key={i}
-              className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
             >
               {/* Image Section with Overlapping Button and Text Overlay */}
               <div className="relative w-full h-[300px] md:h-[400px]">
@@ -324,14 +324,16 @@ export default function Rent() {
 
 
                 {/* Text Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-2 z-10">
-                  <h3 className="text-white font-bold text-lg md:text-xl mb-3">
+                <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-2 px-2 group-hover:pb-2">
+                  <h3 className="text-white font-bold text-lg md:text-xl mb-0 group-hover:mb-3 transition-all duration-300">
                     {blog.title}
                   </h3>
-                  <div className="w-[90%] h-[1px] bg-gray-400 my-4  "></div>
-                  <p className="text-white subheading leading-relaxed opacity-90">
-                    {blog.description}
-                  </p>
+                  <div className="w-[90%] h-[1px] bg-gray-400 my-0 group-hover:my-4 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                  <div className="overflow-hidden max-h-0 group-hover:max-h-[200px] transition-all duration-300 ease-in-out">
+                    <p className="text-white subheading leading-relaxed opacity-0 group-hover:opacity-90 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
+                      {blog.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

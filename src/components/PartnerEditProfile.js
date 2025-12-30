@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://albackend.x-360.ai'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'
 
 export default function PartnerEditProfile() {
   const { partner, fetchUserData } = useAuth()
@@ -36,7 +36,7 @@ export default function PartnerEditProfile() {
       try {
         setLoading(true)
         const token = localStorage.getItem('token')
-        
+
         if (!token) {
           setMessage({ type: 'error', text: 'Please login to continue' })
           setLoading(false)
@@ -54,7 +54,7 @@ export default function PartnerEditProfile() {
         }
 
         const result = await response.json()
-        
+
         if (result.success && result.data) {
           const partnerData = result.data
           // Pre-populate form with existing partner data
@@ -114,11 +114,11 @@ export default function PartnerEditProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     try {
       setSubmitting(true)
       setMessage({ type: '', text: '' })
-      
+
       const token = localStorage.getItem('token')
       if (!token) {
         setMessage({ type: 'error', text: 'Please login to continue' })
@@ -142,14 +142,14 @@ export default function PartnerEditProfile() {
 
       if (result.success) {
         setMessage({ type: 'success', text: 'Profile updated successfully!' })
-        
+
         // Update partner data in AuthContext
         if (result.data) {
           localStorage.setItem('partnerData', JSON.stringify(result.data))
           // Refresh partner data in context
           await fetchUserData(token)
         }
-        
+
         // Clear message after 3 seconds
         setTimeout(() => {
           setMessage({ type: '', text: '' })
@@ -196,11 +196,10 @@ export default function PartnerEditProfile() {
 
             {/* Success/Error Message */}
             {message.text && (
-              <div className={`mb-4 p-3 rounded-md ${
-                message.type === 'success' 
-                  ? 'bg-green-50 text-green-800 border border-green-200' 
+              <div className={`mb-4 p-3 rounded-md ${message.type === 'success'
+                  ? 'bg-green-50 text-green-800 border border-green-200'
                   : 'bg-red-50 text-red-800 border border-red-200'
-              }`}>
+                }`}>
                 <div className="flex items-center">
                   {message.type === 'success' ? (
                     <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -431,12 +430,11 @@ export default function PartnerEditProfile() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  style={{borderRadius: "5px"}}
-                  className={`bg-[#001730] text-white px-6 py-2 rounded-md text-xs font-medium transition-colors ${
-                    submitting 
-                      ? 'opacity-50 cursor-not-allowed' 
+                  style={{ borderRadius: "5px" }}
+                  className={`bg-[#001730] text-white px-6 py-2 rounded-md text-xs font-medium transition-colors ${submitting
+                      ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-[#17395e]'
-                  }`}
+                    }`}
                 >
                   {submitting ? 'Updating...' : 'Submit For Approval'}
                 </button>

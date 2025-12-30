@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import axios from "axios";
+import { fetchProperties } from "../utils/propertyapi";
 
 export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
@@ -14,77 +14,31 @@ export default function FeaturedProperties() {
   const [showScrollButtonRight, setShowScrollButtonRight] = useState(false);
   const [showScrollButtonLeft, setShowScrollButtonLeft] = useState(false);
 
-  // Fetch properties from API
+  // Fetch properties from API (or dummy data)
   useEffect(() => {
-    const fetchProperties = async () => {
+    const loadProperties = async () => {
       try {
         setLoading(true);
-        // Use proxy in production to avoid mixed content issues
-        const isProduction = typeof window !== 'undefined' && window.location.protocol === 'https:';
-        const BASE_URL = isProduction ? window.location.origin : "http://localhost:3002";
-        const API_PATH = isProduction ? '/api/proxy/api/v1' : '/api/v1';
-        const response = await axios.get(`${BASE_URL}${API_PATH}/properties/`);
-
-        console.log("API Response:", response.data);
-        console.log("Response structure:", {
-          hasData: !!response.data,
-          isArray: Array.isArray(response.data),
-          hasProperties: !!response.data?.properties,
-          hasDataProperty: !!response.data?.data,
-          hasResults: !!response.data?.results,
+        // Use fetchProperties from propertyapi.js which handles dummy data
+        const result = await fetchProperties({
+          page: 1,
+          limit: 10,
+          status: "published",
         });
 
-        // Handle different response structures
-        let propertiesData = [];
-        if (response.data) {
-          // Check for properties array (API returns {pagination: {...}, properties: [...]})
-          if (response.data.properties && Array.isArray(response.data.properties)) {
-            propertiesData = response.data.properties;
-            console.log("Found properties array with", propertiesData.length, "items");
-          }
-          // If response.data is an array
-          else if (Array.isArray(response.data)) {
-            propertiesData = response.data;
-            console.log("Response.data is array with", propertiesData.length, "items");
-          }
-          // If response.data has a data property that's an array
-          else if (response.data.data && Array.isArray(response.data.data)) {
-            propertiesData = response.data.data;
-            console.log("Found data.data array with", propertiesData.length, "items");
-          }
-          // If response.data has a results property (pagination)
-          else if (response.data.results && Array.isArray(response.data.results)) {
-            propertiesData = response.data.results;
-            console.log("Found results array with", propertiesData.length, "items");
-          } else {
-            console.log("No properties found in response. Response keys:", Object.keys(response.data || {}));
-            console.log("Full response.data:", JSON.stringify(response.data, null, 2));
-          }
-        }
-
-        // Filter out properties with status 'draft' if needed, or show all
-        // You can uncomment this if you only want to show published properties
-        // propertiesData = propertiesData.filter(p => p.status === 'published' || p.status === 'active');
-
-        console.log("Final propertiesData length:", propertiesData.length);
-        console.log("First property sample:", propertiesData[0]);
-        setProperties(propertiesData);
+        console.log("Properties loaded:", result.properties.length);
+        setProperties(result.properties);
         setError(null);
       } catch (err) {
         console.error("Error fetching properties:", err);
-        console.error("Error details:", {
-          message: err.message,
-          response: err.response?.data,
-          status: err.response?.status,
-        });
-        setError(err.message);
+        setError(err.message || "Failed to load properties");
         setProperties([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProperties();
+    loadProperties();
   }, []);
 
   const scrollRight = () => {
@@ -137,15 +91,28 @@ export default function FeaturedProperties() {
     };
   }, [properties]);
 
-  // Helper function to format property data
+  // Helper function to format property data (handles both raw and pre-formatted properties)
   const formatProperty = (property) => {
-    // Get first image from images array
+    // If property is already formatted by fetchProperties, use it as-is with minor adjustments
+    if (property.image && property.bedrooms !== undefined) {
+      return {
+        id: property.id,
+        title: property.title || "Property",
+        location: property.location || "Location not specified",
+        price: property.price || "Price on request",
+        beds: property.bedrooms || property.beds || 0,
+        baths: property.bathrooms || property.baths || 0,
+        area: property.area || 0,
+        image: property.image || "/div.property-thumbnail-wrapper.png",
+      };
+    }
+
+    // Otherwise, format raw property data
     let imageUrl = "/div.property-thumbnail-wrapper.png";
     if (property.images && Array.isArray(property.images) && property.images.length > 0) {
       imageUrl = property.images[0].url || property.images[0].thumbnailUrl || imageUrl;
     }
 
-    // Format location from locationLevel fields
     let location = "Location not specified";
     if (property.locationLevel1) {
       location = property.locationLevel1;
@@ -155,7 +122,6 @@ export default function FeaturedProperties() {
       location = property.address;
     }
 
-    // Format price
     let price = "Price on request";
     if (property.priceAmount) {
       const currency = property.priceCurrency || "QAR";
@@ -175,7 +141,7 @@ export default function FeaturedProperties() {
     };
   };
 
-  // Only format properties if they exist
+  // Format properties (fetchProperties already formats them, but we ensure compatibility)
   const formattedProperties = properties && properties.length > 0 ? properties.map(formatProperty) : [];
 
   return (
@@ -205,7 +171,7 @@ export default function FeaturedProperties() {
         >
           From luxury residences to commercial developments, we deliver trusted
           services that turn your
-          <br />
+
           real estate goals into reality.
         </p>
 
@@ -283,7 +249,7 @@ export default function FeaturedProperties() {
                           height={14}
                           className="lg:w-[18px] lg:h-[18px]"
                         />
-                        <span>{property.beds}</span>
+                        <span>{property.beds || property.bedrooms || 0}</span>
                       </div>
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
@@ -294,7 +260,7 @@ export default function FeaturedProperties() {
                           height={14}
                           className="lg:w-[18px] lg:h-[18px]"
                         />
-                        <span>{property.baths}</span>
+                        <span>{property.baths || property.bathrooms || 0}</span>
                       </div>
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">

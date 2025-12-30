@@ -44,7 +44,7 @@ export default function EditProfile() {
         return
       }
 
-      const response = await fetch('https://albackend.x-360.ai/api/users/me', {
+      const response = await fetch('http://localhost:3002/api/users/me', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +90,7 @@ export default function EditProfile() {
       const token = localStorage.getItem('token')
       if (!token) return
 
-      const response = await fetch('https://albackend.x-360.ai/api/users/family-members', {
+      const response = await fetch('http://localhost:3002/api/users/family-members', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -195,7 +195,7 @@ export default function EditProfile() {
         return
       }
 
-      const response = await fetch('https://albackend.x-360.ai/api/users/profile', {
+      const response = await fetch('http://localhost:3002/api/users/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +258,7 @@ export default function EditProfile() {
       let response
       if (activeMember._id) {
         // Update existing family member
-        response = await fetch(`https://albackend.x-360.ai/api/users/family-members/${activeMember._id}`, {
+        response = await fetch(`http://localhost:3002/api/users/family-members/${activeMember._id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ export default function EditProfile() {
         })
       } else {
         // Create new family member
-        response = await fetch('https://albackend.x-360.ai/api/users/family-members', {
+        response = await fetch('http://localhost:3002/api/users/family-members', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -300,7 +300,7 @@ export default function EditProfile() {
       setMessage({ type: 'error', text: 'Maximum of 5 family members allowed' })
       return
     }
-    
+
     setFamilyMembers([
       ...familyMembers,
       {
@@ -333,9 +333,9 @@ export default function EditProfile() {
   return (
     <div className="p-3 md:p-4 ">
       <div className="max-w-7xl  mx-auto space-y-6">
-        
+
         {/* Edit Your Profile Section */}
-        <div className="bg-white  shadow p-4 md:p-5" style={{borderRadius: '5px'}}>
+        <div className="bg-white  shadow p-4 md:p-5" style={{ borderRadius: '5px' }}>
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 pb-3">
             <h2 className="text-lg md:text-xl font-semibold text-[#2D3748]">Edit Your Profile</h2>
@@ -577,18 +577,17 @@ export default function EditProfile() {
 
           {/* Message */}
           {message.text && (
-            <div className={`mt-3 p-2 rounded-[5px] text-xs ${
-              message.type === 'success' 
-                ? 'bg-green-100 text-green-700 border border-green-400' 
+            <div className={`mt-3 p-2 rounded-[5px] text-xs ${message.type === 'success'
+                ? 'bg-green-100 text-green-700 border border-green-400'
                 : 'bg-red-100 text-red-700 border border-red-400'
-            }`}>
+              }`}>
               {message.text}
             </div>
           )}
 
           {/* Submit Button */}
           <div className="mt-6 flex">
-            <button 
+            <button
               onClick={handleProfileSubmit}
               disabled={submitting}
               className="bg-[#001730] text-white px-6 py-2 rounded-[5px] text-xs font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -611,11 +610,10 @@ export default function EditProfile() {
                 <button
                   key={member._id || index}
                   onClick={() => setActiveMemberIndex(index)}
-                  className={`px-3 py-1.5 rounded-[5px] text-xs font-medium ${
-                    activeMemberIndex === index
+                  className={`px-3 py-1.5 rounded-[5px] text-xs font-medium ${activeMemberIndex === index
                       ? 'bg-[#001730] text-white'
                       : 'bg-gray-200 text-[#2D3748]'
-                  }`}
+                    }`}
                 >
                   Member {index + 1}
                 </button>
@@ -839,18 +837,17 @@ export default function EditProfile() {
 
           {/* Message */}
           {message.text && (
-            <div className={`mt-3 p-2 rounded-[5px] text-xs ${
-              message.type === 'success' 
-                ? 'bg-green-100 text-green-700 border border-green-400' 
+            <div className={`mt-3 p-2 rounded-[5px] text-xs ${message.type === 'success'
+                ? 'bg-green-100 text-green-700 border border-green-400'
                 : 'bg-red-100 text-red-700 border border-red-400'
-            }`}>
+              }`}>
               {message.text}
             </div>
           )}
 
           {/* Submit Button */}
           <div className="mt-6 flex ">
-            <button 
+            <button
               onClick={handleFamilyMemberSubmit}
               disabled={submitting || loading}
               className="bg-[#001730] text-white px-6 py-2 rounded-[5px] text-xs font-medium hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -865,11 +862,10 @@ export default function EditProfile() {
           <button
             onClick={addFamilyMember}
             disabled={familyMembers.length >= 5}
-            className={`px-6 py-2 rounded-[5px] text-xs font-medium ${
-              familyMembers.length >= 5
+            className={`px-6 py-2 rounded-[5px] text-xs font-medium ${familyMembers.length >= 5
                 ? 'bg-gray-400 text-white cursor-not-allowed'
                 : 'bg-[#001730] text-white hover:bg-blue-800'
-            }`}
+              }`}
           >
             {familyMembers.length >= 5 ? 'Maximum 5 Family Members Reached' : 'Add More Family Members'}
           </button>

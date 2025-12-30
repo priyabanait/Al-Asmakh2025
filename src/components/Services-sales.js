@@ -350,7 +350,7 @@ export default function Rent() {
         {/* Service Boxes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {/* Card 1 */}
-          <div className="glass-effect rounded-md p-6 bg-[#EEEEEE] shadow-md transition-all">
+          <div className="glass-effect rounded-md p-6 bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Market Analysis</h3>
             <p className="subheading text-gray-600">
               Comprehensive market research and competitive analysis to price your property optimally.
@@ -358,7 +358,7 @@ export default function Rent() {
           </div>
 
           {/* Card 2 */}
-          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md transition-all">
+          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Property Valuation</h3>
             <p className="subheading text-gray-600">
               Professional property appraisal and valuation services using latest market data.
@@ -366,7 +366,7 @@ export default function Rent() {
           </div>
 
           {/* Card 3 */}
-          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md transition-all">
+          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Expert Negotiation</h3>
             <p className="subheading text-gray-600">
               Skilled negotiation to secure the best possible terms for buyers and sellers.
@@ -374,7 +374,7 @@ export default function Rent() {
           </div>
 
           {/* Card 4 */}
-          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md transition-all">
+          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Transaction Management</h3>
             <p className="subheading text-gray-600">
               Complete transaction coordination from contract to closing with legal support.
@@ -382,7 +382,7 @@ export default function Rent() {
           </div>
 
           {/* Card 5 */}
-          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md transition-all">
+          <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Buyer Matching</h3>
             <p className="subheading text-gray-600">
               Extensive network and marketing to connect sellers with qualified buyers.
@@ -390,7 +390,7 @@ export default function Rent() {
           </div>
 
           {/* Card 6 */}
-          <div className="glass-effect rounded-md p-6 shadow-md bg-[#EEEEEE]  transition-all">
+          <div className="glass-effect rounded-md p-6 shadow-md bg-[#EEEEEE] hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Closing Support</h3>
             <p className="subheading text-gray-600">
               Full support through the closing process ensuring smooth transactions.

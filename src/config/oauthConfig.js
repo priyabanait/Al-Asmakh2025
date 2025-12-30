@@ -14,6 +14,6 @@ export const OAUTH_CONFIG = {
     clientId: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || '', // Will be set from environment
     redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/auth/linkedin/callback` : '',
   },
-  backendUrl: process.env.NEXT_PUBLIC_API_URL || 'https://albackend.x-360.ai',
+  backendUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002',
 };
 

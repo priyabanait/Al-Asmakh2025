@@ -71,7 +71,7 @@ Production-ready OAuth authentication has been successfully implemented for **Go
 Create `.env.local` in `frontend-project/`:
 
 ```env
-NEXT_PUBLIC_API_URL=https://albackend.x-360.ai
+NEXT_PUBLIC_API_URL=http://localhost:3002
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
 NEXT_PUBLIC_MICROSOFT_CLIENT_ID=your_microsoft_client_id
 NEXT_PUBLIC_LINKEDIN_CLIENT_ID=your_linkedin_client_id

@@ -72,8 +72,8 @@ export default function Header() {
         router.push('/dashboard')
       }
     } else {
-      // Not logged in, navigate to login page
-      router.push('/login')
+      // Not logged in, navigate to external login page
+      window.open('https://x-360.vercel.app/login', '_blank', 'noopener,noreferrer')
     }
   }
 
@@ -251,14 +251,18 @@ export default function Header() {
                             : `/${item.key.toLowerCase().replace(' ', '-')}`
                         )
                     }
-                    className={`flex items-center whitespace-nowrap backdropFilter: 'blur(40px) saturate(180%)',
-                          WebkitBackdropFilter: 'blur(40px) saturate(180%)', gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${activeDropdown === item.key
-                        ? 'bg-white/20 text-[#001730]'
-                        : 'hover:bg-white/10 text-[#001730]'
+                    className={`flex items-center whitespace-nowrap gap-1 px-3 py-2 rounded-lg transition-all duration-300 relative overflow-hidden ${activeDropdown === item.key
+                      ? 'text-[#001730]'
+                      : 'hover:bg-white/10 text-[#001730]'
                       }`}
                     style={{
                       fontSize: 'clamp(11px, 0.8vw, 14px)',
                       fontWeight: '500',
+                      ...(activeDropdown === item.key && {
+                        backdropFilter: 'blur(45px) saturate(180%)',
+                        WebkitBackdropFilter: 'blur(45px) saturate(180%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                      }),
                     }}
                   >
                     <span>{item.label}</span>
@@ -270,42 +274,34 @@ export default function Header() {
                     )}
                   </button>
 
-                  {/* Dropdown */}
                   {hasDropdown && activeDropdown === item.key && (
                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[220px] z-[999]">
-
-                      {/* GLASS CONTAINER */}
-                      <div className="relative rounded-[6px] overflow-hidden border border-white/30">
-
-                        {/* 🔥 BLUR LAYER (SEPARATE PLANE) */}
+                      <div className="relative rounded-[8px] overflow-hidden border border-white/40 ">
+                        {/* 🔥 APPLE-STYLE GLASS BACKGROUND */}
                         <div
                           className="absolute inset-0"
                           style={{
-                            backdropFilter: 'blur(40px) saturate(180%)',
-                            WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-                            backgroundColor: 'rgba(241, 224, 224, 0.15)',
+                            backdropFilter: 'blur(45px) saturate(180%)',
+                            WebkitBackdropFilter: 'blur(45px) saturate(180%)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.45)',
                           }}
                         />
 
-                        {/* CONTENT (SHARP TEXT) */}
+                        {/* ✅ DROPDOWN CONTENT (TEXT UNCHANGED) */}
                         <div className="relative py-2">
                           {dropdowns[item.key].map((dropdownItem, index) => (
                             <button
                               key={index}
                               onClick={() => handleDropdownItemClick(dropdownItem)}
-                              className="w-full text-left px-4 py-2 text-sm font-medium
-                       text-[#001730] hover:bg-white/30 transition"
+                              className="w-full text-left px-4 py-2 text-sm font-medium text-[#001730] hover:bg-white/30 transition-all duration-200"
                             >
                               {dropdownItem.label}
                             </button>
                           ))}
                         </div>
-
                       </div>
                     </div>
                   )}
-
-
                 </div>
               )
             })}

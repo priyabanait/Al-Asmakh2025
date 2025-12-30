@@ -22,29 +22,29 @@ export default function ScanMemberPage() {
     membershipId: "",
     amount: ""
   });
-  
+
   // Check authentication
   useEffect(() => {
     // Wait for loading to complete
     if (loading) return;
-    
+
     // Check token in localStorage
     const token = localStorage.getItem('token');
     const partnerData = localStorage.getItem('partnerData');
-    
+
     // If no token, redirect to login
     if (!token) {
       router.push('/partner-login');
       return;
     }
-    
+
     // If authenticated but no partner data, redirect to partner dashboard (main page)
     if (!partner && !partnerData) {
       router.push('/partner-login');
       return;
     }
   }, [loading, partner, router]);
-  
+
   // Handle QR scan result
   const handleScan = async (result) => {
     if (result && result.data) {
@@ -59,44 +59,44 @@ export default function ScanMemberPage() {
         // Parse the QR code URL
         const url = new URL(result.data);
         const pathParts = url.pathname.split('/').filter(part => part !== '');
-        
+
         console.log("QR Code scanned:", result.data);
         console.log("Path parts:", pathParts);
-        
+
         // Check if it's a partner QR code or user QR code
         const isPartnerScan = pathParts.includes('partner');
         const isUserScan = pathParts.includes('user');
-        
+
         if (isPartnerScan) {
           // Handle partner QR code scan
           // Expected format: https://privilege.alasmakhrealestate.com/partner/PARTNERSHIP_ID
           const partnershipId = pathParts[pathParts.length - 1];
-          
+
           if (!partnershipId) {
             setScanError("Invalid partner QR code format");
             return;
           }
-          
+
           try {
             console.log("Fetching partner data for partnershipId:", partnershipId);
-            
+
             // Fetch partner data by partnershipId
-            const partnerResponse = await fetch(`https://albackend.x-360.ai/api/partners/partnership/${partnershipId}`, {
+            const partnerResponse = await fetch(`http://localhost:3002/api/partners/partnership/${partnershipId}`, {
               headers: {
                 "Authorization": `Bearer ${token}`
               }
             });
-            
+
             if (!partnerResponse.ok) {
               const errorData = await partnerResponse.json();
               throw new Error(errorData.message || "Failed to fetch partner data");
             }
-            
+
             const partnerData = await partnerResponse.json();
             const scannedPartner = partnerData.data;
-            
+
             console.log("Partner data fetched:", scannedPartner);
-            
+
             // Set the scanned partner data
             setScannedUser({
               id: scannedPartner._id,
@@ -108,14 +108,14 @@ export default function ScanMemberPage() {
               isPartner: true,
               businessName: scannedPartner.businessName || ''
             });
-            
+
             // Update form fields
             setMemberDetails({
               phone: scannedPartner.phone || scannedPartner.phoneNumber || '',
               membershipId: scannedPartner.partnershipId,
               amount: ""
             });
-            
+
             // Record the scan in the backend
             const scanData = {
               partnershipId: partnershipId,
@@ -123,10 +123,10 @@ export default function ScanMemberPage() {
               location: "Mobile App",
               notes: `Scanned partner QR code: ${scannedPartner.businessName || scannedPartner.name}`
             };
-            
+
             console.log("Recording partner scan with data:", scanData);
-            
-            const scanResponse = await fetch("https://albackend.x-360.ai/api/scans", {
+
+            const scanResponse = await fetch("http://localhost:3002/api/scans", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -134,18 +134,18 @@ export default function ScanMemberPage() {
               },
               body: JSON.stringify(scanData)
             });
-            
+
             if (!scanResponse.ok) {
               const errorData = await scanResponse.json();
               throw new Error(errorData.message || "Failed to record partner scan");
             }
-            
+
             const scanResult = await scanResponse.json();
             console.log("Partner scan recorded successfully:", scanResult);
-            
+
             // Close scanner modal
             setShowScanner(false);
-            
+
             // Navigate to success page with scan ID
             if (scanResult.data && scanResult.data._id) {
               router.push(`/scanned/success/${scanResult.data._id}`);
@@ -154,28 +154,28 @@ export default function ScanMemberPage() {
               setScanError("Scan recorded but no ID returned");
               alert("Scan recorded successfully but could not navigate to success page");
             }
-            
+
           } catch (fetchError) {
             console.error("Error fetching partner data:", fetchError);
             setScanError(fetchError.message || "Could not fetch partner data. Please try again.");
             alert(`Error: ${fetchError.message || "Could not fetch partner data. Please try again."}`);
           }
-          
+
         } else if (isUserScan) {
           // Handle user QR code scan
           // Expected format: https://alasmakh.com/user/USER_ID
           const userId = pathParts[pathParts.length - 1];
-          
+
           if (!userId) {
             setScanError("Invalid user QR code format");
             return;
           }
-          
+
           try {
             console.log("Fetching user data for ID:", userId);
-            
+
             // Fetch user details from the backend
-            const userResponse = await fetch(`https://albackend.x-360.ai/api/users/${userId}`, {
+            const userResponse = await fetch(`http://localhost:3002/api/users/${userId}`, {
               headers: {
                 "Authorization": `Bearer ${token}`
               }
@@ -196,19 +196,19 @@ export default function ScanMemberPage() {
                 })
               };
             });
-            
+
             const userData = await userResponse.json();
-            
+
             if (!userResponse.ok) {
               throw new Error(userData.message || "Failed to fetch user data");
             }
-            
+
             const user = userData.data;
             console.log("User data fetched:", user);
-            
+
             // Ensure _id is converted to string (handle both ObjectId objects and strings)
             const userIdString = user._id ? String(user._id) : String(userId);
-            
+
             // Set the scanned user data
             setScannedUser({
               id: userIdString,
@@ -219,14 +219,14 @@ export default function ScanMemberPage() {
               membershipId: userIdString.substring(0, 8),
               isPartner: false
             });
-            
+
             // Update form fields
             setMemberDetails({
               phone: user.phone,
               membershipId: userIdString.substring(0, 8),
               amount: ""
             });
-            
+
             // Record the scan in the backend
             const scanData = {
               userId: userIdString,
@@ -234,10 +234,10 @@ export default function ScanMemberPage() {
               location: "Mobile App",
               notes: "Scanned via QR code"
             };
-            
+
             console.log("Recording user scan with data:", scanData);
-            
-            const scanResponse = await fetch("https://albackend.x-360.ai/api/scans", {
+
+            const scanResponse = await fetch("http://localhost:3002/api/scans", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -245,18 +245,18 @@ export default function ScanMemberPage() {
               },
               body: JSON.stringify(scanData)
             });
-            
+
             if (!scanResponse.ok) {
               const errorData = await scanResponse.json();
               throw new Error(errorData.message || "Failed to record scan");
             }
-            
+
             const scanResult = await scanResponse.json();
             console.log("Scan recorded successfully:", scanResult);
-            
+
             // Close scanner modal
             setShowScanner(false);
-            
+
             // Navigate to success page with scan ID
             if (scanResult.data && scanResult.data._id) {
               router.push(`/scanned/success/${scanResult.data._id}`);
@@ -265,7 +265,7 @@ export default function ScanMemberPage() {
               setScanError("Scan recorded but no ID returned");
               alert("Scan recorded successfully but could not navigate to success page");
             }
-            
+
           } catch (fetchError) {
             console.error("Error fetching user data:", fetchError);
             setScanError(fetchError.message || "Could not fetch user data. Please try again.");
@@ -284,13 +284,13 @@ export default function ScanMemberPage() {
       }
     }
   };
-  
+
   // Handle QR scan error
   const handleScanError = (error) => {
     console.error("QR scan error:", error);
     setScanError("Error scanning QR code");
   };
-  
+
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -318,10 +318,10 @@ export default function ScanMemberPage() {
       }
 
       let scanData = {};
-      
+
       // Try to find user by membershipId (could be user ID, customerId, or tenantId)
       try {
-        const userResponse = await fetch(`https://albackend.x-360.ai/api/users/${memberDetails.membershipId}`, {
+        const userResponse = await fetch(`http://localhost:3002/api/users/${memberDetails.membershipId}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -345,7 +345,7 @@ export default function ScanMemberPage() {
       // If user not found, try to find partner by partnershipId
       if (!scanData.userId) {
         try {
-          const partnerResponse = await fetch(`https://albackend.x-360.ai/api/partners/partnership/${memberDetails.membershipId}`, {
+          const partnerResponse = await fetch(`http://localhost:3002/api/partners/partnership/${memberDetails.membershipId}`, {
             headers: {
               "Authorization": `Bearer ${token}`
             }
@@ -378,7 +378,7 @@ export default function ScanMemberPage() {
       }
 
       // Submit the scan
-      const response = await fetch("https://albackend.x-360.ai/api/scans", {
+      const response = await fetch("http://localhost:3002/api/scans", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -420,7 +420,7 @@ export default function ScanMemberPage() {
 
   const handleMenuItemClick = (itemId) => {
     setActiveMenuItem(itemId)
-    
+
 
     console.log(itemId);
     // Handle navigation for partner dashboard
@@ -433,17 +433,17 @@ export default function ScanMemberPage() {
       router.push('/partner-dashboard')
       return
     }
-    
+
     if (itemId === 'edit-profile') {
       router.push('/partner-dashboard/edit-profile')
       return
     }
-    
+
     if (itemId === 'signout') {
       logout()
       return
     }
-    
+
     // Close sidebar on mobile after selection
     if (window.innerWidth < 1024) {
       setSidebarOpen(false)
@@ -497,7 +497,7 @@ export default function ScanMemberPage() {
                     }}
                   >
                     {" "}
-                    <p 
+                    <p
                       className="text-white text-sm font-medium pl-4 md:pl-6 pt-3 cursor-pointer hover:underline"
                       onClick={() => {
                         setShowScanner(true);
@@ -528,7 +528,7 @@ export default function ScanMemberPage() {
                   <div className="bg-white p-4 rounded-lg w-full max-w-md">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-lg font-medium">Scan Member QR Code</h3>
-                      <button 
+                      <button
                         onClick={() => setShowScanner(false)}
                         className="text-gray-400 hover:text-gray-500"
                       >
@@ -537,9 +537,9 @@ export default function ScanMemberPage() {
                         </svg>
                       </button>
                     </div>
-                    
+
                     {/* QR Scanner Component */}
-                    <QRScanner 
+                    <QRScanner
                       key={showScanner ? 'scanner-active' : 'scanner-inactive'}
                       autoStart={true}
                       onScan={(result) => {
@@ -552,7 +552,7 @@ export default function ScanMemberPage() {
                         // Don't close on error, let user see the error message
                       }}
                     />
-                    
+
                     {/* Error Message */}
                     {scanError && (
                       <div className="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 text-xs rounded">
@@ -562,7 +562,7 @@ export default function ScanMemberPage() {
                   </div>
                 </div>
               )}
-              
+
               {/* Success Message */}
               {scannedUser && (
                 <div className="mt-2 p-2 bg-green-100 border border-green-400 text-green-700 text-xs rounded absolute bottom-4 left-4 right-4">
@@ -630,7 +630,7 @@ export default function ScanMemberPage() {
                       className="w-full border border-gray-200 rounded-md px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-300 focus:border-blue-300"
                     />
                   </div>
-                  
+
                   {/* Submit Button */}
                   {/* <div className="absolute bottom-4 right-4">
                     <button 
@@ -654,7 +654,7 @@ export default function ScanMemberPage() {
                           }
                           
                           // Update the scan with the transaction amount
-                          const response = await fetch("https://albackend.x-360.ai/api/scans", {
+                          const response = await fetch("http://localhost:3002/api/scans", {
                             method: "POST",
                             headers: {
                               "Content-Type": "application/json",

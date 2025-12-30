@@ -175,14 +175,25 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                             </div>
 
                             {/* TAGS — GRID RESPONSIVE - Static */}
-                            <div className='p-2 shadow-md bg-gray-50 rounded-md mt-2'>
-                                <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-1 ">
 
-                                    {/* Static Tags */}
+                            <div className="p-2 shadow-md bg-gray-50 rounded-md mt-2">
+                                <div className="grid grid-cols-[1fr_1fr_1fr_60px] gap-1">
+
                                     {staticTags.map((tag, index) => (
                                         <div
                                             key={index}
-                                            className="bg-gray-300 text-white flex items-center justify-center text-center flex-wrap border border-gray-200 shadow-sm rounded-md px-2 py-2 text-[0.6rem] font-semibold w-fit"
+                                            className="
+          bg-gray-300 text-white
+          flex items-center justify-center
+          text-center
+          border border-gray-200
+          shadow-sm
+          rounded-md
+          h-10
+          text-[0.6rem]
+          font-semibold
+          whitespace-nowrap
+        "
                                         >
                                             {tag}
                                         </div>
@@ -190,6 +201,8 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
                                 </div>
                             </div>
+
+
 
                             {/* Map - Static */}
                             <img

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Search, Mic, ArrowDown } from "lucide-react";
+import { VscSettings } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import MoreFiltersModal from "./MoreFiltersModal";
 
@@ -173,11 +174,11 @@ export default function Hero() {
 
         {/* BACKGROUND VIDEO OR IMAGE */}
         <video
-          src="/images/hero_section_video.mov"
+          src="/images/hero_section_video_vertical.mp4"
           autoPlay
           loop
-          muted
           playsInline
+          preload="auto"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
 
@@ -228,53 +229,35 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* SEARCH BAR */}
+          {/* SEARCH BAR WITH FILTER - SAME LINE */}
           <div className="bg-white/20 rounded-[3px] mt-2 p-2 sm:p-3 md:p-4 lg:p-5 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
-            <div className="flex items-center mx-2 sm:mx-3 md:mx-4 lg:mx-5 px-3 sm:px-4 md:px-5 lg:px-6 bg-white rounded-[3px] shadow-md py-2 sm:py-2.5 md:py-3 lg:py-4">
-              <div className="p-1.5 sm:p-2 md:p-2.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[28px] w-[28px] sm:h-[32px] sm:w-[32px] md:h-[36px] md:w-[36px] lg:h-[40px] lg:w-[40px]">
-                <Search className="text-white h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Search Input Section */}
+              <div className="flex items-center flex-1 px-3 sm:px-4 md:px-5 lg:px-6 bg-white rounded-[3px] shadow-md py-2 sm:py-2.5 md:py-3 lg:py-4">
+                <div className="p-1.5 sm:p-2 md:p-2.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[28px] w-[28px] sm:h-[32px] sm:w-[32px] md:h-[36px] md:w-[36px] lg:h-[40px] lg:w-[40px] flex-shrink-0">
+                  <Search className="text-white h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Your search starts here..."
+                  className="flex-1 ml-2 sm:ml-3 md:ml-4 outline-none text-xs sm:text-sm md:text-[10px] lg:text-sm xl:text-base 2xl:text-lg bg-transparent"
+                />
+                <Mic className="text-gray-500 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 flex-shrink-0" />
               </div>
-              <input
-                type="text"
-                placeholder="Type here..."
-                className="flex-1 ml-2 sm:ml-3 md:ml-4 outline-none text-xs sm:text-sm md:text-[10px] lg:text-sm xl:text-base 2xl:text-lg"
-              />
-              <Mic className="text-gray-500 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
+
+              {/* Filter Button */}
+              <button
+                onClick={() => setShowMoreFilters(true)}
+                className="bg-white rounded-[3px] shadow-md p-2 sm:p-2.5 md:p-3 lg:p-4 flex items-center justify-center h-[45px] sm:h-[50px] md:h-[55px] lg:h-[60px] w-[45px] sm:w-[50px] md:w-[55px] lg:w-[60px] flex-shrink-0"
+              >
+                <VscSettings className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:w-7 lg:w-8 lg:h-8 text-gray-600" />
+              </button>
             </div>
           </div>
 
         </div>
 
-        {/* FILTER BUTTON */}
-        <div
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 bg-white/20 rounded-[3px] p-3 sm:p-4 md:p-5 lg:p-6 px-8 sm:px-10 md:px-12 lg:px-14 xl:px-16 2xl:px-20 shadow-lg border border-white/10 backdrop-blur-sm z-50 cursor-pointer"
-        >
-          <div className="flex w-full bg-[#0A2A4C] text-white px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-2.5 md:py-3 lg:py-4 rounded-[3px] shadow-md items-center relative overflow-hidden">
 
-            {/* LEFT SIDE: Icon + Divider + Text */}
-            <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 relative z-10">
-
-              {/* ICON */}
-              <img
-                src="/Icon (10).png"
-                alt="Filter Icon"
-                className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7"
-              />
-
-              {/* VERTICAL DIVIDER */}
-              <div className="h-4 sm:h-5 md:h-6 lg:h-7 w-[1px] bg-white"></div>
-
-              {/* TEXT */}
-              <span className="font-medium text-xs sm:text-sm md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg">Filters</span>
-            </div>
-
-            {/* ARROW ICON */}
-            <div className="ml-12 sm:ml-16 md:ml-20 lg:ml-24 xl:ml-32 2xl:ml-40 relative z-10">
-              <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
-            </div>
-
-          </div>
-        </div>
 
       </section>
 

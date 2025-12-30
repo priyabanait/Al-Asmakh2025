@@ -43,7 +43,7 @@ export default function ScanSuccessClient() {
         }
 
         // Fetch scan data from backend
-        const response = await fetch(`https://albackend.x-360.ai/api/scans/${scanId}`, {
+        const response = await fetch(`http://localhost:3002/api/scans/${scanId}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -153,7 +153,7 @@ export default function ScanSuccessClient() {
                   <div className="space-y-4">
                     <div className="border-b border-gray-200 pb-4">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">Scan Details</h3>
-                      
+
                       {/* Scan Type */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>

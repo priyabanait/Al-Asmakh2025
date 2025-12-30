@@ -13,8 +13,8 @@ const Offers = () => {
       try {
         setLoading(true)
         setError('')
-        
-        const response = await fetch('https://albackend.x-360.ai/api/offers')
+
+        const response = await fetch('http://localhost:3002/api/offers')
         const data = await response.json()
 
         if (!response.ok) {
@@ -90,27 +90,27 @@ const Offers = () => {
         </div>
       </div>
 
-      <div style={{fontSize: '10px'}} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div style={{ fontSize: '10px' }} className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {offers.map((offer) => (
           <div key={offer._id} className="bg-white rounded-lg shadow overflow-hidden">
             <div className="h-52 bg-gray-200 relative">
               {offer.imageurl ? (
-                <Image 
-                  src={offer.imageurl} 
-                  alt={offer.title || 'Offer Image'} 
+                <Image
+                  src={offer.imageurl}
+                  alt={offer.title || 'Offer Image'}
                   fill
-                  style={{objectFit: 'cover'}}
+                  style={{ objectFit: 'cover' }}
                   onError={(e) => {
                     // Fallback to placeholder if image fails to load
                     e.target.src = '/images/placeholder.svg'
                   }}
                 />
               ) : (
-                <Image 
-                  src="/images/placeholder.svg" 
-                  alt="Placeholder" 
+                <Image
+                  src="/images/placeholder.svg"
+                  alt="Placeholder"
                   fill
-                  style={{objectFit: 'cover'}}
+                  style={{ objectFit: 'cover' }}
                 />
               )}
               <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-2">

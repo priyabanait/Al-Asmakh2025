@@ -27,7 +27,7 @@ export default function SignupPage() {
   const [success, setSuccess] = useState("");
   const [oauthLoading, setOauthLoading] = useState({ google: false, microsoft: false, linkedin: false });
   const handleChange = (e) => {
-    const { name, value } = e.target; 
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -35,8 +35,8 @@ export default function SignupPage() {
   };
 
   const validateForm = () => {
-    if (!formData.firstName || !formData.secondName || !formData.email || 
-        !formData.phone || !formData.password) {
+    if (!formData.firstName || !formData.secondName || !formData.email ||
+      !formData.phone || !formData.password) {
       setError("All fields are required");
       return false;
     }
@@ -64,7 +64,7 @@ export default function SignupPage() {
 
     try {
       setLoading(true);
-      const response = await fetch("https://albackend.x-360.ai/api/users/register", {
+      const response = await fetch("http://localhost:3002/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -82,7 +82,7 @@ export default function SignupPage() {
       setSuccess("Registration successful! Redirecting to dashboard...");
       localStorage.setItem("token", data.token);
       localStorage.setItem("userData", JSON.stringify(data.data));
-      
+
       // Redirect after a short delay
       setTimeout(() => {
         router.push("/dashboard");
@@ -100,7 +100,7 @@ export default function SignupPage() {
     try {
       setOauthLoading(prev => ({ ...prev, google: true }));
       setError("");
-      
+
       const token = await signInWithGoogle();
       await oauthLogin('google', token);
     } catch (err) {
@@ -113,7 +113,7 @@ export default function SignupPage() {
     try {
       setOauthLoading(prev => ({ ...prev, microsoft: true }));
       setError("");
-      
+
       const token = await signInWithMicrosoft();
       await oauthLogin('microsoft', token);
     } catch (err) {
@@ -126,7 +126,7 @@ export default function SignupPage() {
     try {
       setOauthLoading(prev => ({ ...prev, linkedin: true }));
       setError("");
-      
+
       signInWithLinkedIn();
       // LinkedIn uses redirect flow, so we don't wait for response
     } catch (err) {
@@ -138,9 +138,9 @@ export default function SignupPage() {
   return (
     <>
       <div className="relative w-full min-h-screen">
-        
+
         {/* Background Image */}
-       
+
         <div
           className="fixed inset-0 w-full h-auto bg-cover bg-center bg-no-repeat"
           style={{
@@ -149,20 +149,20 @@ export default function SignupPage() {
         />
 
 
-<Header/>
-        
+        <Header />
+
 
 
         {/* Login Card - Positioned on Left */}
         <div className=" mb-24  mt-20 relative z-10 w-full flex justify-center items-center min-h-screen p-4 lg:p-8 lg:pl-16 md:left-56">
-          <div  style={{borderRadius:"5px"}} className="bg-[#a0a6b0]/40  backdrop-blur-md  p-6 sm:p-10  w-full max-w-md lg:max-w-lg shadow-2xl  border border-white/10   ">
+          <div style={{ borderRadius: "5px" }} className="bg-[#a0a6b0]/40  backdrop-blur-md  p-6 sm:p-10  w-full max-w-md lg:max-w-lg shadow-2xl  border border-white/10   ">
 
             {/* Title */}
             <h2 className="text-3xl font-bold text-white mb-3">Get Registered !</h2>
 
             <div className=" mb-5 h-0.5 mt-4 bg-gray-300 mx-auto "></div>
 
-            <p style={{ color :"#001730"}} className=" text-sm mb-6">
+            <p style={{ color: "#001730" }} className=" text-sm mb-6">
               Register today and become part of Qatar's most rewarding real estate privilege community
             </p>
 
@@ -181,7 +181,7 @@ export default function SignupPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px',      color: "#001730"}}>First Name</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>First Name</label>
                 <input
                   type="text"
                   name="firstName"
@@ -189,12 +189,12 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="John"
                   className="w-full border  border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px"}}
+                  style={{ borderRadius: "5px", height: "35px" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Last Name</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Last Name</label>
                 <input
                   type="text"
                   name="secondName"
@@ -202,12 +202,12 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="Carter"
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px"}}
+                  style={{ borderRadius: "5px", height: "35px" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold" style={{fontSize:'16px', color: "#001730"}}>Email</label>
+                <label className="text-sm font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Email</label>
                 <input
                   type="email"
                   name="email"
@@ -215,12 +215,12 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="Enter Email here.."
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px"}}
+                  style={{ borderRadius: "5px", height: "35px" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Phone</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Phone</label>
                 <input
                   type="tel"
                   name="phone"
@@ -228,11 +228,11 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="(123) 456-789"
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px"}}
+                  style={{ borderRadius: "5px", height: "35px" }}
                 />
               </div>
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Create Password</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Create Password</label>
                 <input
                   type="password"
                   name="password"
@@ -240,12 +240,12 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="Please type here..."
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px"}}
+                  style={{ borderRadius: "5px", height: "35px" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px',    color: "#001730"}}>Confirm Password</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Confirm Password</label>
                 <input
                   type="password"
                   name="password"
@@ -253,29 +253,29 @@ export default function SignupPage() {
                   onChange={handleChange}
                   placeholder="Please type here..."
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px"}}
+                  style={{ borderRadius: "5px", height: "35px" }}
                 />
               </div>
-            
+
 
               <div className="col-span-1 md:col-span-2 flex justify-center md:justify-start mt-4 sm:mt-6 md:mt-5 mb-4">
-  <button
-    type="submit"
-    disabled={loading}
-    style={{ borderRadius: "5px", fontSize: "12px" }}
-    className="bg-[#0C1E35] hover:bg-[#132b47] w-full sm:w-auto min-w-[200px] md:w-44 text-white py-2 px-6 flex items-center justify-center md:justify-around gap-2 transition-all"
-  >
-    {loading ? (
-      "Processing..."
-    ) : (
-      <>
-        Submit
-        <FiArrowRight className="text-sm md:text-base shrink-0" />
-      </>
-    )}
-  </button>
-</div>
-        
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{ borderRadius: "5px", fontSize: "12px" }}
+                  className="bg-[#0C1E35] hover:bg-[#132b47] w-full sm:w-auto min-w-[200px] md:w-44 text-white py-2 px-6 flex items-center justify-center md:justify-around gap-2 transition-all"
+                >
+                  {loading ? (
+                    "Processing..."
+                  ) : (
+                    <>
+                      Submit
+                      <FiArrowRight className="text-sm md:text-base shrink-0" />
+                    </>
+                  )}
+                </button>
+              </div>
+
             </form>
 
             {/* Divider */}
@@ -341,7 +341,7 @@ export default function SignupPage() {
 
       {/* Footer - positioned below the main content */}
       <div className="relative z-20">
-        <Footer/>   
+        <Footer />
       </div>
     </>
   );

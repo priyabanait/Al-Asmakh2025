@@ -3,7 +3,7 @@ import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import { ArrowLeft, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaArrowRight, FaArrowLeft, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
-import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding } from "react-icons/fa";
+import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare } from "react-icons/fa";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../utils/propertyapi";
@@ -247,7 +247,7 @@ export default function PropertyDetails() {
         {/* Title + Price + Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
-            <h1 className="text-xl sm:text-2xl font-bold">{formattedProperty.title}</h1>
+            <h1 className="text-xl sm:text-2xl ">{formattedProperty.title.slice(0, 33)}</h1>
             <div className="w-[50%] h-[0.2px] px-10  mt-2 3xl:mt-3 bg-gray-400 my-2 "></div>
             <div className="flex items-center text-gray-200 text-xs sm:text-sm mt-2">
               <MapPin size={16} className="mr-1" /> {formattedProperty.location}
@@ -256,7 +256,7 @@ export default function PropertyDetails() {
 
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
             <p className="text-xs sm:text-sm opacity-80 mb-1">{formattedProperty.priceLabel || "Price"}</p>
-            <h2 className="text-xl sm:text-2xl font-bold">{formattedProperty.price}</h2>
+            <h2 className="text-xl sm:text-2xl ">{formattedProperty.price}</h2>
           </div>
 
           <div className="bg-[#001730] p-4 sm:p-6 rounded-[5px] shadow-md flex items-center justify-center">
@@ -355,6 +355,7 @@ export default function PropertyDetails() {
             {/* TOP SPECS */}
             <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
+
                 {[
                   { icon: "bed", label: formattedProperty.beds || "0" },
                   { icon: "bath", label: formattedProperty.baths || "0" },
@@ -364,28 +365,41 @@ export default function PropertyDetails() {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-2 sm:gap-3 bg-white px-2 sm:px-4 py-2 sm:py-3 rounded-[5px] shadow-sm"
+                    className="
+          flex items-center gap-2 sm:gap-3
+          bg-white
+          px-2 sm:px-3
+          h-12 sm:h-14
+          rounded-[5px]
+          shadow-sm
+        "
                   >
-                    {item.icon === "bed" && (
-                      <FaBed className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-                    )}
-                    {item.icon === "bath" && (
-                      <FaBath className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-                    )}
-                    {item.icon === "area" && (
-                      <FaRulerCombined className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-                    )}
-                    {item.icon === "car" && (
-                      <FaCar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-                    )}
-                    {item.icon === "furnished" && (
-                      <FaCouch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-                    )}
-                    <p className="font-semibold text-[#001730] text-xs sm:text-base">{item.label}</p>
+                    {/* ICONS */}
+                    {item.icon === "bed" && <FaBed className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                    {item.icon === "bath" && <FaBath className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                    {item.icon === "area" && <FaRegSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                    {item.icon === "car" && <FaCar className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                    {item.icon === "furnished" && <FaCouch className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+
+                    {/* TEXT */}
+                    <p
+                      className="
+            font-semibold text-[#001730]
+            text-xs sm:text-sm
+            whitespace-nowrap
+            truncate
+            w-full
+          "
+                      title={item.label}
+                    >
+                      {item.label}
+                    </p>
                   </div>
                 ))}
+
               </div>
             </div>
+
 
             {/* Tabs */}
 
@@ -414,7 +428,9 @@ export default function PropertyDetails() {
                     : "bg-gray-200 text-gray-500"
                     }`}
                 >
-                  360 Virtual Tour
+                  {/* 360 Icon */}
+
+                  <span>360 Virtual Tour</span>
                   {activeTab === "virtual" ? (
                     <FaChevronDown size={14} />
                   ) : (
@@ -423,17 +439,97 @@ export default function PropertyDetails() {
                 </button>
               </div>
               <h2 className="text-lg sm:text-xl mx-4 sm:mx-10  text-[#001730] mb-3">
-                Description
+                {activeTab === "overview" ? "Description" : "360 Virtual Tour"}
               </h2>
 
-              {formattedProperty.description ? (
-                <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4 whitespace-pre-line">
-                  {formattedProperty.description}
-                </div>
+              {activeTab === "overview" ? (
+                <>
+                  {formattedProperty.description ? (
+                    <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4 whitespace-pre-line">
+                      {formattedProperty.description}
+                    </div>
+                  ) : (
+                    <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                      No description available for this property.
+                    </p>
+                  )}
+                </>
               ) : (
-                <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                  No description available for this property.
-                </p>
+                <div className="mx-4 sm:mx-10 mb-4">
+                  {/* 360 Virtual Tour Viewer */}
+                  <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
+                    {/* 360 Logo/Icon Overlay */}
+                    <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-md shadow-md flex items-center gap-2">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-[#001730]"
+                      >
+                        <path
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"
+                          fill="currentColor"
+                        />
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.3" />
+                      </svg>
+                      <span className="text-[#001730] font-semibold text-sm sm:text-base">360° Virtual Tour</span>
+                    </div>
+
+                    {/* 360 Viewer Container - You can replace this with actual 360 viewer iframe/embed */}
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                      {/* Placeholder for 360 viewer - Replace with actual 360 tour embed URL */}
+                      <div className="text-center p-8">
+                        <div className="mb-4">
+                          <svg
+                            width="80"
+                            height="80"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="mx-auto text-[#001730]"
+                          >
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                            <path
+                              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                              fill="currentColor"
+                              opacity="0.3"
+                            />
+                            <path
+                              d="M12 6v6l4 2"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-semibold text-[#001730] mb-2">
+                          360° Virtual Tour
+                        </h3>
+                        <p className="text-gray-600 text-sm sm:text-base mb-4">
+                          Interactive 360° view of this property
+                        </p>
+                        <p className="text-gray-500 text-xs sm:text-sm">
+                          {/* Replace this iframe src with your actual 360 tour URL (e.g., Matterport, Kuula, etc.) */}
+                          {/* Example: <iframe src="YOUR_360_TOUR_URL" className="w-full h-full" frameBorder="0"></iframe> */}
+                        </p>
+                      </div>
+
+                      {/* Uncomment and use this iframe when you have a 360 tour URL */}
+                      {/* 
+                      <iframe
+                        src={property?.virtualTourUrl || "YOUR_DEFAULT_360_TOUR_URL"}
+                        className="w-full h-full"
+                        frameBorder="0"
+                        allow="fullscreen; vr"
+                        allowFullScreen
+                        title="360 Virtual Tour"
+                      ></iframe>
+                      */}
+                    </div>
+                  </div>
+                </div>
               )}
               <div className="w-[90%] h-[0.2px] px-10 mx-4 sm:mx-10  mt-2 3xl:mt-3 bg-gray-400 mb-3 md:mb-4 3xl:mb-5"></div>
               {/* Bottom stats */}
@@ -451,7 +547,7 @@ export default function PropertyDetails() {
                     {/* TITLE + ICON SIDE BY SIDE */}
                     <div className="flex items-center gap-1 sm:gap-2">
                       {item.icon === "area" && (
-                        <FaRulerCombined className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        <FaRegSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                       )}
                       {item.icon === "floors" && (
                         <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
@@ -488,31 +584,29 @@ export default function PropertyDetails() {
 
             {/* Bottom info strip */}
             <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
-              <div className=" grid grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
 
                 {/* Box 1 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="flex items-center whitespace-nowrap">
+                  <p className="flex flex-col sm:flex-row sm:items-center">
                     <span className="font-semibold text-[#001730]">Property ID:</span>
-                    <br />
-                    {" "}
-                    <span className="ml-1">{formattedProperty.reference || formattedProperty.id}</span>
+                    <span className="mt-1 sm:mt-0 sm:ml-1">{formattedProperty.reference || formattedProperty.id}</span>
                   </p>
                 </div>
 
                 {/* Box 2 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p>
-                    <span className="font-semibold text-[#001730]">Property Type:</span>{" "}
-                    {formattedProperty.type ? formattedProperty.type.charAt(0).toUpperCase() + formattedProperty.type.slice(1) : "N/A"}
+                  <p className="flex flex-col sm:flex-row sm:items-center">
+                    <span className="font-semibold text-[#001730]">Property Type:</span>
+                    <span className="mt-1 sm:mt-0 sm:ml-1">{formattedProperty.type ? formattedProperty.type.charAt(0).toUpperCase() + formattedProperty.type.slice(1) : "N/A"}</span>
                   </p>
                 </div>
 
                 {/* Box 3 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="flex items-center whitespace-nowrap">
-                    <span className="font-semibold text-[#001730]">Year Built:</span>{" "}
-                    <span className="ml-1">{formattedProperty.yearBuilt || "N/A"}</span>
+                  <p className="flex flex-col sm:flex-row sm:items-center">
+                    <span className="font-semibold text-[#001730]">Year Built:</span>
+                    <span className="mt-1 sm:mt-0 sm:ml-1">{formattedProperty.yearBuilt || "N/A"}</span>
                   </p>
                 </div>
               </div>
@@ -548,7 +642,7 @@ export default function PropertyDetails() {
                   className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
                 >
                   {/* LEFT IMAGE */}
-                  <div className="w-full lg:w-1/2 relative flex-shrink-0 h-64 lg:h-full min-h-[260px]">
+                  <div className="w-full lg:w-1/2 relative flex-shrink-0 h-64  sm:h-30 lg:h-full ">
                     {agent.profilePicture ? (
                       <Image
                         src={agent.profilePicture}
@@ -655,7 +749,10 @@ export default function PropertyDetails() {
         <div className="max-w-[1500px] mt-10 mx-auto w-full">
           <h2
             id="my-heading"
-            className="text-2xl text-[#001730] uppercase mb-2  lg:mb-2 text-center"
+            className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
+            style={{
+              fontSize: "clamp(16px, 4vw, 24px)"
+            }}
           >
             Related Listings
           </h2>

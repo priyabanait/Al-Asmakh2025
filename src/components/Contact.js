@@ -160,7 +160,7 @@ export default function MeetOurAgents() {
         </div>
 
         {/* Mobile Filters Button - Absolute positioned in hero section */}
-        <div className="absolute left-1/2 bottom-[50px] mb-4 transform -translate-x-1/2 z-20 w-[100%] px-4 lg:hidden">
+        <div className="absolute left-1/2 bottom-[-54px] mb-4 transform -translate-x-1/2 z-20 w-[100%] px-4 lg:hidden">
           <div ref={filtersRef} className="flex flex-col gap-3 bg-white/20 backdrop-blur-[10px] border border-white/10 p-3 px-10 rounded-md shadow-md">
             {/* Single Filters Button for Mobile */}
             <div
@@ -250,84 +250,84 @@ export default function MeetOurAgents() {
             <p className="text-gray-600">No agents available at the moment.</p>
           </div>
         ) : (
-        <div className="container mx-auto px-4 sm:px-6 md:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          <div className="container mx-auto px-4 sm:px-6 md:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {agents.map((agent) => (
-            <div
+              <div
                 key={agent.id || agent.name}
-              className="shadow-lg rounded-md overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 bg-gray-200"
-            >
-              {/* Combined Header Section (Image + Name + Title) */}
-              <div className="shadow-md bg-gray-100 rounded-md overflow-hidden mx-2 sm:mx-4 mt-2 sm:mt-4">
-                {/* Profile Image */}
-                <div className="relative w-full h-80">
-                  <Image
+                className="shadow-lg rounded-md overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 bg-gray-200"
+              >
+                {/* Combined Header Section (Image + Name + Title) */}
+                <div className="shadow-md bg-gray-100 rounded-md overflow-hidden mx-2 sm:mx-4 mt-2 sm:mt-4">
+                  {/* Profile Image */}
+                  <div className="relative w-full h-80">
+                    <Image
                       src={agent.image || "/div.png"}
                       alt={agent.name || agent.title || "Agent"}
-                    fill
-                    className="object-fill"
-                  />
+                      fill
+                      className="object-fill"
+                    />
 
-                  {/* Name + Title - Absolute positioned over image */}
-                  <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-2 lg:p-3">
-                    <h3 className="text-base sm:text-lg  text-[#001730]">
-                      {agent.name}
-                    </h3>
-                    <p className="text-[#001730] text-xs sm:text-sm">{agent.title}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="text-center mt-2 sm:mt-3 px-3 sm:px-4 pb-3 sm:pb-4">
-                {/* Stats */}
-                <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-2 sm:mb-3">
-                  {/* Box 1 */}
-                  <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-6 rounded-md ">
-                    <p className=" text-[#001730] text-base sm:text-lg">
-                      {agent.properties}
-                    </p>
-                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 mx-auto"></div>
-                    <p className="subheading text-[#001730]">Properties</p>
-                  </div>
-
-                  {/* Box 2 */}
-                  <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-3 rounded-md ">
-                    <p className=" text-[#001730] text-base sm:text-lg">
-                      {agent.clients}
-                    </p>
-                    <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 "></div>
-                    <p className="subheading text-[#001730]">Clients Served</p>
+                    {/* Name + Title - Absolute positioned over image */}
+                    <div className="absolute text-center backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-lg bottom-0 left-0 right-0 p-2 lg:p-3">
+                      <h3 className="text-base sm:text-lg  text-[#001730]">
+                        {agent.name}
+                      </h3>
+                      <p className="text-[#001730] text-xs sm:text-sm">{agent.title}</p>
+                    </div>
                   </div>
                 </div>
 
+                {/* Content */}
+                <div className="text-center mt-2 sm:mt-3 px-3 sm:px-4 pb-3 sm:pb-4">
+                  {/* Stats */}
+                  <div className="grid grid-cols-2 gap-2 lg:gap-2 mb-2 sm:mb-3">
+                    {/* Box 1 */}
+                    <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-6 rounded-md ">
+                      <p className=" text-[#001730] text-base sm:text-lg">
+                        {agent.properties}
+                      </p>
+                      <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 mx-auto"></div>
+                      <p className="subheading text-[#001730]">Properties</p>
+                    </div>
 
-                {/* Info */}
-                <div className="glass-effect text-left text-xs sm:text-sm mb-1.5 shadow-md p-1.5 rounded-md">
-                  <p className="text-gray-400">Specialities</p>
-                  <p className="subheading text-gray-700 font-medium text-center">{agent.specialties}</p>
-                </div>
+                    {/* Box 2 */}
+                    <div className="glass-effect shadow-md p-1.5 px-3 sm:px-5 md:px-3 rounded-md ">
+                      <p className=" text-[#001730] text-base sm:text-lg">
+                        {agent.clients}
+                      </p>
+                      <div className="h-[0.5px] bg-gray-300 my-1 sm:my-1.5 md:my-1.5 "></div>
+                      <p className="subheading text-[#001730]">Clients Served</p>
+                    </div>
+                  </div>
 
-                <div className="glass-effect text-left text-xs sm:text-sm mb-2 sm:mb-3 shadow-md p-1.5 rounded-md">
-                  <p className="text-gray-400">Languages</p>
-                  <p className="subheading text-gray-700 font-medium text-center">{agent.languages}</p>
-                </div>
 
-                {/* Buttons */}
-                <div className="flex flex-row gap-2">
+                  {/* Info */}
+                  <div className="glass-effect text-left text-xs sm:text-sm mb-1.5 shadow-md p-1.5 rounded-md">
+                    <p className="text-gray-400">Specialities</p>
+                    <p className="subheading text-gray-700 font-medium text-center">{agent.specialties}</p>
+                  </div>
+
+                  <div className="glass-effect text-left text-xs sm:text-sm mb-2 sm:mb-3 shadow-md p-1.5 rounded-md">
+                    <p className="text-gray-400">Languages</p>
+                    <p className="subheading text-gray-700 font-medium text-center">{agent.languages}</p>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex flex-row gap-2">
                     {agent.phone ? (
                       <a
                         href={`tel:${agent.phone}`}
-                    className="flex-1 flex items-center justify-between
+                        className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white py-2 rounded-md
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition"
-                  >
-                    <span>Call Agent</span>
-                    <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                      >
+                        <span>Call Agent</span>
+                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                       </a>
                     ) : (
-                  <button
-                    className="flex-1 flex items-center justify-between
+                      <button
+                        className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white py-2 rounded-md
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition opacity-50 cursor-not-allowed"
@@ -356,17 +356,17 @@ export default function MeetOurAgents() {
     text-[12px] sm:text-[12px] font-medium
     hover:bg-[#0d1f3a] transition opacity-50 cursor-not-allowed"
                         disabled
-                  >
-                    <span>Send Email</span>
-                    <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                  </button>
+                      >
+                        <span>Send Email</span>
+                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                      </button>
                     )}
 
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         )}
       </section>
       <DreamPropertySection />

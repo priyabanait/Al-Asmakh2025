@@ -268,7 +268,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             onClick={() => setShowMoreFilters(true)}
             className="flex text-[13px] items-center 
           justify-center  bg-[#0B1F3A]/40 text-white px-6 py-2 
-          rounded-md  font-medium shadow-lg hover:bg-[#5c1eff] transition">
+          rounded-md  font-medium shadow-lg hover:bg-gray-600 transition">
             <span className="text-[13px]">+ More Filters</span>
           </button>
         </div>
@@ -292,7 +292,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             <p className="text-red-500 text-lg mb-2">Error loading properties</p>
             <p className="text-gray-600">{error}</p>
           </div>
-                        </div>
+        </div>
       ) : properties.length === 0 ? (
         <div className="w-full py-20 flex items-center justify-center">
           <div className="text-center">
@@ -306,7 +306,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         </div>
       ) : (
         <PropertyListView properties={properties} totalProperties={totalProperties} />
-        )}
+      )}
 
       {/* More Filters Modal */}
       <MoreFiltersModal

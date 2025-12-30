@@ -11,6 +11,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "aredcsa.blob.core.windows.net",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
     ],
   },
 };

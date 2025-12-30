@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
+import useEmblaCarousel from "embla-carousel-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function PrivilegeProgram() {
   const [isVisible, setIsVisible] = useState(false);
@@ -140,79 +142,37 @@ export default function PrivilegeProgram() {
     },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const [isPaused, setIsPaused] = useState(false);
-  const carouselRef = useRef(null);
-  const autoScrollIntervalRef = useRef(null);
+  // Motion Carousel setup
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "center",
+    loop: true,
+    skipSnaps: false,
+    dragFree: false,
+    breakpoints: {
+      "(min-width: 640px)": { slidesToScroll: 1 },
+      "(min-width: 768px)": { slidesToScroll: 2 },
+    },
+  });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
 
-  // Minimum swipe distance (in pixels)
-  const minSwipeDistance = 50;
+  const scrollTo = useCallback(
+    (index) => emblaApi && emblaApi.scrollTo(index),
+    [emblaApi]
+  );
 
-  // Auto-scroll functionality
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
   useEffect(() => {
-    if (isPaused) {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
-      return;
-    }
-
-    autoScrollIntervalRef.current = setInterval(() => {
-      setCurrentIndex((prevIndex) => {
-        if (prevIndex >= services.length - 1) {
-          return 0; // Loop back to start
-        }
-        return prevIndex + 1;
-      });
-    }, 3000); // Auto-scroll every 3 seconds
-
-    return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
-    };
-  }, [isPaused, services.length]);
-
-  const handleTouchStart = (e) => {
-    setIsPaused(true);
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStart || !touchEnd) {
-      // Resume auto-scroll after a delay if no swipe occurred
-      setTimeout(() => setIsPaused(false), 2000);
-      return;
-    }
-
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && currentIndex < services.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-    if (isRightSwipe && currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-
-    // Resume auto-scroll after user interaction
-    setTimeout(() => setIsPaused(false), 3000);
-  };
-
-  const goToSlide = (index) => {
-    setIsPaused(true);
-    setCurrentIndex(index);
-    // Resume auto-scroll after clicking dot
-    setTimeout(() => setIsPaused(false), 3000);
-  };
+    if (!emblaApi) return;
+    onSelect();
+    setScrollSnaps(emblaApi.scrollSnapList());
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+  }, [emblaApi, onSelect]);
 
   return (
     <section
@@ -228,83 +188,58 @@ export default function PrivilegeProgram() {
     >
       <div className="container-custom text-center lg:mb-20 mb-4">
 
-       <div className="lg:mt-16 lg:mb-16 mt-20 mb-8">
-        <h1 className="text-sm sm:text-2xl text-[#10284C]  mx-20 text-uppercase lg:mx-0 text-uppercase   md:text-[23px] lg:text-[23px] mb-2 md:mb-3 lg:mb-4 ">
-          HOW CAN WE HELP ?
-
-        </h1>
-
-
-        <div
-          className={`w-32 lg:w-40  mt-2 3xl:mt-5 4xl:mt-6 h-[0.5px] bg-gray-300 mx-auto mb-4 3xl:mb-8 4xl:mb-10 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-            }`}
-        ></div>
-
-
-
-        <p
-          style={{ fontSize: "clamp(13px, 0.8vw, 17px)", color: "#919191" }}
-
-          className="mb-7"
-
-        >
-
-          Real Estate Services for Residents, Owners, and Partners
-
-        </p></div>
-
-        {/* Mobile Carousel - Only visible on mobile */}
-        <div
-          className="block lg:hidden relative"
-          style={{
-            overflow: "hidden",
-            width: "100%",
-            marginLeft: "-16px",
-            marginRight: "-16px",
-            paddingLeft: "16px",
-            paddingRight: "16px",
-          }}
-        >
-          <div
-            ref={carouselRef}
-            className="relative"
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
+        <div className="lg:mt-16 lg:mb-16 mt-8 mb-8">
+          <h1
+            className="text-[#10284C] uppercase mb-2 md:mb-3 lg:mb-4 px-2 sm:px-4"
             style={{
-              height: "auto",
-              minHeight: "320px",
-              overflow: "visible",
-              width: "100%",
-              position: "relative",
+              fontSize: "clamp(18px, 3.5vw, 23px)",
+              whiteSpace: "nowrap"
             }}
           >
-            <div
-              className="flex transition-transform duration-500 ease-out"
-              style={{
-                transform: `translateX(calc(50vw - 125px - ${currentIndex * 266}px))`,
-                willChange: "transform",
-              }}
-            >
-              {services.map((item, index) => {
-                const isCenter = index === currentIndex;
-                const offset = index - currentIndex;
+            HOW CAN WE HELP ?
+          </h1>
 
+
+          <div
+            className={`w-32 lg:w-40  mt-2 3xl:mt-5 4xl:mt-6 h-[0.5px] bg-gray-300 mx-auto mb-4 3xl:mb-8 4xl:mb-10 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+              }`}
+          ></div>
+
+
+
+          <p
+            style={{ fontSize: "clamp(13px, 0.8vw, 17px)", color: "#919191" }}
+
+            className="mb-7"
+
+          >
+
+            Real Estate Services for Residents, Owners, and Partners
+
+          </p></div>
+
+        {/* Motion Carousel - Mobile & Tablet */}
+        <div className="block lg:hidden relative w-full py-2 px-2 sm:px-4">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex touch-pan-y" style={{ gap: "1rem", paddingLeft: "1rem", paddingRight: "1rem" }}>
+              {services.map((item, index) => {
+                const isActive = index === selectedIndex;
                 return (
-                  <div
+                  <motion.div
                     key={index}
-                    className="flex-shrink-0"
+                    className="flex-shrink-0 w-[M92%] sm:w-[80%] md:w-[55%]"
                     style={{
-                      width: "250px",
-                      padding: "0 8px",
-                      transform: isCenter
-                        ? "translateY(0) scale(1)"
-                        : `translateY(${20 + Math.abs(offset) * 5}px) scale(${0.9 - Math.abs(offset) * 0.05})`,
-                      transition: "transform 0.3s ease-in-out",
-                      zIndex: isCenter ? 10 : 5 - Math.abs(offset),
-                      opacity: Math.abs(offset) > 1 ? 0.6 : 0.9,
+                      paddingLeft: "0.5rem",
+                      paddingRight: "0.5rem",
+                    }}
+                    animate={{
+                      scale: isActive ? 1 : 0.85,
+                      opacity: isActive ? 1 : 0.6,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
                     }}
                   >
                     <div
@@ -317,63 +252,76 @@ export default function PrivilegeProgram() {
                         flexDirection: "column",
                         justifyContent: "flex-start",
                       }}
-                      className={`
-                        bg-white shadow-sm p-6 text-center
-                        ${isCenter ? "shadow-lg" : "shadow-sm"}
-                        transition-all duration-500 ease-out
-                        ${isCenter ? "hover:scale-105" : ""}
-                      `}
+                      className="bg-white shadow-lg p-6 text-center"
                     >
-                      <div className={`flex justify-center items-center h-[60px] mb-4 transition-transform duration-300 ${isCenter ? "hover:scale-110" : ""}`}>
+                      <motion.div
+                        className="flex justify-center items-center h-[60px] mb-4"
+                        animate={{
+                          scale: isActive ? 1.1 : 1,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
+                      >
                         {item.icon}
-                      </div>
+                      </motion.div>
 
                       <div>
                         <h3
                           style={{
-                            // fontSize: "clamp(16px, 4vw, 20px)",
                             color: "#2D3748",
                           }}
-                          className=" text-[16px] md:text-[16px]"
+                          className="text-[16px] md:text-[16px]"
                         >
                           {item.title}
                         </h3>
-                        <div className="w-[90%] h-[0.5px]  bg-gray-300 mx-auto my-2 "></div>
+                        <div className="w-[90%] h-[0.5px] bg-gray-300 mx-auto my-2"></div>
                         <p
                           style={{
                             color: "#4A5568",
-
                           }}
-                          // id="desc"
-
-                          className=" subheading p-0 leading-relaxed mb-0 "
+                          className="subheading p-0 leading-relaxed mb-0"
                         >
                           {item.description}
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
           </div>
 
-          {/* Navigation Dots */}
-          <div className="flex justify-center items-center gap-2 mt-6">
-            {services.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`transition-all duration-300 hover:scale-125 ${index === currentIndex
-                  ? "w-2 h-2 bg-gray-800 scale-125"
-                  : "w-2 h-2 border border-gray-800 bg-transparent hover:bg-gray-400"
-                  }`}
-                style={{
-                  borderRadius: "2px",
-                }}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
+          {/* Pill-style Pagination */}
+          <div className="flex justify-center items-center gap-2 mt-8">
+            {scrollSnaps.map((_, index) => {
+              const isActive = index === selectedIndex;
+              return (
+                <motion.button
+                  key={index}
+                  onClick={() => scrollTo(index)}
+                  className="relative flex items-center justify-center outline-none border-none bg-transparent cursor-pointer p-2"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label={`Go to slide ${index + 1}`}
+                >
+                  <motion.div
+                    className="h-2 rounded-full bg-[#001730]"
+                    animate={{
+                      width: isActive ? 24 : 8,
+                      opacity: isActive ? 1 : 0.4,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  />
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 

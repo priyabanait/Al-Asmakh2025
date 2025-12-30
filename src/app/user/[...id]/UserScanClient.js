@@ -28,7 +28,7 @@ export default function UserScanClient({ params: serverParams }) {
       // Extract user ID from URL pathname for static export compatibility
       // Catch-all route: params.id will be an array, e.g., ['1233'] for /user/1233
       let userId = null;
-      
+
       if (typeof window !== 'undefined') {
         const pathname = window.location.pathname;
         const match = pathname.match(/\/user\/([^\/]+)/);
@@ -36,7 +36,7 @@ export default function UserScanClient({ params: serverParams }) {
           userId = match[1];
         }
       }
-      
+
       // Fallback to params if pathname extraction didn't work
       // For catch-all route, params.id is an array
       if (!userId) {
@@ -67,7 +67,7 @@ export default function UserScanClient({ params: serverParams }) {
 
         // Step 1: Fetch user data from API
         console.log("Fetching user data for ID:", userId);
-        const userResponse = await fetch(`https://albackend.x-360.ai/api/users/${userId}`, {
+        const userResponse = await fetch(`http://localhost:3002/api/users/${userId}`, {
           headers: {
             "Authorization": `Bearer ${token}`
           }
@@ -81,7 +81,7 @@ export default function UserScanClient({ params: serverParams }) {
         const userResult = await userResponse.json();
         const user = userResult.data;
         console.log("User data fetched:", user);
-        
+
         // Set user data to display
         setUserData(user);
 
@@ -95,7 +95,7 @@ export default function UserScanClient({ params: serverParams }) {
 
         console.log("Recording user scan with data:", scanDataPayload);
 
-        const scanResponse = await fetch("https://albackend.x-360.ai/api/scans", {
+        const scanResponse = await fetch("http://localhost:3002/api/scans", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -111,7 +111,7 @@ export default function UserScanClient({ params: serverParams }) {
 
         const scanResult = await scanResponse.json();
         console.log("Scan recorded successfully:", scanResult);
-        
+
         // Set scan data
         setScanData(scanResult.data);
         setSuccess(true);
@@ -133,7 +133,7 @@ export default function UserScanClient({ params: serverParams }) {
         console.error("Error processing scan:", error);
         setError(error.message || "Could not process scan. Please try again.");
         setProcessing(false);
-        
+
         // Navigate to partner-dashboard after showing error for 3 seconds
         setTimeout(() => {
           router.push('/partner-dashboard');
@@ -163,46 +163,46 @@ export default function UserScanClient({ params: serverParams }) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            
+
             {/* Success Message */}
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Scan Successful!</h2>
-            
+
             {/* User Data Display */}
             <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Scanned User Information</h3>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600 font-medium">Name:</span>
                   <span className="text-gray-900">{userData.firstName} {userData.secondName}</span>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-gray-600 font-medium">Email:</span>
                   <span className="text-gray-900 break-all">{userData.email}</span>
                 </div>
-                
+
                 {userData.phone && (
                   <div className="flex justify-between">
                     <span className="text-gray-600 font-medium">Phone:</span>
                     <span className="text-gray-900">{userData.phone}</span>
                   </div>
                 )}
-                
+
                 {userData.customerId && (
                   <div className="flex justify-between">
                     <span className="text-gray-600 font-medium">Customer ID:</span>
                     <span className="text-gray-900 font-mono text-sm">{userData.customerId}</span>
                   </div>
                 )}
-                
+
                 {userData.tenantId && (
                   <div className="flex justify-between">
                     <span className="text-gray-600 font-medium">Tenant ID:</span>
                     <span className="text-gray-900 font-mono text-sm">{userData.tenantId}</span>
                   </div>
                 )}
-                
+
                 {userData.nationality && (
                   <div className="flex justify-between">
                     <span className="text-gray-600 font-medium">Nationality:</span>
@@ -211,7 +211,7 @@ export default function UserScanClient({ params: serverParams }) {
                 )}
               </div>
             </div>
-            
+
             {/* Scan Info */}
             {scanData && (
               <div className="bg-blue-50 rounded-lg p-3 mb-4 text-left">
@@ -223,7 +223,7 @@ export default function UserScanClient({ params: serverParams }) {
                 </p>
               </div>
             )}
-            
+
             <p className="text-gray-500 text-sm">Redirecting to success page...</p>
           </div>
         )}

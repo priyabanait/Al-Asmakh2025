@@ -34,7 +34,7 @@ Dependencies are already installed:
 
    ```env
    # Backend API URL
-   NEXT_PUBLIC_API_URL=https://albackend.x-360.ai
+   NEXT_PUBLIC_API_URL=http://localhost:3002
 
    # Google OAuth - Get from Google Cloud Console
    NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id_here

@@ -26,7 +26,7 @@ export default function UserScanClient({ params: serverParams }) {
       // Always extract user ID from URL pathname for static export compatibility
       // Static export doesn't pass params correctly for routes not in generateStaticParams
       let userId = null;
-      
+
       if (typeof window !== 'undefined') {
         const pathname = window.location.pathname;
         const match = pathname.match(/\/user\/([^\/]+)/);
@@ -34,12 +34,12 @@ export default function UserScanClient({ params: serverParams }) {
           userId = match[1];
         }
       }
-      
+
       // Fallback to params if pathname extraction didn't work
       if (!userId) {
         userId = serverParams?.id || clientParams?.id;
       }
-      
+
       // Final fallback - ignore placeholder param
       if (userId === 'placeholder') {
         userId = null;
@@ -71,7 +71,7 @@ export default function UserScanClient({ params: serverParams }) {
 
         console.log("Recording user scan with data:", scanData);
 
-        const scanResponse = await fetch("https://albackend.x-360.ai/api/scans", {
+        const scanResponse = await fetch("http://localhost:3002/api/scans", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -87,9 +87,9 @@ export default function UserScanClient({ params: serverParams }) {
 
         const scanResult = await scanResponse.json();
         console.log("Scan recorded successfully:", scanResult);
-        
+
         setSuccess(true);
-        
+
         // Navigate to partner-dashboard after a short delay
         setTimeout(() => {
           router.push('/partner-dashboard');
@@ -99,7 +99,7 @@ export default function UserScanClient({ params: serverParams }) {
         console.error("Error processing scan:", error);
         setError(error.message || "Could not process scan. Please try again.");
         setProcessing(false);
-        
+
         // Navigate to partner-dashboard after showing error for 2 seconds
         setTimeout(() => {
           router.push('/partner-dashboard');

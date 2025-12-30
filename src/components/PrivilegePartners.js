@@ -1,41 +1,42 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { ChevronRight } from "lucide-react";
 import { Quote } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import Link from "next/link";
 import { MdLocationOn } from "react-icons/md";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import FeaturedProperties from "./FeaturedProperties";
+import useEmblaCarousel from "embla-carousel-react";
 export default function Profit() {
   const [currentSlides, setCurrentSlide] = useState(0);
   const testimonials = [
     {
-      name: "Cameron Williamson",
-      text: "AREDC’s attention to detail and understanding of my specific requirements made finding my dream penthouse an effortless experience.",
-      image: "/518.png",
+      name: "Sarah Mitchell",
+      text: "Al-Asmakh's attention to detail and understanding of my specific requirements made finding my dream penthouse an effortless experience. The team went above and beyond to ensure every detail was perfect.",
+      image: "https://i.pravatar.cc/150?img=1",
     },
     {
-      name: "Victoria Chen",
-      text: "Their global network and discreet approach were instrumental in helping us acquire multiple investment properties across three continents.",
-      image: "/514.png",
+      name: "Ahmed Al-Thani",
+      text: "Their global network and discreet approach were instrumental in helping us acquire multiple investment properties across three continents. Truly professional service.",
+      image: "https://i.pravatar.cc/150?img=12",
     },
     {
-      name: "Robert Keller",
-      text: "The team at AREDC provided white-glove service from start to finish. They truly understand the meaning of luxury in real estate.",
-      image: "/516.png",
+      name: "Emma Thompson",
+      text: "The team at Al-Asmakh provided white-glove service from start to finish. They truly understand the meaning of luxury in real estate and made our journey seamless.",
+      image: "https://i.pravatar.cc/150?img=9",
     },
     {
-      name: "Sophia Lewis",
-      text: "The professionalism and attention to every small detail made our home buying process seamless and stress-free.",
-      image: "/516.png",
+      name: "James Anderson",
+      text: "The professionalism and attention to every small detail made our home buying process seamless and stress-free. Highly recommend their services to anyone looking for premium properties.",
+      image: "https://i.pravatar.cc/150?img=13",
     },
     {
-      name: "Michael Brown",
-      text: "Outstanding service and deep understanding of luxury properties — truly unmatched in the region.",
-      image: "/516.png",
+      name: "Fatima Hassan",
+      text: "Outstanding service and deep understanding of luxury properties — truly unmatched in the region. Al-Asmakh exceeded all our expectations and delivered beyond what we imagined.",
+      image: "https://i.pravatar.cc/150?img=47",
     },
   ];
 
@@ -54,18 +55,20 @@ export default function Profit() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Automatically move to the next card every 5 seconds (one by one)
+  // Automatically move to the next card every 5 seconds (one by one) - Desktop only
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStartIndex((prevIndex) => {
-        // Continue through all cards, then loop back to start
-        return prevIndex >= testimonials.length - 1 ? 0 : prevIndex + 1;
-      });
-    }, 5000);
-    return () => clearInterval(interval);
+    if (window.innerWidth >= 1024) {
+      const interval = setInterval(() => {
+        setStartIndex((prevIndex) => {
+          // Continue through all cards, then loop back to start
+          return prevIndex >= testimonials.length - 1 ? 0 : prevIndex + 1;
+        });
+      }, 5000);
+      return () => clearInterval(interval);
+    }
   }, [testimonials.length]);
 
-  // Get three testimonials for current slide (wrapping around)
+  // Get three testimonials for current slide (wrapping around) - Desktop only
   const visibleTestimonials = [];
   for (let i = 0; i < testimonialsPerSlide; i++) {
     const index = (startIndex + i) % testimonials.length;
@@ -74,6 +77,34 @@ export default function Profit() {
 
   // Get current slide index for dots
   const currentTestimonialSlide = Math.floor(startIndex / testimonialsPerSlide);
+
+  // Motion Carousel setup for mobile testimonials
+  const [emblaTestimonialRef, emblaTestimonialApi] = useEmblaCarousel({
+    align: "center",
+    loop: true,
+    skipSnaps: false,
+    dragFree: false,
+  });
+  const [selectedTestimonialIndex, setSelectedTestimonialIndex] = useState(0);
+  const [testimonialScrollSnaps, setTestimonialScrollSnaps] = useState([]);
+
+  const scrollToTestimonial = useCallback(
+    (index) => emblaTestimonialApi && emblaTestimonialApi.scrollTo(index),
+    [emblaTestimonialApi]
+  );
+
+  const onSelectTestimonial = useCallback(() => {
+    if (!emblaTestimonialApi) return;
+    setSelectedTestimonialIndex(emblaTestimonialApi.selectedScrollSnap());
+  }, [emblaTestimonialApi]);
+
+  useEffect(() => {
+    if (!emblaTestimonialApi) return;
+    onSelectTestimonial();
+    setTestimonialScrollSnaps(emblaTestimonialApi.scrollSnapList());
+    emblaTestimonialApi.on("select", onSelectTestimonial);
+    emblaTestimonialApi.on("reInit", onSelectTestimonial);
+  }, [emblaTestimonialApi, onSelectTestimonial]);
 
   // Blog data
   const blogs = [
@@ -119,10 +150,35 @@ export default function Profit() {
   // Get current blog slide index for dots
   const currentBlogSlide = Math.floor(blogStartIndex / blogsPerSlide);
 
-  // Mobile: show first blog initially, all blogs when showAllBlogs is true
-  const mobileBlogs = showAllBlogs ? blogs : [blogs[0]];
+  // Motion Carousel setup for mobile blogs
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    align: "center",
+    loop: true,
+    skipSnaps: false,
+    dragFree: false,
+  });
+  const [selectedBlogIndex, setSelectedBlogIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
 
-  // Automatically move to the next blog card every 5 seconds
+  const scrollToBlog = useCallback(
+    (index) => emblaApi && emblaApi.scrollTo(index),
+    [emblaApi]
+  );
+
+  const onSelectBlog = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedBlogIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelectBlog();
+    setScrollSnaps(emblaApi.scrollSnapList());
+    emblaApi.on("select", onSelectBlog);
+    emblaApi.on("reInit", onSelectBlog);
+  }, [emblaApi, onSelectBlog]);
+
+  // Automatically move to the next blog card every 5 seconds (desktop only)
   useEffect(() => {
     const blogInterval = setInterval(() => {
       setBlogStartIndex((prevIndex) => {
@@ -216,6 +272,11 @@ export default function Profit() {
     const index = (currentSlides + i) % offices.length;
     visibleOffices.push(offices[index]);
   }
+
+  // Ref and scroll animation for info boxes
+  const infoBoxesRef = useRef(null);
+  const isInView = useInView(infoBoxesRef, { once: false, amount: 0.2 });
+
   return (
     <div>
       {/* Full Page Image */}
@@ -279,7 +340,7 @@ export default function Profit() {
             </div>
 
             {/* Info Boxes */}
-            <div className="space-y-2 lg:space-y-3 mt-3 lg:mt-6">
+            <div ref={infoBoxesRef} className="space-y-2 lg:space-y-3 mt-3 lg:mt-6">
               {[
                 {
                   title: "Expert Knowledge",
@@ -302,9 +363,16 @@ export default function Profit() {
                     "From early studies to leasing, operations, and future upgrades, we provide continuous support at every stage of the journey."
                 }
               ].map((item, i) => (
-                <div
+                <motion.div
                   key={i}
                   className="bg-white/30 p-3 sm:p-4 rounded-md"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: i * 0.15,
+                    ease: [0.25, 0.46, 0.45, 0.94]
+                  }}
                 >
                   <h3 className="font-semibold text-xs sm:text-sm lg:text-base">
                     {item.title}
@@ -312,7 +380,7 @@ export default function Profit() {
                   <p className="text-[0.65rem] sm:text-xs lg:text-sm mt-1 text-white lg:text-gray-400">
                     {item.text}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -338,15 +406,105 @@ export default function Profit() {
         <div className="relative z-10 min-h-[400px] flex flex-col w-full">
 
           {/* Heading (Top) */}
-          <div className="mt-0 text-center mb-[80px]">
+          <div className="mt-0 text-center mb-8 lg:mb-[80px]">
             <h2 id="my-heading" className="text-2xl text-[#001730] uppercase mb-2 3xl:mb-3 4xl:mb-4">
               STORY FROM OUR CLIENTS
             </h2>
             <div className="w-[40%] lg:w-[30%] h-[0.5px] bg-gray-300 mx-auto"></div>
           </div>
 
-          {/* Testimonial Cards */}
-          <div className="relative w-full mt-[10px]">
+          {/* Mobile Testimonials - Motion Carousel */}
+          <div className="block lg:hidden relative w-full pt-2 pb-8 px-2">
+            <div className="overflow-hidden" ref={emblaTestimonialRef}>
+              <div className="flex touch-pan-y" style={{ gap: "1rem", paddingLeft: "1rem", paddingRight: "1rem" }}>
+                {testimonials.map((t, index) => {
+                  const isActive = index === selectedTestimonialIndex;
+                  return (
+                    <motion.div
+                      key={index}
+                      className="flex-shrink-0 w-[92%] sm:w-[80%]"
+                      style={{
+                        paddingLeft: "0.5rem",
+                        paddingRight: "0.5rem",
+                      }}
+                      animate={{
+                        scale: isActive ? 1 : 0.85,
+                        opacity: isActive ? 1 : 0.6,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    >
+                      <div className="relative bg-gray-200 shadow-lg rounded-md p-4 pl-14 hover:shadow-xl transition overflow-visible">
+                        {/* Image */}
+                        <div className="absolute left-[10px] top-1/2 -translate-y-1/2 w-[70px] h-[70px] rounded-md overflow-hidden flex-shrink-0 z-10">
+                          <Image
+                            src={t.image}
+                            alt={t.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div className="text-left relative">
+                          <h3 className="text-[#001730] ml-10 font-semibold text-sm mb-2 flex items-center justify-between">
+                            {t.name}
+                            <Image
+                              src="/SVG.png"
+                              alt="quote"
+                              width={16}
+                              height={16}
+                              className="object-contain"
+                            />
+                          </h3>
+
+                          <p className="text-gray-600 ml-10 text-xs leading-relaxed">
+                            {t.text}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Pill-style Pagination for Mobile */}
+            <div className="flex justify-center items-center gap-2 mt-8">
+              {testimonialScrollSnaps.map((_, index) => {
+                const isActive = index === selectedTestimonialIndex;
+                return (
+                  <motion.button
+                    key={index}
+                    onClick={() => scrollToTestimonial(index)}
+                    className="relative flex items-center justify-center outline-none border-none bg-transparent cursor-pointer p-2"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    aria-label={`Go to slide ${index + 1}`}
+                  >
+                    <motion.div
+                      className="h-2 rounded-full bg-[#001730]"
+                      animate={{
+                        width: isActive ? 24 : 8,
+                        opacity: isActive ? 1 : 0.4,
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                    />
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Desktop Testimonials - Keep original grid */}
+          <div className="hidden lg:block relative w-full mt-[10px]">
             <div className="flex justify-center overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -396,43 +554,42 @@ export default function Profit() {
                 </motion.div>
               </AnimatePresence>
             </div>
-          </div>
 
-
-          {/* Dots Navigation */}
-          <div className="flex justify-center mt-8 gap-2">
-            {Array.from({ length: testimonials.length }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setStartIndex(index)}
-                className="relative flex items-center justify-center"
-                aria-label={`Go to slide ${index + 1}`}
-              >
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  initial={false}
-                  animate={{
-                    scale: index === startIndex ? 1.2 : 1,
-                    opacity: index === startIndex ? 1 : 0.5,
-                  }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                />
-                <motion.span
-                  className={`
-                    block rounded-full
-                    ${index === startIndex
-                      ? "bg-[#001730]"
-                      : "bg-gray-400"
-                    }
-                  `}
-                  animate={{
-                    width: index === startIndex ? "24px" : "8px",
-                    height: index === startIndex ? "8px" : "8px",
-                  }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                />
-              </button>
-            ))}
+            {/* Dots Navigation - Desktop */}
+            <div className="flex justify-center mt-8 gap-2">
+              {Array.from({ length: testimonials.length }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setStartIndex(index)}
+                  className="relative flex items-center justify-center"
+                  aria-label={`Go to slide ${index + 1}`}
+                >
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    initial={false}
+                    animate={{
+                      scale: index === startIndex ? 1.2 : 1,
+                      opacity: index === startIndex ? 1 : 0.5,
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  />
+                  <motion.span
+                    className={`
+                      block rounded-full
+                      ${index === startIndex
+                        ? "bg-[#001730]"
+                        : "bg-gray-400"
+                      }
+                    `}
+                    animate={{
+                      width: index === startIndex ? "24px" : "8px",
+                      height: index === startIndex ? "8px" : "8px",
+                    }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
         </div>
@@ -456,54 +613,103 @@ export default function Profit() {
           <div className="w-40 h-[0.5px] bg-gray-300 mx-auto"></div>
         </div>
 
-        {/* Mobile Version - Show one blog initially, all when View All is clicked */}
-        <div className="block lg:hidden">
-          <div className="grid grid-cols-1 gap-4 lg:gap-6 w-full">
-            {mobileBlogs.map((blog, i) => (
-              <div
-                key={i}
-                className="bg-white shadow-md rounded-md overflow-hidden transition-shadow duration-300"
-              >
-                {/* Image Section with Overlapping Button and Text Overlay */}
-                <div className="relative w-full h-[300px] lg:h-[400px]">
-                  <Image
-                    src={blog.image}
-                    alt={blog.title}
-                    fill
-                    className="object-fill"
-                  />
-                  {/* EXPLORE Button - overlapping top-left corner, partially on image and white space */}
-                  <button className="absolute top-6 left-3 lg:top-8 lg:left-4 -translate-y-1/2 bg-[#001730] text-white text-[10px] lg:text-xs font-semibold px-3 lg:px-4 py-1.5 lg:py-2 rounded flex items-center gap-1.5 lg:gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
-                    <span>EXPLORE</span>
-                    <FaArrowRight size={10} className="lg:w-3 lg:h-3 ml-2 lg:ml-6" />
-                  </button>
+        {/* Mobile Version - Motion Carousel */}
+        <div className="block lg:hidden relative w-full py-8 px-2">
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex touch-pan-y" style={{ gap: "1rem", paddingLeft: "1rem", paddingRight: "1rem" }}>
+              {blogs.map((blog, index) => {
+                const isActive = index === selectedBlogIndex;
+                return (
+                  <motion.div
+                    key={index}
+                    className="flex-shrink-0 w-[92%] sm:w-[80%]"
+                    style={{
+                      paddingLeft: "0.5rem",
+                      paddingRight: "0.5rem",
+                    }}
+                    animate={{
+                      scale: isActive ? 1 : 0.85,
+                      opacity: isActive ? 1 : 0.6,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  >
+                    <div className="bg-white shadow-lg rounded-md overflow-hidden transition-shadow duration-300 group">
+                      {/* Image Section with Overlapping Button and Text Overlay */}
+                      <div className="relative w-full h-[300px]">
+                        <Image
+                          src={blog.image}
+                          alt={blog.title}
+                          fill
+                          className="object-fill"
+                        />
+                        {/* EXPLORE Button - overlapping top-left corner */}
+                        <motion.button
+                          className="absolute top-6 left-3 bg-[#001730] text-white text-[10px] font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 hover:bg-[#1b3a70] transition z-10 shadow-md"
+                          animate={{
+                            scale: isActive ? 1.05 : 1,
+                          }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30,
+                          }}
+                        >
+                          <span>EXPLORE</span>
+                          <FaArrowRight size={10} className="ml-2" />
+                        </motion.button>
 
-                  {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 lg:p-6 z-10">
-                    <h3 id="my-heading" className="text-white font-semibold text-base lg:text-lg xl:text-xl mb-2 lg:mb-3">
-                      {blog.title}
-                    </h3>
-                    <p id="desc" className="text-white text-sm lg:text-sm xl:text-base leading-relaxed opacity-90">
-                      {blog.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
+                        {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-4 px-4 group-hover:pb-4">
+                          <h3 className="text-white font-semibold text-base mb-0 group-hover:mb-2 transition-all duration-300">
+                            {blog.title}
+                          </h3>
+                          <div className="overflow-hidden max-h-0 group-hover:max-h-[200px] transition-all duration-300 ease-in-out">
+                            <p className="text-white text-sm leading-relaxed opacity-0 group-hover:opacity-90 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
+                              {blog.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
 
-          {/* View All Button - Only show when not all blogs are displayed */}
-          {!showAllBlogs && (
-            <div className="flex justify-center mt-6 lg:mt-8">
-              <button
-                onClick={() => setShowAllBlogs(true)}
-                className="bg-[#001730] text-white px-6 lg:px-8 py-2.5 lg:py-3 rounded-md font-semibold hover:bg-[#1b3a70] transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2 text-sm lg:text-base"
-              >
-                <span>View All</span>
-                <FaArrowRight size={14} className="lg:w-4 lg:h-4" />
-              </button>
-            </div>
-          )}
+          {/* Pill-style Pagination */}
+          <div className="flex justify-center items-center gap-2 mt-8">
+            {scrollSnaps.map((_, index) => {
+              const isActive = index === selectedBlogIndex;
+              return (
+                <motion.button
+                  key={index}
+                  onClick={() => scrollToBlog(index)}
+                  className="relative flex items-center justify-center outline-none border-none bg-transparent cursor-pointer p-2"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label={`Go to slide ${index + 1}`}
+                >
+                  <motion.div
+                    className="h-2 rounded-full bg-[#001730]"
+                    animate={{
+                      width: isActive ? 24 : 8,
+                      opacity: isActive ? 1 : 0.4,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                  />
+                </motion.button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Desktop Version - Keep carousel/pagination as is */}
@@ -522,7 +728,7 @@ export default function Profit() {
                 {visibleBlogs.map((blog, i) => (
                   <div
                     key={i}
-                    className="bg-white shadow-md rounded-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                    className="bg-white shadow-md rounded-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
                   >
                     {/* Image Section with Overlapping Button and Text Overlay */}
                     <div className="relative w-full h-[250px] lg:h-[300px]">
@@ -539,15 +745,17 @@ export default function Profit() {
                       </button>
 
                       {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-6 z-10">
-                        <h3 className="text-white font-semibold text-lg lg:text-xl mb-3">
+                      <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-6 px-6 group-hover:pb-6">
+                        <h3 className="text-white font-semibold text-lg lg:text-xl mb-0 group-hover:mb-3 transition-all duration-300">
                           {blog.title}
                         </h3>
 
-                        <div className="h-[0.3px] w-40 bg-gray-300 mb-3 lg:mb-4  w-full"></div>
-                        <p className="text-white text-sm lg:text-base leading-relaxed opacity-90">
-                          {blog.description}
-                        </p>
+                        <div className="h-[0.3px] w-40 bg-gray-300 mb-0 group-hover:mb-3 lg:group-hover:mb-4 w-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+                        <div className="overflow-hidden max-h-0 group-hover:max-h-[300px] transition-all duration-300 ease-in-out">
+                          <p className="text-white text-sm lg:text-base leading-relaxed opacity-0 group-hover:opacity-90 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
+                            {blog.description}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -702,7 +910,7 @@ export default function Profit() {
           </div>
         </div>
       </section>
-      <section className="w-full py-8 lg:py-16 bg-white relative overflow-hidden">
+      <section className="w-full py-4 lg:py-16 bg-white relative overflow-hidden">
         {/* Background Image */}
         <div
           className="absolute inset-0"
@@ -710,12 +918,12 @@ export default function Profit() {
         />
         <div className="max-w-[1300px] mx-auto px-4 lg:px-4 relative z-10">
           {/* Mobile Version */}
-          <div className="block lg:hidden relative" style={{ overflow: "hidden", width: "100%" }}>
+          <div className="block lg:hidden relative pt-4 pb-2" style={{ overflow: "hidden", width: "100%" }}>
             <div
               className="relative"
               style={{
                 height: "auto",
-                minHeight: "300px",
+                minHeight: "218px",
                 overflow: "hidden",
                 width: "100%",
                 position: "relative",
@@ -776,7 +984,7 @@ export default function Profit() {
             </div>
 
             {/* Navigation Dots */}
-            <div className="flex justify-center mt-8 gap-2">
+            <div className="flex justify-center mt-4 mb-2 gap-2">
               {Array.from({ length: offices.length }).map((_, index) => (
                 <button
                   key={index}

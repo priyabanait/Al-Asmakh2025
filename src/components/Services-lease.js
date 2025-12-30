@@ -175,7 +175,7 @@ export default function Services({
         </div>
 
         {/* Mobile Filters Button - Absolute positioned in hero section */}
-        <div className="absolute left-1/2 bottom-[50px] mb-4 transform -translate-x-1/2 z-20 w-[100%] px-4 lg:hidden">
+        <div className="absolute left-1/2 bottom-[-10px] mb-4 transform -translate-x-1/2 z-20 w-[100%] px-4 lg:hidden">
           <div ref={filtersRef} className="flex flex-col gap-3 bg-white/20 backdrop-blur-[10px] border border-white/10 p-3 px-10  rounded-md shadow-md">
             {/* Single Filters Button for Mobile */}
             <div
@@ -228,12 +228,14 @@ export default function Services({
       </section>
 
       {/* Filter Buttons Box - Dynamic from props */}
-      <div className="w-full flex justify-center px-4 lg:px-40 lg:pt-0 pt-0 lg:-mt-[145px] lg:mb-8 relative z-50">
+      <div className="w-full 
+      
+       flex justify-center px-4 lg:px-40 lg:pt-0 pt-0 lg:-mt-[145px] lg:mb-8 relative z-50">
         <div
           className="
       grid w-full overflow-x-auto lg:overflow-visible
       border border-white/20 backdrop-blur-[10px] lg:mx-24 bg-[#8C8C8C66]
-      p-2 lg:p-4 lg:px-4 rounded-md shadow-md gap-2 lg:gap-3
+      p-3 py-3lg:p-3 lg:px-2 rounded-md shadow-md gap-2 lg:gap-3
       grid-cols-3  lg:grid-cols-3
       justify-center 
     "

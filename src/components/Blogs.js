@@ -207,7 +207,7 @@ export default function Buy() {
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 md:px-10 lg:px-10 p-4 sm:p-6">
+      <div className="mt-10 lg:mt-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 md:px-10 lg:px-10 p-4 sm:p-6">
         {blogs.map((blog, i) => (
           <div
             key={i}

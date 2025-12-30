@@ -9,37 +9,37 @@ const Members = () => {
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Fetch scanned members data
   useEffect(() => {
     const fetchScannedMembers = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
           setError('Authentication token not found');
           setLoading(false);
           return;
         }
-        
+
         // Fetch partner-specific scans
         console.log('Fetching partner-specific scans...');
-        const response = await fetch('https://albackend.x-360.ai/api/scans', {
+        const response = await fetch('http://localhost:3002/api/scans', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await response.json();
-        
+
         if (!response.ok) {
           throw new Error(data.message || 'Failed to fetch scanned members');
         }
-        
+
         console.log('Scans fetched successfully:', data);
         setScans(data.data);
-        
+
         // If no scans are returned from the backend, we'll use the sample data
         // In a production environment, this would be removed
         if (data.data && data.data.length === 0) {
@@ -52,26 +52,26 @@ const Members = () => {
         setLoading(false);
       }
     };
-    
+
     fetchScannedMembers();
   }, []);
-  
+
   // Refresh scans periodically (every 30 seconds)
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
         const token = localStorage.getItem('token');
-        
+
         if (!token) return;
-        
-        const response = await fetch('https://albackend.x-360.ai/api/scans', {
+
+        const response = await fetch('http://localhost:3002/api/scans', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
           setScans(data.data);
           console.log('Scans refreshed');
@@ -80,16 +80,16 @@ const Members = () => {
         console.error('Error refreshing scans:', err);
       }
     }, 30000); // 30 seconds
-    
+
     return () => clearInterval(interval);
   }, []);
-  
+
   // Format date for display
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
-  
+
   // Process scan data to display in the members list
   const processScans = () => {
     if (scans && scans.length > 0) {
@@ -101,7 +101,7 @@ const Members = () => {
           const secondName = scan.user?.secondName || 'User';
           const userId = scan.user?._id || scan.user || 'unknown';
           const profilePicture = scan.user?.profilePicture || '/images/person_icon.png';
-          
+
           return {
             name: `${firstName} ${secondName}`,
             id: typeof userId === 'string' ? userId.substring(0, 8) : 'N/A',
@@ -116,7 +116,7 @@ const Members = () => {
           const name = scan.scannedPartner?.name || scan.scannedPartner?.businessName || 'Unknown Partner';
           const partnershipId = scan.scannedPartner?.partnershipId || scan.scannedPartner?._id || 'unknown';
           const profilePicture = scan.scannedPartner?.profilePicture || scan.scannedPartner?.logo || '/images/person_icon.png';
-          
+
           return {
             name: name,
             id: typeof partnershipId === 'string' ? partnershipId.substring(0, 8) : 'N/A',
@@ -132,7 +132,7 @@ const Members = () => {
           const secondName = scan.user?.secondName || 'User';
           const userId = scan.user?._id || scan.user || 'unknown';
           const profilePicture = scan.user?.profilePicture || '/images/person_icon.png';
-          
+
           return {
             name: `${firstName} ${secondName}`,
             id: typeof userId === 'string' ? userId.substring(0, 8) : 'N/A',
@@ -144,11 +144,11 @@ const Members = () => {
         }
       });
     }
-    
+
     // Return empty array when no scans are available
     return [];
   };
-  
+
   // Get members to display
   const members = processScans();
 
@@ -161,7 +161,7 @@ const Members = () => {
           <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Members</h2>
         </div>
 
-                {/* Column Headers */}
+        {/* Column Headers */}
         <div className="flex items-center justify-between py-2 border-b border-gray-200 mb-2">
           <div className="flex-1">
             <span className="text-sm font-semibold text-[#A0AEC0]">Name</span>
@@ -171,14 +171,14 @@ const Members = () => {
             <span className="text-sm font-semibold text-[#A0AEC0] w-20 text-right">Date</span>
           </div>
         </div>
-        
+
         {/* Loading State */}
         {loading && (
           <div className="flex justify-center items-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         )}
-        
+
         {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded my-4">
@@ -198,33 +198,33 @@ const Members = () => {
             </div>
           ) : (
             members.map((member, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="flex items-center justify-between py-1 border-b border-gray-200 last:border-b-0"
               >
                 {/* Left - Profile and Name */}
                 <div className="flex items-center space-x-2 flex-1 min-w-0">
-                  <div className="w-10 h-10 border border-gray-200 overflow-hidden bg-gray-200 flex-shrink-0" style={{borderRadius:"10px"}}>
+                  <div className="w-10 h-10 border border-gray-200 overflow-hidden bg-gray-200 flex-shrink-0" style={{ borderRadius: "10px" }}>
                     {member.image && member.image !== '/images/person_icon.png' ? (
-                      <Image 
-                        src={member.image} 
-                        alt={member.name} 
-                        width={40} 
+                      <Image
+                        src={member.image}
+                        alt={member.name}
+                        width={40}
                         height={40}
                         className="w-full h-full object-cover"
-                        style={{borderRadius:"10px"}}
+                        style={{ borderRadius: "10px" }}
                         onError={(e) => {
                           e.target.src = '/images/person_icon.png';
                         }}
                       />
                     ) : (
-                      <Image 
-                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKgAAACUCAMAAAAwLZJQAAAAMFBMVEXk5ueutLfn6eqrsbTh4+SorrLR1Na9wsSxt7q1ur3d4OHa3d64vcDIzM7M0NLU19g5zzA6AAAEfklEQVR4nO2cwbKrIAxAJYCAiP7/3z5Ap621tgoJcOd5NndxN2ciCYhJu+7m5ubm5uamEQBqG3zH+wlr58kFptla0aQydLNTRnMpecD/YaNyc9eYKlilGedsC+daK9tOWGGYtHyXfCD1NDShCsLpQ8slsMaJ+qow/dCMqmyqbArWyJ+acQEYW1MVHPsdzjWofKqWVSDGs5pRVYlKnvbE6twGtUr6w3z6sT9M2VzBs7+qGVXn0jGF/ly2vyMLm4JNiWekqKnPo1RPxkpmlDDJAfW5X84TLtXPnakq5jmlJdLDtNTGb7M0A4X2fZXz4GNIxxKiMOc9+IDsC5hCbjwDeqD3dBiiBfJpMAiePqTURz6YMALqVyl1SMWI4ukhFkVI+QVOm/iAFlBGXEuxAurTyRJqYqVSgE+UogrNk/YQNWScl/fQlVL/4omIJHwlRVyi/tk7urzPPuBtMGSieNtShNOJogaUcbJssnjlPoqSlXy0jX4VpdruMfelCFXa4xzuX1BUorjV6Ra9Rf9j0T+T9diiZHUUueDTXZf8lS20G5AjSnZTJlBfmZikO+Fn3d3voRPFTXuq6oSd9ryn8vSvy5iLlC6XkN/uDOFdLuqVjqPzTPz2fQDpBSnKJ5EFyiePei6hK04RtFd7Sf2lCevwTP2VEevmkfLOcQXlgxgfyXugAGeVFugsyWt/WBnJNT3pDToPyFM+kn+GorwU35CZT7zIg+9Cq3BmPhVrJc07mxB/rt2SsT9J4k3+jeQaVWyBrsDFJtenZ+m23CEpplyXb3RPaSTkpkbz8PW9lKtKgwPuWj2VqtqIy6X+YcILh5/A+ZTipvK8SL8bDvqoyabak00w/N6leLWhhg1e9Wv151q1MdAUXk8mczB5xeXoqs7dvAHd4PSnUTZH2YaVBoDolRqNDleTWptRqV60M2+3IQxcDtbO82zt4CXbtFyAJ7VV9ixWg49lCGYfiVH1YRVdI87eQth+cnF1hvR54leqMUqFqVtR2RY6Oymz5PdRJV3/Mbq5q7E3hTjOzsjjudV9QZVa9bbo3G0sRCM7L/mU5Ua5Uq4gppFdHrd7yvqlS78LAAy94tnXeVwGV7q4Asxqv08mujI1kR1Q+4wn/kmVk5yqBsdw2wpYPFoh/1JAmPNH7idZVfmIOdJ84hCf4WqQogrCISXQEXLEOFrDlDFaeRJfAnLT6vLEd6oqz3pLDU+9hGZAmvQvOmCRm12+wlnyB/xy4VxVTcpXHRhG9AL/0zRhIgfmMln0rnr1gj93PDnd9GJjROnl+WKqL1R/9Nbba5w3pd+LvnOyol77mRQSTnXAQu14spO/EtKAJzvz9Ovm0YNfuV85359w9t2zVp3/gP4mitAugsa3AVeBM+SPxHEDQjMLdEUebPupPzhEx+ceBMAdTMbgYEajsQcf+XTtNzfo+eknYlKbRGiRuw2qvUxa2A9iN1VCX3grptDXFjrgfX8SLaZ85G0Su6VNfsv2BRp97A+RzXgWtJnykdftCeNHseh4KfqtHZu2LL+29Q+mxD9yHdOgqgAAAABJRU5ErkJggg==" 
-                        alt={member.name} 
-                        width={40} 
+                      <Image
+                        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKgAAACUCAMAAAAwLZJQAAAAMFBMVEXk5ueutLfn6eqrsbTh4+SorrLR1Na9wsSxt7q1ur3d4OHa3d64vcDIzM7M0NLU19g5zzA6AAAEfklEQVR4nO2cwbKrIAxAJYCAiP7/3z5Ap621tgoJcOd5NndxN2ciCYhJu+7m5ubm5uamEQBqG3zH+wlr58kFptla0aQydLNTRnMpecD/YaNyc9eYKlilGedsC+daK9tOWGGYtHyXfCD1NDShCsLpQ8slsMaJ+qow/dCMqmyqbArWyJ+acQEYW1MVHPsdzjWofKqWVSDGs5pRVYlKnvbE6twGtUr6w3z6sT9M2VzBs7+qGVXn0jGF/ly2vyMLm4JNiWekqKnPo1RPxkpmlDDJAfW5X84TLtXPnakq5jmlJdLDtNTGb7M0A4X2fZXz4GNIxxKiMOc9+IDsC5hCbjwDeqD3dBiiBfJpMAiePqTURz6YMALqVyl1SMWI4ukhFkVI+QVOm/iAFlBGXEuxAurTyRJqYqVSgE+UogrNk/YQNWScl/fQlVL/4omIJHwlRVyi/tk7urzPPuBtMGSieNtShNOJogaUcbJssnjlPoqSlXy0jX4VpdruMfelCFXa4xzuX1BUorjV6Ra9Rf9j0T+T9diiZHUUueDTXZf8lS20G5AjSnZTJlBfmZikO+Fn3d3voRPFTXuq6oSd9ryn8vSvy5iLlC6XkN/uDOFdLuqVjqPzTPz2fQDpBSnKJ5EFyiePei6hK04RtFd7Sf2lCevwTP2VEevmkfLOcQXlgxgfyXugAGeVFugsyWt/WBnJNT3pDToPyFM+kn+GorwU35CZT7zIg+9Cq3BmPhVrJc07mxB/rt2SsT9J4k3+jeQaVWyBrsDFJtenZ+m23CEpplyXb3RPaSTkpkbz8PW9lKtKgwPuWj2VqtqIy6X+YcILh5/A+ZTipvK8SL8bDvqoyabak00w/N6leLWhhg1e9Wv151q1MdAUXk8mczB5xeXoqs7dvAHd4PSnUTZH2YaVBoDolRqNDleTWptRqV60M2+3IQxcDtbO82zt4CXbtFyAJ7VV9ixWg49lCGYfiVH1YRVdI87eQth+cnF1hvR54leqMUqFqVtR2RY6Oymz5PdRJV3/Mbq5q7E3hTjOzsjjudV9QZVa9bbo3G0sRCM7L/mU5Ua5Uq4gppFdHrd7yvqlS78LAAy94tnXeVwGV7q4Asxqv08mujI1kR1Q+4wn/kmVk5yqBsdw2wpYPFoh/1JAmPNH7idZVfmIOdJ84hCf4WqQogrCISXQEXLEOFrDlDFaeRJfAnLT6vLEd6oqz3pLDU+9hGZAmvQvOmCRm12+wlnyB/xy4VxVTcpXHRhG9AL/0zRhIgfmMln0rnr1gj93PDnd9GJjROnl+WKqL1R/9Nbba5w3pd+LvnOyol77mRQSTnXAQu14spO/EtKAJzvz9Ovm0YNfuV85359w9t2zVp3/gP4mitAugsa3AVeBM+SPxHEDQjMLdEUebPupPzhEx+ceBMAdTMbgYEajsQcf+XTtNzfo+eknYlKbRGiRuw2qvUxa2A9iN1VCX3grptDXFjrgfX8SLaZ85G0Su6VNfsv2BRp97A+RzXgWtJnykdftCeNHseh4KfqtHZu2LL+29Q+mxD9yHdOgqgAAAABJRU5ErkJggg=="
+                        alt={member.name}
+                        width={40}
                         height={40}
                         className="w-full h-full object-cover"
-                        style={{borderRadius:"10px"}}
+                        style={{ borderRadius: "10px" }}
                       />
                     )}
                   </div>
@@ -234,7 +234,7 @@ const Members = () => {
                     </p>
 
                     <span className="text-xs text-[#718096]">
-                     ID {member.id}
+                      ID {member.id}
                     </span>
                   </div>
                 </div>

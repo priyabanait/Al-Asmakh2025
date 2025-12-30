@@ -4,8 +4,10 @@ import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function AlAsmakhTower() {
+  const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
   const [currentAreaIndex, setCurrentAreaIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
@@ -16,15 +18,34 @@ export default function AlAsmakhTower() {
   // Minimum swipe distance (in pixels)
   const minSwipeDistance = 50;
 
+  // Function to convert area name to slug
+  const getAreaSlug = (areaName) => {
+    const slugMap = {
+      "Lusail City": "lusail-city",
+      "Pearl Island": "pearl-island",
+      "West Bay": "west-bay",
+      "Doha": "doha",
+      "Al Sadd": "al-sadd",
+      "Al Dafna": "al-dafna"
+    };
+    return slugMap[areaName] || areaName.toLowerCase().replace(/\s+/g, "-");
+  };
+
+  // Function to handle area click
+  const handleAreaClick = (areaName) => {
+    const slug = getAreaSlug(areaName);
+    router.push(`/towerdetails/${slug}`);
+  };
+
   const areas = [
-    { name: "Lusail City", image: "/images_prop/1.png" },
-    { name: "Pearl Island", image: "/images_prop/2.png" },
-    { name: "Lusail City", image: "/images_prop/3.png" },
-    { name: "Doha", image: "/images_prop/4.png" },
-    { name: "Al Sadd", image: "/images_prop/5.png" },
-    { name: "Lusail City", image: "/images_prop/6.png" },
-    { name: "Al Dafna", image: "/images_prop/7.png" },
-    { name: "West Bay", image: "/images_prop/8.png" },
+    { name: "Lusail City", subheading: "A Future-Focused Tower with Heritage at Its Core.", image: "/images_prop/1.png" },
+    { name: "Pearl Island", subheading: "Sea Views, Smart Living, and a Private Beach Below.", image: "/images_prop/2.png" },
+    { name: "Lusail City", subheading: "A Neighbourhood Feel, with City Life on Your Doorstep.", image: "/images_prop/3.png" },
+    { name: "Doha", subheading: "Experience the Heart of Qatar's Capital City.", image: "/images_prop/4.png" },
+    { name: "Al Sadd", subheading: "Modern Living in a Vibrant Urban District.", image: "/images_prop/5.png" },
+    { name: "Lusail City", subheading: "Premium Properties in Qatar's Newest City.", image: "/images_prop/6.png" },
+    { name: "Al Dafna", subheading: "Luxury Living in Doha's Business District.", image: "/images_prop/7.png" },
+    { name: "West Bay", subheading: "Serviced City Living, with Hotel-Style Comfort Every Day.", image: "/images_prop/8.png" },
   ];
 
 
@@ -43,7 +64,7 @@ export default function AlAsmakhTower() {
       subheading: "Serviced City Living, with Hotel-Style Comfort Every Day.",
       description:
         "A 30-storey residential tower in West Bay offering 318 fully furnished apartments, premium wellness facilities, and 24-hour concierge services in one centrally connected address. Beverly Hills Tower is designed for those who want hotel-style ease without losing the feeling of home. From the moment you arrive, a staffed lobby, round-the-clock concierge, and secure access create a sense of being looked after, whether you are staying for a year or a longer assignment in Doha.",
-      img: "https://media.istockphoto.com/id/175767618/photo/modern-townhouse-complex.jpg?s=612x612&w=0&k=20&c=ltPDM5QTC1a4cdr7Fjvct-KNlNCUPC_IyNC2f93eJ84=",
+      img: "/images_pages/BEVALIHILLS_TOWER.jpg",
     },
     {
       title: "FLORESTA TOWER, THE PEARL",
@@ -51,7 +72,7 @@ export default function AlAsmakhTower() {
       subheading: "Sea Views, Smart Living, and a Private Beach Below.",
       description:
         "A waterfront tower on The Pearl offering 102 luxury apartments, panoramic sea views, smart home technology, and private beach access in one of Qatar's most recognisable island settings. Floresta Tower is designed for those who crave the calm of a private shoreline with the convenience of tower living. Residences open out to sweeping views of the sea and marina, creating a daily connection to the water that is rare even on The Pearl. At ground level, residents enjoy direct access to a private beach area, turning early morning swims and sunset walks into a natural part of life at home.",
-      img: "https://images.pexels.com/photos/358636/pexels-photo-358636.jpeg?cs=srgb&dl=pexels-pixabay-358636.jpg&fm=jpg",
+      img: "/images_pages/THEPEARL.jpg"
     },
     {
       title: "LES MAISONS BLANCHES",
@@ -59,8 +80,9 @@ export default function AlAsmakhTower() {
       subheading: "A Neighbourhood Feel, with City Life on Your Doorstep.",
       description:
         "An exclusive compound of villas and apartments, thoughtfully planned around a central clubhouse, with everyday services, and easy access to Lusail's key destinations. Les Maisons Blanches is for residents who want the feel of a neighbourhood, without losing the benefits of a central Lusail location. Inside the gates, the focus is on quiet streets, defined entrances, and homes that feel spacious and private. Outside, the city's newest retail and entertainment districts are only a short drive away.",
-      img: "https://images.pexels.com/photos/358636/pexels-photo-358636.jpeg?cs=srgb&dl=pexels-pixabay-358636.jpg&fm=jpg",
-    },
+      img: "/images_pages/LUSIL.jpg",
+
+    }
   ];
 
   // Function to reset auto-slide interval
@@ -217,7 +239,7 @@ export default function AlAsmakhTower() {
                 {/* DETAILS BUTTON */}
                 <div className="flex justify-center md:justify-start">
                   <button
-                    className="flex items-center justify-between gap-2 bg-[#001730] text-white px-4 md:px-6 py-2 md:py-3 rounded-md font-medium shadow-lg transition-all duration-300 hover:bg-[#002d52] text-sm md:text-base"
+                    className="flex items-center justify-between gap-2 bg-[#001730] text-white px-4 md:px-6 py-2 md:py-3 rounded-md font-medium shadow-lg transition-all  hover:bg-[#002d52] text-sm md:text-base"
                     style={{ fontSize: "clamp(13px, 1.1vw, 16px)" }}
                   >
                     <span>Details</span>
@@ -340,7 +362,7 @@ export default function AlAsmakhTower() {
 
 
           {/* <button
-            className="flex items-center justify-center gap-2 bg-[#001730] text-white px-6 md:px-8 py-3 md:py-3.5 rounded-md hover:bg-[#022d5e] transition-all duration-300 shadow-md hover:shadow-lg w-fit text-[18px] md:text-[22px]"
+            className="flex items-center justify-center gap-2 bg-[#001730] text-white px-6 md:px-8 py-3 md:py-3.5 rounded-md hover:bg-[#022d5e] transition-all  shadow-md hover:shadow-lg w-fit text-[18px] md:text-[22px]"
             style={{ fontSize: "clamp(12px, 1.1vw, 16px)" }}
           >
             <span>Details</span>
@@ -432,7 +454,7 @@ export default function AlAsmakhTower() {
               }}
             >
               <div
-                className="flex transition-transform duration-300 ease-in-out"
+                className="flex transition-transform  ease-in-out"
                 style={{
                   transform: `translateX(calc(-${currentAreaIndex * 100}%))`,
                   willChange: "transform",
@@ -454,6 +476,7 @@ export default function AlAsmakhTower() {
                       }}
                     >
                       <div
+                        onClick={() => handleAreaClick(area.name)}
                         style={{
                           borderRadius: "8px",
                           width: "100%",
@@ -462,8 +485,9 @@ export default function AlAsmakhTower() {
                           position: "relative",
                           overflow: "hidden",
                           margin: "0 auto",
+                          cursor: "pointer",
                         }}
-                        className="shadow-lg md:h-[400px]"
+                        className="shadow-lg md:h-[400px] hover:shadow-xl transition-shadow "
                       >
                         <Image
                           src={area.image}
@@ -508,7 +532,7 @@ export default function AlAsmakhTower() {
                 {/* Previous Button */}
                 <button
                   onClick={goToPreviousArea}
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-white border border-black flex items-center justify-center hover:bg-gray-50 transition-all duration-300"
+                  className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-white border border-black flex items-center justify-center hover:bg-gray-50 transition-all "
                   aria-label="Previous area"
                 >
                   <FaArrowLeft size={14} className="md:w-4 md:h-4 text-black" />
@@ -517,7 +541,7 @@ export default function AlAsmakhTower() {
                 {/* Next Button */}
                 <button
                   onClick={goToNextArea}
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-[#001730] flex items-center justify-center hover:bg-[#022d5e] transition-all duration-300"
+                  className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-[#001730] flex items-center justify-center hover:bg-[#022d5e] transition-all "
                   aria-label="Next area"
                 >
                   <FaArrowRight size={14} className="md:w-4 md:h-4 text-white" />
@@ -535,7 +559,8 @@ export default function AlAsmakhTower() {
               {[0, 1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`relative rounded-lg ${i === 1 ? "w-[865px] h-[300px]" : "w-[430px] h-[300px]"
+                  onClick={() => handleAreaClick(areas[i].name)}
+                  className={`group relative rounded-lg cursor-pointer hover:opacity-100 transition-opacity  overflow-hidden ${i === 1 ? "w-[865px] h-[300px]" : "w-[430px] h-[300px]"
                     }`}
                 >
                   <Image
@@ -544,6 +569,24 @@ export default function AlAsmakhTower() {
                     fill
                     className="object-fill rounded-lg"
                   />
+                  {/* Light Black Overlay on Hover */}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
+                  {/* Hover Overlay - Title and Arrow */}
+                  <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
+                    <div
+                      className="flex items-center justify-between rounded-b-lg px-4 py-3"
+                      style={{
+                        backdropFilter: 'blur(45px) saturate(180%)',
+                        WebkitBackdropFilter: 'blur(45px) saturate(180%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                      }}
+                    >
+                      <span className="text-[#001730] font-semibold text-xs">
+                        {areas[i].subheading}
+                      </span>
+                      {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -553,7 +596,8 @@ export default function AlAsmakhTower() {
               {[4, 5, 6, 7].map((i) => (
                 <div
                   key={i}
-                  className={`relative rounded-lg ${i === 7 ? "w-[826px] h-[300px]" : "w-[404px] h-[300px]"
+                  onClick={() => handleAreaClick(areas[i].name)}
+                  className={`group relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity  overflow-hidden ${i === 7 ? "w-[826px] h-[300px]" : "w-[404px] h-[300px]"
                     }`}
                 >
                   <Image
@@ -562,6 +606,24 @@ export default function AlAsmakhTower() {
                     fill
                     className="object-fill rounded-lg"
                   />
+                  {/* Light Black Overlay on Hover */}
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
+                  {/* Hover Overlay - Title and Arrow */}
+                  <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
+                    <div
+                      className="flex items-center justify-between rounded-b-lg px-4 py-3"
+                      style={{
+                        backdropFilter: 'blur(45px) saturate(180%)',
+                        WebkitBackdropFilter: 'blur(45px) saturate(180%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                      }}
+                    >
+                      <span className="text-[#001730] font-semibold text-xs">
+                        {areas[i].subheading}
+                      </span>
+                      {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

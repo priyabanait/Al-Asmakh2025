@@ -10,7 +10,7 @@ import Image from "next/image";
 import Header from "../../components/Header";
 
 
-// https://albackend.x-360.ai
+// http://localhost:3002
 export default function PartnerSignupPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -33,8 +33,8 @@ export default function PartnerSignupPage() {
   };
 
   const validateForm = () => {
-    if (!formData.name || !formData.email || !formData.phoneNumber || 
-        !formData.partnershipId || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.phoneNumber ||
+      !formData.partnershipId || !formData.password || !formData.confirmPassword) {
       setError("All fields are required");
       return false;
     }
@@ -67,7 +67,7 @@ export default function PartnerSignupPage() {
 
     try {
       setLoading(true);
-      const response = await fetch("https://albackend.x-360.ai/api/partners/register", {
+      const response = await fetch("http://localhost:3002/api/partners/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export default function PartnerSignupPage() {
       localStorage.setItem("token", data.token);
       router.push("/partner-dashboard");
 
-      
+
       // Redirect after a short delay
       setTimeout(() => {
         router.push("/partner-login");
@@ -108,9 +108,9 @@ export default function PartnerSignupPage() {
   return (
     <>
       <div className="relative w-full min-h-screen">
-        
+
         {/* Background Image */}
-       
+
         <div
           className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
           style={{
@@ -118,22 +118,22 @@ export default function PartnerSignupPage() {
           }}
         />
 
-        <Header/>
+        <Header />
         {/* Glass Overlay */}
         {/* <div className="absolute inset-0 bg-black/20"></div> */}
 
-    
+
 
         {/* Login Card - Positioned on Left */}
         <div className=" mb-24  mt-20 relative z-10 w-full flex justify-center items-center min-h-screen p-4 lg:p-8 lg:pl-16 md:left-56">
-          <div  style={{borderRadius:"5px"}} className="bg-[#E0E0E0]/40  backdrop-blur-md  p-6 sm:p-10  w-full max-w-md lg:max-w-lg shadow-2xl  border border-white/10   ">
+          <div style={{ borderRadius: "5px" }} className="bg-[#E0E0E0]/40  backdrop-blur-md  p-6 sm:p-10  w-full max-w-md lg:max-w-lg shadow-2xl  border border-white/10   ">
 
             {/* Title */}
             <h2 className="text-3xl font-bold text-white mb-3">Partner Registration !</h2>
 
             <div className=" mb-2 h-[0.3px] mt-5 bg-gray-300 mx-auto "></div>
 
-            <p style={{ color :"#001730"}} className=" text-sm mb-2">
+            <p style={{ color: "#001730" }} className=" text-sm mb-2">
               Register today and become part of Qatar's most rewarding real estate privilege community
             </p>
 
@@ -152,7 +152,7 @@ export default function PartnerSignupPage() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Name</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Name</label>
                 <input
                   type="text"
                   name="name"
@@ -160,12 +160,12 @@ export default function PartnerSignupPage() {
                   onChange={handleChange}
                   placeholder="John Carter"
                   className="w-full border  border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , fontSize: '12px' , height:"35px"}}
+                  style={{ borderRadius: "5px", fontSize: '12px', height: "35px" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Email</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Email</label>
                 <input
                   type="email"
                   name="email"
@@ -173,12 +173,12 @@ export default function PartnerSignupPage() {
                   onChange={handleChange}
                   placeholder="Enter Email here.."
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px", fontSize: '12px'}}
+                  style={{ borderRadius: "5px", height: "35px", fontSize: '12px' }}
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold" style={{fontSize:'16px', color: "#001730"}}>Phone</label>
+                <label className="text-sm font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Phone</label>
                 <input
                   type="tel"
                   name="phoneNumber"
@@ -186,13 +186,13 @@ export default function PartnerSignupPage() {
                   onChange={handleChange}
                   placeholder="(123) 456-789"
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px", fontSize: '12px'}}
+                  style={{ borderRadius: "5px", height: "35px", fontSize: '12px' }}
                 />
               </div>
 
 
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px',    color: "#001730"}}>Partnership ID</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Partnership ID</label>
                 <input
                   type="text"
                   name="partnershipId"
@@ -200,11 +200,11 @@ export default function PartnerSignupPage() {
                   onChange={handleChange}
                   placeholder="DF-108-77890"
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px", fontSize: '12px'}}
+                  style={{ borderRadius: "5px", height: "35px", fontSize: '12px' }}
                 />
               </div>
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Create Password</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Create Password</label>
                 <input
                   type="password"
                   name="password"
@@ -212,14 +212,14 @@ export default function PartnerSignupPage() {
                   onChange={handleChange}
                   placeholder="Please type here..."
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px", fontSize: '12px' }}
+                  style={{ borderRadius: "5px", height: "35px", fontSize: '12px' }}
                 />
               </div>
 
 
-              
+
               <div>
-                <label className="text-sm  font-semibold" style={{fontSize:'16px', color: "#001730"}}>Re Type Password</label>
+                <label className="text-sm  font-semibold" style={{ fontSize: '16px', color: "#001730" }}>Re Type Password</label>
                 <input
                   type="password"
                   name="confirmPassword"
@@ -227,28 +227,28 @@ export default function PartnerSignupPage() {
                   onChange={handleChange}
                   placeholder="Please type here..."
                   className="w-full border border-white/60 bg-white text-gray-800 px-4 py-2 mt-1 outline-none"
-                  style={{borderRadius: "5px" , height:"35px", fontSize: '12px' }}
+                  style={{ borderRadius: "5px", height: "35px", fontSize: '12px' }}
                 />
               </div>
-            
+
 
               <div className="col-span-1 md:col-span-2 flex justify-center md:justify-start mt-4 sm:mt-6 md:mt-12 mb-4">
-  <button
-    type="submit"
-    disabled={loading}
-    style={{ borderRadius: "5px", fontSize: "12px" }}
-    className="bg-[#0C1E35] hover:bg-[#132b47] w-full sm:w-auto min-w-[200px] md:w-44 text-white py-2 px-6 flex items-center justify-center md:justify-around gap-2 transition-all"
-  >
-    {loading ? (
-      "Processing..."
-    ) : (
-      <>
-        Submit
-        <FiArrowRight className="text-sm md:text-base shrink-0" />
-      </>
-    )}
-  </button>
-</div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{ borderRadius: "5px", fontSize: "12px" }}
+                  className="bg-[#0C1E35] hover:bg-[#132b47] w-full sm:w-auto min-w-[200px] md:w-44 text-white py-2 px-6 flex items-center justify-center md:justify-around gap-2 transition-all"
+                >
+                  {loading ? (
+                    "Processing..."
+                  ) : (
+                    <>
+                      Submit
+                      <FiArrowRight className="text-sm md:text-base shrink-0" />
+                    </>
+                  )}
+                </button>
+              </div>
             </form>
 
             {/* Divider */}
@@ -284,7 +284,7 @@ export default function PartnerSignupPage() {
 
       {/* Footer - positioned below the main content */}
       <div className="relative z-20">
-        <Footer/>   
+        <Footer />
       </div>
     </>
   );
