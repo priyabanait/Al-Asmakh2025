@@ -80,48 +80,54 @@ export default function Header() {
   // Dropdown menus
   const dropdowns = {
     HOME: [
-      { label: 'Home', path: '/', external: true },
+      { label: 'Home', path: '/', external: false },
       { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
+    ],
+    'ABOUT US': [
+      { label: 'About Us', path: '/aboutus' },
+    ],
+    SERVICES: [
+      { label: 'Leasing Services', path: '/listings/services-lease' },
+      { label: 'Sales Services', path: '/services/services-sales' },
+      { label: 'Project Development', path: '/services/project-devlopment' },
+      { label: 'Property Management', path: '/services/propertyManagement' },
+      { label: 'Marketing', path: '/services/marketing' },
+      { label: 'Facilities Management', path: '/services/facilities-management' },
+      { label: 'Become an Agent', path: '/services/become-an-agent' },
+      { label: 'Other Services', path: '/services/all-services' },
     ],
     LISTINGS: [
       { label: 'Rent', path: '/listings/rent' },
-      // { label: 'Sale', path: '/listings/sale' },
       { label: 'Sale', path: '/listings/listing-sale' },
-      // { label: 'Listing Rent', path: '/listings/listing-rent' },
-    ],
-    SERVICES: [
-      { label: 'Lease', path: '/listings/services-lease' },
-      { label: 'Sales', path: '/services/services-sales' },
-      { label: 'Marketing', path: '/services/marketing' },
-      { label: 'Property Management', path: '/services/propertyManagement' },
+      // { label: 'All Listings', path: '/listings/all' },
     ],
     DEVELOPMENT: [
-      { label: 'Luxury', path: '/listings/luxury' },
-      { label: 'All Projects', path: '/allprojects' },
+      { label: 'Luxury Residences', path: '/listings/luxury' },
       { label: 'Commercial', path: '/commercial' },
       { label: 'Industrial', path: '/industrial' },
-      // { label: 'Contact Head Office', path: '/contactheadoffice' },
+      { label: 'Mixed-Use', path: '/development/mixed-use' },
+      { label: 'Upcoming', path: '/development/upcoming' },
     ],
-    MEDIA: [
+    CONTACT: [
+      { label: 'Our Agents', path: '/contact' },
+      { label: 'Head Office', path: '/contactheadoffice' },
+    ],
+    'MEDIA CONTENT': [
       { label: 'Blogs', path: '/listings/blogs' },
       { label: 'Articles', path: '/listings/blogs' },
 
     ],
-    CONTACT: [
-      { label: 'Contact Agent', path: '/contact' },
-      { label: 'Contact Head Office', path: '/contactheadoffice' },
-    ],
   }
 
-  // Navigation menu items
+  // Navigation menu items - in order
   const menuItems = [
     { key: 'HOME', label: 'HOME' },
-    { key: 'LISTINGS', label: 'LISTINGS' },
-    { key: 'SERVICES', label: 'SERVICES' },
-    { key: 'DEVELOPMENT', label: 'DEVELOPMENT' },
-    { key: 'MEDIA', label: 'MEDIA' },
     { key: 'ABOUT US', label: 'ABOUT US' },
+    { key: 'SERVICES', label: 'SERVICES' },
+    { key: 'LISTINGS', label: 'LISTINGS' },
+    { key: 'DEVELOPMENT', label: 'DEVELOPMENT' },
     { key: 'CONTACT', label: 'CONTACT' },
+    { key: 'MEDIA CONTENT', label: 'MEDIA CONTENT' },
   ]
 
   // Toggle dropdown
@@ -275,7 +281,7 @@ export default function Header() {
                   </button>
 
                   {hasDropdown && activeDropdown === item.key && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[220px] z-[999]">
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-6 min-w-[220px] z-[999]">
                       <div className="relative rounded-[8px] overflow-hidden border border-white/40 ">
                         {/* 🔥 APPLE-STYLE GLASS BACKGROUND */}
                         <div

@@ -1,7 +1,7 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
+import { FaArrowRight } from "react-icons/fa6";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { fetchProperties } from "../utils/propertyapi";
@@ -10,9 +10,6 @@ export default function FeaturedProperties() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const scrollRef = useRef(null);
-  const [showScrollButtonRight, setShowScrollButtonRight] = useState(false);
-  const [showScrollButtonLeft, setShowScrollButtonLeft] = useState(false);
 
   // Fetch properties from API (or dummy data)
   useEffect(() => {
@@ -22,7 +19,7 @@ export default function FeaturedProperties() {
         // Use fetchProperties from propertyapi.js which handles dummy data
         const result = await fetchProperties({
           page: 1,
-          limit: 10,
+          limit: 4,
           status: "published",
         });
 
@@ -41,55 +38,6 @@ export default function FeaturedProperties() {
     loadProperties();
   }, []);
 
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
-    }
-  };
-
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
-    }
-  };
-
-  const checkScrollButtons = () => {
-    const el = scrollRef.current;
-    if (el) {
-      const hasOverflow = el.scrollWidth > el.clientWidth;
-      const canScrollRight = el.scrollLeft < el.scrollWidth - el.clientWidth - 1;
-      const canScrollLeft = el.scrollLeft > 1;
-
-      setShowScrollButtonRight(hasOverflow && canScrollRight);
-      setShowScrollButtonLeft(hasOverflow && canScrollLeft);
-    }
-  };
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    // Check buttons after properties are loaded
-    if (properties.length > 0) {
-      setTimeout(checkScrollButtons, 100);
-    }
-
-    const handleScroll = () => {
-      checkScrollButtons();
-    };
-
-    const handleResize = () => {
-      checkScrollButtons();
-    };
-
-    el.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      el.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [properties]);
 
   // Helper function to format property data (handles both raw and pre-formatted properties)
   const formatProperty = (property) => {
@@ -190,14 +138,17 @@ export default function FeaturedProperties() {
         ) : (
           <>
             <div
-              ref={scrollRef}
-              className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto no-scrollbar scroll-smooth pb-4 lg:pb-6 "
+              className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto scroll-smooth pb-4 lg:pb-6"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#cbd5e0 transparent'
+              }}
             >
               {formattedProperties.map((property, index) => (
                 <div
                   key={property.id || index}
                   className={`
-          w-[250px]  lg:w-[350px]
+          w-[250px]  lg:w-[333px]
           p-4
           bg-[#E9E9E9] border border-gray-200 
           rounded-md overflow-hidden shadow-md 
@@ -284,7 +235,7 @@ export default function FeaturedProperties() {
                     {/* Price and Button */}
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
-                        {property.price}
+                        {property.price} QAR
                       </p>
 
                       <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
@@ -307,41 +258,19 @@ export default function FeaturedProperties() {
 
             {/* View All Button - Moved inside max-w container */}
             <div className="flex justify-center mt-4 lg:mt-6 mb-5">
-              <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
-                <span>View All</span>
-                <FaArrowRight
-                  size={12}
-                  className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
-                />
-              </button>
+              <Link href="/listing/rent">
+                <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
+                  <span>View All</span>
+                  <FaArrowRight
+                    size={12}
+                    className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
+                  />
+                </button>
+              </Link>
             </div>
           </>
         )}
       </div>
-
-      {/* Left Scroll Button */}
-      {showScrollButtonLeft && (
-        <button
-          onClick={scrollLeft}
-          className="absolute left-2 md:left-3 lg:left-4 xl:left-5 2xl:left-6 3xl:left-8 4xl:left-10 5xl:left-12 top-1/2 transform -translate-y-1/2 
-                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
-                     shadow-md z-10 hover:shadow-lg transition"
-        >
-          <FaArrowLeft className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
-        </button>
-      )}
-
-      {/* Right Scroll Button */}
-      {showScrollButtonRight && (
-        <button
-          onClick={scrollRight}
-          className="absolute right-2 md:right-3 lg:right-4 xl:right-5 2xl:right-6 3xl:right-8 4xl:right-10 5xl:right-12 top-1/2 transform -translate-y-1/2 
-                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
-                     shadow-md z-10 hover:shadow-lg transition"
-        >
-          <FaArrowRight className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
-        </button>
-      )}
     </div>
   );
 }

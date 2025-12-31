@@ -75,9 +75,9 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
                             {/* Top Labels - Dynamic from API */}
                             <div className="absolute top-2 lg:top-3 right-2 lg:right-3 flex flex-wrap gap-1 lg:gap-2">
-                                <span className="bg-[#8C8C8C66] text-white text-[10px] lg:text-xs px-2 py-1 rounded-md">
+                                {/* <span className="bg-[#8C8C8C66] text-white text-[10px] lg:text-xs px-2 py-1 rounded-md">
                                     {property.status || "Completed"}
-                                </span>
+                                </span> */}
                                 <span className="bg-[#8C8C8C66] text-white text-[10px] lg:text-xs px-2 py-1 rounded-md">
                                     {getStatusLabel(property.statusType)}
                                 </span>
@@ -167,9 +167,9 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                                         </span>
                                     </div>
 
-                                    <div className="w-full h-1 bg-green-200 rounded-full mt-1">
+                                    {/* <div className="w-full h-1 bg-green-200 rounded-full mt-1">
                                         <div className={`w-full h-full ${property.statusType === "completed" ? "bg-green-500" : "bg-yellow-500"} rounded-full`}></div>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                             </div>

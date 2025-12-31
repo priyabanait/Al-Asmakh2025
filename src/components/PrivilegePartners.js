@@ -15,13 +15,13 @@ export default function Profit() {
   const testimonials = [
     {
       name: "Sarah Mitchell",
-      text: "Al-Asmakh's attention to detail and understanding of my specific requirements made finding my dream penthouse an effortless experience. The team went above and beyond to ensure every detail was perfect.",
-      image: "https://i.pravatar.cc/150?img=1",
+      text: "Al-Asmakh's attention to detail and understanding of my specific requirements made finding my dream penthouse an effortless experience. ",
+      image: "https://media.istockphoto.com/id/1394149744/photo/headshot-of-early-20s-middle-eastern-woman.jpg?s=612x612&w=0&k=20&c=Q4gBjPUfikbPtkFh3I9_CoLF53H8Bz9FAfxiMOO7eIY=",
     },
     {
       name: "Ahmed Al-Thani",
       text: "Their global network and discreet approach were instrumental in helping us acquire multiple investment properties across three continents. Truly professional service.",
-      image: "https://i.pravatar.cc/150?img=12",
+      image: "https://media.istockphoto.com/id/1188035960/photo/arabian-man-with-traditional-dress.jpg?s=612x612&w=0&k=20&c=1YLblK80dPpriEy3-mcH8NQcBINrUc42c_P9lCF7zag=",
     },
     {
       name: "Emma Thompson",
@@ -31,12 +31,12 @@ export default function Profit() {
     {
       name: "James Anderson",
       text: "The professionalism and attention to every small detail made our home buying process seamless and stress-free. Highly recommend their services to anyone looking for premium properties.",
-      image: "https://i.pravatar.cc/150?img=13",
+      image: "https://t4.ftcdn.net/jpg/04/31/64/75/360_F_431647519_usrbQ8Z983hTYe8zgA7t1XVc5fEtqcpa.jpg",
     },
     {
       name: "Fatima Hassan",
       text: "Outstanding service and deep understanding of luxury properties — truly unmatched in the region. Al-Asmakh exceeded all our expectations and delivered beyond what we imagined.",
-      image: "https://i.pravatar.cc/150?img=47",
+      image: "https://media.istockphoto.com/id/487224796/photo/young-arabic-woman-in-modern-office.jpg?s=612x612&w=0&k=20&c=fr9umHN4hxFFVrgJFwk4_eBKfFvyrM79JzD9wePWWV4=",
     },
   ];
 
@@ -664,7 +664,7 @@ export default function Profit() {
 
                         {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
                         <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-4 px-4 group-hover:pb-4">
-                          <h3 className="text-white font-semibold text-base mb-0 group-hover:mb-2 transition-all duration-300">
+                          <h3 className="text-white font-semibold text-[10px] mb-0 group-hover:mb-2 transition-all duration-300">
                             {blog.title}
                           </h3>
                           <div className="overflow-hidden max-h-0 group-hover:max-h-[200px] transition-all duration-300 ease-in-out">
@@ -746,7 +746,7 @@ export default function Profit() {
 
                       {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
                       <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-6 px-6 group-hover:pb-6">
-                        <h3 className="text-white font-semibold text-lg lg:text-xl mb-0 group-hover:mb-3 transition-all duration-300">
+                        <h3 className="text-white font-semibold text-[18px] lg:text-[18px] mb-0 group-hover:mb-3 transition-all duration-300">
                           {blog.title}
                         </h3>
 
@@ -910,6 +910,8 @@ export default function Profit() {
           </div>
         </div>
       </section>
+
+
       <section className="w-full py-4 lg:py-16 bg-white relative overflow-hidden">
         {/* Background Image */}
         <div

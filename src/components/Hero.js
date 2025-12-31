@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, Mic, ArrowDown } from "lucide-react";
 import { VscSettings } from "react-icons/vsc";
 import { motion } from "framer-motion";
@@ -7,6 +7,59 @@ import MoreFiltersModal from "./MoreFiltersModal";
 
 export default function Hero() {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  // Initialize with a check if window is available (client-side)
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth >= 1024; // lg breakpoint
+    }
+    return false;
+  });
+  const desktopVideoRef = useRef(null);
+  const mobileVideoRef = useRef(null);
+
+  useEffect(() => {
+    // Check initial screen size
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024); // lg breakpoint
+    };
+
+    // Set initial value (in case it wasn't set correctly)
+    checkScreenSize();
+
+    // Listen for resize events
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  useEffect(() => {
+    // Control video playback based on screen size
+    if (isDesktop) {
+      // Desktop: play desktop video, pause mobile video
+      if (desktopVideoRef.current) {
+        desktopVideoRef.current.play().then(() => {
+          // Unmute after video starts playing
+          desktopVideoRef.current.muted = false;
+        }).catch(console.error);
+      }
+      if (mobileVideoRef.current) {
+        mobileVideoRef.current.pause();
+        mobileVideoRef.current.currentTime = 0;
+      }
+    } else {
+      // Mobile: play mobile video, pause desktop video
+      if (mobileVideoRef.current) {
+        mobileVideoRef.current.play().then(() => {
+          // Unmute after video starts playing
+          mobileVideoRef.current.muted = false;
+        }).catch(console.error);
+      }
+      if (desktopVideoRef.current) {
+        desktopVideoRef.current.pause();
+        desktopVideoRef.current.currentTime = 0;
+      }
+    }
+  }, [isDesktop]);
 
   return (
     <div>
@@ -14,14 +67,17 @@ export default function Hero() {
 
       <section className="hidden lg:flex relative w-full min-h-screen  items-center justify-center overflow-hidden">
 
-        <video
-          src="/images/hero_section_video.mov"
-          autoPlay
-          loop
-
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
+        {isDesktop && (
+          <video
+            ref={desktopVideoRef}
+            src="/images/hero_section_video.mov"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        )}
 
         {/* overlay only for mobile */}
         <div className="absolute inset-0 bg-black/20 md:bg-transparent" />
@@ -38,7 +94,7 @@ export default function Hero() {
         p-5 sm:p-6 md:p-5 lg:p-8 
   
         mx-auto
-        mt-16 sm:mt-24 md:mt-40 lg:mt-52
+        mt-16 sm:mt-24 md:mt-30 lg:mt-30
         
         w-[92%] sm:w-[96%] md:w-[90%] lg:w-[85%]
         max-w-[360px] sm:max-w-[550px] md:max-w-[770px] lg:max-w-[900px]
@@ -173,14 +229,18 @@ export default function Hero() {
       <section className="lg:hidden relative w-full min-h-screen  items-center justify-center" style={{ overflow: 'visible' }}>
 
         {/* BACKGROUND VIDEO OR IMAGE */}
-        <video
-          src="/images/hero_section_video_vertical.mp4"
-          autoPlay
-          loop
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
+        {!isDesktop && (
+          <video
+            ref={mobileVideoRef}
+            src="/images/hero_section_video_vertical.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        )}
 
 
         {/* OVERLAY */}
@@ -257,11 +317,9 @@ export default function Hero() {
 
         </div>
 
-
-
       </section>
 
-      {/* More Filters Modal */}
+      {/* More Filters Modal - Hide new filters on home page */}
       <MoreFiltersModal
         isOpen={showMoreFilters}
         onClose={() => setShowMoreFilters(false)}
@@ -269,6 +327,7 @@ export default function Hero() {
           // Handle show results action
           console.log("Show results clicked");
         }}
+        hideNewFilters={true}
       />
     </div>
   );

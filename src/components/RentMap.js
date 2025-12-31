@@ -207,7 +207,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
 
         {/* Zoom Controls - Bottom Right */}
-        <div className="absolute bottom-4 right-4 bg-white rounded-md shadow-lg flex flex-col z-10">
+        <div className="absolute bottom-4 right-4 bg-gray-200 rounded-md shadow-lg flex flex-col z-10">
           <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
             <span className="text-lg font-semibold">+</span>
           </button>

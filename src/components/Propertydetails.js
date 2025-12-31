@@ -3,7 +3,8 @@ import Image from "next/image";
 import React, { useRef, useState, useEffect } from "react";
 import { ArrowLeft, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaArrowRight, FaArrowLeft, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
-import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare } from "react-icons/fa";
+import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaElevator, FaTv, FaUtensils } from "react-icons/fa";
+import { Md360 } from "react-icons/md";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../utils/propertyapi";
@@ -247,7 +248,7 @@ export default function PropertyDetails() {
         {/* Title + Price + Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
-            <h1 className="text-xl sm:text-2xl ">{formattedProperty.title.slice(0, 33)}</h1>
+            <h1 className="text-xl sm:text-2xl ">{formattedProperty.title.slice(0, 27)}...</h1>
             <div className="w-[50%] h-[0.2px] px-10  mt-2 3xl:mt-3 bg-gray-400 my-2 "></div>
             <div className="flex items-center text-gray-200 text-xs sm:text-sm mt-2">
               <MapPin size={16} className="mr-1" /> {formattedProperty.location}
@@ -438,9 +439,9 @@ export default function PropertyDetails() {
                   )}
                 </button>
               </div>
-              <h2 className="text-lg sm:text-xl mx-4 sm:mx-10  text-[#001730] mb-3">
+              {/* <h2 className="text-lg sm:text-xl mx-4 sm:mx-10  text-[#001730] mb-3">
                 {activeTab === "overview" ? "Description" : "360 Virtual Tour"}
-              </h2>
+              </h2> */}
 
               {activeTab === "overview" ? (
                 <>
@@ -459,56 +460,20 @@ export default function PropertyDetails() {
                   {/* 360 Virtual Tour Viewer */}
                   <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
                     {/* 360 Logo/Icon Overlay */}
-                    <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-md shadow-md flex items-center gap-2">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="text-[#001730]"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"
-                          fill="currentColor"
-                        />
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.3" />
-                      </svg>
-                      <span className="text-[#001730] font-semibold text-sm sm:text-base">360° Virtual Tour</span>
-                    </div>
+
 
                     {/* 360 Viewer Container - You can replace this with actual 360 viewer iframe/embed */}
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
                       {/* Placeholder for 360 viewer - Replace with actual 360 tour embed URL */}
                       <div className="text-center p-8">
                         <div className="mb-4">
-                          <svg
-                            width="80"
-                            height="80"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="mx-auto text-[#001730]"
-                          >
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
-                            <path
-                              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                              fill="currentColor"
-                              opacity="0.3"
-                            />
-                            <path
-                              d="M12 6v6l4 2"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                            />
-                          </svg>
+                          <Md360 className="mx-auto text-[#001730] w-20 h-20" />
                         </div>
                         <h3 className="text-xl sm:text-2xl font-semibold text-[#001730] mb-2">
                           360° Virtual Tour
                         </h3>
                         <p className="text-gray-600 text-sm sm:text-base mb-4">
-                          Interactive 360° view of this property
+                          Click Here To View Interactive 360° view of this property
                         </p>
                         <p className="text-gray-500 text-xs sm:text-sm">
                           {/* Replace this iframe src with your actual 360 tour URL (e.g., Matterport, Kuula, etc.) */}
@@ -568,6 +533,65 @@ export default function PropertyDetails() {
 
             </div>
 
+            {/* Amenities Card */}
+            {formattedProperty.amenities && formattedProperty.amenities.length > 0 && (
+              <div className="bg-white p-4 sm:p-6 shadow-lg rounded-[5px] mb-4 mt-4 sm:mt-6">
+                <h3 className="text-base sm:text-lg font-semibold text-[#001730] mb-3 sm:mb-4">Amenities</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                  {formattedProperty.amenities.map((amenity, idx) => {
+                    // Map amenity names to icons
+                    const getAmenityIcon = (amenityName) => {
+                      const name = amenityName?.toLowerCase() || '';
+                      if (name.includes('wifi') || name.includes('internet')) return <FaWifi className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('pool') || name.includes('swimming')) return <FaSwimmingPool className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('gym') || name.includes('fitness')) return <FaDumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('parking')) return <FaParking className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('ac') || name.includes('air conditioning')) return <FaSnowflake className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('pet') || name.includes('dog')) return <FaDog className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('security') || name.includes('guard')) return <FaShieldAlt className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('elevator') || name.includes('lift')) return <FaElevator className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('tv') || name.includes('television')) return <FaTv className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      if (name.includes('kitchen') || name.includes('restaurant')) return <FaUtensils className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                      return <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                    };
+
+                    const amenityName = typeof amenity === 'string' ? amenity : amenity?.name || amenity?.label || 'Amenity';
+
+                    return (
+                      <div
+                        key={idx}
+                        className="
+                          flex items-center gap-2 sm:gap-3
+                          bg-gray-100
+                          px-2 sm:px-3
+                          h-10 sm:h-10
+                          rounded-[5px]
+                          shadow-sm
+                        "
+                      >
+                        {/* ICON */}
+                        {getAmenityIcon(amenityName)}
+
+                        {/* TEXT */}
+                        <p
+                          className="
+                            font-semibold text-[#001730]
+                            text-xs sm:text-sm
+                            whitespace-nowrap
+                            truncate
+                            w-full
+                          "
+                          title={amenityName}
+                        >
+                          {amenityName}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Map Box */}
             <div className="mt-4 sm:mt-6 bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden">
               <iframe
@@ -584,7 +608,7 @@ export default function PropertyDetails() {
 
             {/* Bottom info strip */}
             <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
-              <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
 
                 {/* Box 1 */}
                 <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
@@ -642,14 +666,14 @@ export default function PropertyDetails() {
                   className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
                 >
                   {/* LEFT IMAGE */}
-                  <div className="w-full lg:w-1/2 relative flex-shrink-0 h-64  sm:h-30 lg:h-full ">
+                  <div className="w-full lg:w-1/2  rounded-[5px] relative flex-shrink-0 h-64 p-6 sm:h-56 lg:h-auto lg:pr-0 lg:mr-0">
                     {agent.profilePicture ? (
                       <Image
                         src={agent.profilePicture}
                         width={300}
                         height={300}
                         alt={agentName}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full  rounded-[5px] object-cover"
                         unoptimized={agent.profilePicture?.startsWith('http')}
                       />
                     ) : (
@@ -662,24 +686,24 @@ export default function PropertyDetails() {
                       </div>
                     )}
 
-                    <Image
+                    {/* <Image
                       src="/Frame 74.png"
                       width={50}
                       height={50}
                       alt="logo"
                       className="absolute top-2 left-2 sm:top-3 sm:left-3 w-8 h-8 sm:w-[50px] sm:h-[50px]"
-                    />
+                    /> */}
                   </div>
 
                   {/* RIGHT DETAILS */}
                   <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col justify-between">
                     <div>
-                      <div className="shadow-md bg-white text-center p-4 sm:p-8 rounded-[5px]">
+                      <div className="shadow-md bg-white text-center p-3 sm:p-4 rounded-[5px]">
                         <h3 className="text-base sm:text-lg font-semibold text-center text-[#001730] mb-1">
                           {agentName}
                         </h3>
-                        <div className="w-[30%] h-[0.2px] px-10 mt-2 3xl:mt-3 bg-gray-400 my-2 mx-auto"></div>
-                        <p className="text-gray-500 text-xs sm:text-sm mb-4">
+                        <div className="w-[30%] h-[0.2px] px-10 mt-1 3xl:mt-2 bg-gray-400 my-1 mx-auto"></div>
+                        <p className="text-gray-500 text-xs sm:text-sm mb-2">
                           Property Agent
                         </p>
                       </div>
@@ -695,7 +719,18 @@ export default function PropertyDetails() {
                         </div>
                       )}
 
-                      {agent.email && (
+
+
+                      <div className="relative mt-4">
+                        <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                          Languages:
+                        </p>
+                        <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                          English , arabic , Spanish
+                        </p>
+                      </div>
+
+                      {/* {agent.email && (
                         <div className="relative mt-4">
                           <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
                             Email:
@@ -704,7 +739,7 @@ export default function PropertyDetails() {
                             {agent.email}
                           </p>
                         </div>
-                      )}
+                      )} */}
                     </div>
 
                     {/* Buttons */}
@@ -778,8 +813,11 @@ export default function PropertyDetails() {
           </p>
 
           <div
-            ref={scrollRef}
-            className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto no-scrollbar scroll-smooth pb-4 lg:pb-6 "
+            className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto scroll-smooth pb-4 lg:pb-6"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#cbd5e0 transparent'
+            }}
           >
             {relatedProperties.length > 0 ? (
               relatedProperties.map((property, index) => {
@@ -788,7 +826,7 @@ export default function PropertyDetails() {
                   <div
                     key={formatted.id || index}
                     className={`
-          w-[250px]  lg:w-[350px]
+          w-[250px]  lg:w-[333px]
           p-4
           bg-[#E9E9E9] border border-gray-200 
           rounded-md overflow-hidden shadow-md 
@@ -902,42 +940,23 @@ export default function PropertyDetails() {
 
           {/* View All Button - Moved inside max-w container */}
           <div className="flex justify-center mt-4 lg:mt-6 mb-5">
-            <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
-              <span>View All</span>
-              <FaArrowRight
-                size={12}
-                className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
-              />
-            </button>
+            <Link href="/listings/rent">
+              <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
+                <span>View All</span>
+                <FaArrowRight
+                  size={12}
+                  className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
+                />
+              </button>
+            </Link>
           </div>
         </div>
-
-        {/* Left Scroll Button */}
-        {showScrollButtonLeft && (
-          <button
-            onClick={scrollLeft}
-            className="absolute left-2 md:left-3 lg:left-4 xl:left-5 2xl:left-6 3xl:left-8 4xl:left-10 5xl:left-12 top-1/2 transform -translate-y-1/2 
-                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
-                     shadow-md z-10 hover:shadow-lg transition"
-          >
-            <FaArrowLeft className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
-          </button>
-        )}
-
-        {/* Right Scroll Button */}
-        {showScrollButtonRight && (
-          <button
-            onClick={scrollRight}
-            className="absolute right-2 md:right-3 lg:right-4 xl:right-5 2xl:right-6 3xl:right-8 4xl:right-10 5xl:right-12 top-1/2 transform -translate-y-1/2 
-                     bg-white border border-gray-300 rounded-md p-2 md:p-2.5 lg:p-3 xl:p-3.5 2xl:p-4 3xl:p-5 4xl:p-6 5xl:p-7 px-4 md:px-5 lg:px-6 xl:px-7 2xl:px-8 3xl:px-10 4xl:px-12 5xl:px-14
-                     shadow-md z-10 hover:shadow-lg transition"
-          >
-            <FaArrowRight className="text-[#001730] w-5 h-5 md:w-5 md:h-5 lg:w-6 lg:h-6 xl:w-6 xl:h-6 2xl:w-8 2xl:h-8 3xl:w-10 3xl:h-10 4xl:w-12 4xl:h-12 5xl:w-14 5xl:h-14" />
-          </button>
-        )}
       </div>
+
+
 
 
     </div>
   );
 }
+

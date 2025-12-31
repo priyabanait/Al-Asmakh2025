@@ -161,7 +161,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
             ) : (
                 <div className="hidden lg:flex h-[calc(100vh-120px)]">
                     {/* Left Section: Property List (50%) */}
-                    <div className="w-full lg:w-1/2 overflow-y-auto bg-white p-4">
+                    <div className="w-full lg:w-1/2 overflow-y-auto p-4">
                         <div className="space-y-4">
                             {properties.map((property) => (
                                 <div
@@ -286,7 +286,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                             ></iframe>
 
                             {/* Zoom Controls */}
-                            <div className="absolute top-4 right-4 bg-white rounded-md shadow-lg flex flex-col z-10">
+                            <div className="absolute top-4 right-4 bg-[#E9E9E9] rounded-md shadow-lg flex flex-col z-10">
                                 <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
                                     <span className="text-lg font-semibold">+</span>
                                 </button>

@@ -1,13 +1,17 @@
 "use client";
 import { useState } from "react";
-import { ArrowDown, X, Sofa, Ruler, Gem, MapPin, Building, ListChecks, Search, Mic, Bed, DollarSign } from "lucide-react";
+import { ArrowDown, X, Sofa, Ruler, Gem, MapPin, Building, ListChecks, Search, Mic, Bed, DollarSign, User, Briefcase, Bath } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
+export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false }) {
   const [openSections, setOpenSections] = useState({
     location: false,
     propertyType: false,
+    size: false,
+    agent: false,
+    project: false,
     bedrooms: false,
+    bathrooms: false,
     priceRange: false,
     amenities: false,
   });
@@ -41,6 +45,12 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
 
   const [locationSearch, setLocationSearch] = useState("");
   const [selectedBedrooms, setSelectedBedrooms] = useState([]);
+  const [selectedBathrooms, setSelectedBathrooms] = useState([]);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedAgent, setSelectedAgent] = useState("");
+  const [selectedProject, setSelectedProject] = useState("");
+  const [agentSearch, setAgentSearch] = useState("");
+  const [projectSearch, setProjectSearch] = useState("");
   const [sevenPlusChecked, setSevenPlusChecked] = useState(false);
   const [minPrice, setMinPrice] = useState(1000);
   const [maxPrice, setMaxPrice] = useState(10000000);
@@ -69,6 +79,33 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
   const bedroomOptions = ["Studio", "1", "2", "3", "4", "5", "6", "7+"];
 
   const bathroomOptions = ["1", "2", "3", "4", "5+"];
+
+  const sizeOptions = [
+    "0 - 500 sqft",
+    "500 - 1,000 sqft",
+    "1,000 - 2,000 sqft",
+    "2,000 - 3,000 sqft",
+    "3,000 - 5,000 sqft",
+    "5,000+ sqft",
+  ];
+
+  const agentOptions = [
+    "John Smith",
+    "Sarah Johnson",
+    "Michael Brown",
+    "Emily Davis",
+    "David Wilson",
+    "Lisa Anderson",
+  ];
+
+  const projectOptions = [
+    "Al Asmakh Tower",
+    "Beverly Hills Tower",
+    "Floresta Tower",
+    "Les Maisons Blanches",
+    "Pearl Residences",
+    "West Bay Plaza",
+  ];
 
   const priceRanges = [
     "0 - 500,000 QAR",
@@ -134,7 +171,7 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
               {/* Header */}
               <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
                 <h2 className="text-lg sm:text-xl font-semibold text-[#001730]">
-                  More Filters
+                  Filters
                 </h2>
                 <button
                   onClick={onClose}
@@ -227,7 +264,180 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
                   )}
                 </div>
 
-                {/* 3. Bedrooms Section */}
+                {/* 3. Size Section - Hidden on home page */}
+                {!hideNewFilters && (
+                  <div className="mb-6">
+                    <button
+                      onClick={() => toggleSection("size")}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Ruler size={18} className="text-[#001730]" />
+                        <span className="font-medium text-[#001730]">Size</span>
+                      </div>
+                      <ArrowDown
+                        size={16}
+                        className={`text-gray-600 transition-transform ${openSections.size ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+
+                    {openSections.size && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-3 overflow-hidden"
+                      >
+                        <div className="p-3 bg-white border border-gray-200 rounded-[5px]">
+                          <div className="flex flex-wrap gap-2 justify-start items-center">
+                            {sizeOptions.map((option, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setSelectedSize(selectedSize === option ? "" : option)}
+                                className={`px-4 py-2 rounded-[5px] text-sm font-medium transition ${selectedSize === option
+                                  ? "bg-[#001730] text-white"
+                                  : "bg-gray-100 text-[#001730] hover:bg-gray-200"
+                                  }`}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+
+                {/* 4. Agent Section - Hidden on home page */}
+                {!hideNewFilters && (
+                  <div className="mb-6">
+                    <button
+                      onClick={() => toggleSection("agent")}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition"
+                    >
+                      <div className="flex items-center gap-3">
+                        <User size={18} className="text-[#001730]" />
+                        <span className="font-medium text-[#001730]">Agent</span>
+                      </div>
+                      <ArrowDown
+                        size={16}
+                        className={`text-gray-600 transition-transform ${openSections.agent ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+
+                    {openSections.agent && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-3 overflow-hidden"
+                      >
+                        <div className="p-3 bg-white border border-gray-200 rounded-[5px]">
+                          {/* Search Input Box */}
+                          <div className="flex items-center px-3 sm:px-4 bg-white rounded-[3px] border border-gray-300 py-2 mb-4">
+                            <div className="p-1 sm:p-1.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[24px] w-[24px] sm:h-[28px] sm:w-[28px]">
+                              <Search className="text-white h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            </div>
+                            <input
+                              type="text"
+                              placeholder="Search agent..."
+                              value={agentSearch}
+                              onChange={(e) => setAgentSearch(e.target.value)}
+                              className="flex-1 ml-2 sm:ml-3 outline-none text-xs sm:text-sm"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            {agentOptions
+                              .filter(agent => agent.toLowerCase().includes(agentSearch.toLowerCase()))
+                              .map((agent, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setSelectedAgent(selectedAgent === agent ? "" : agent)}
+                                  className={`px-4 py-2 rounded-[5px] text-sm font-medium transition text-left ${selectedAgent === agent
+                                    ? "bg-[#001730] text-white"
+                                    : "bg-gray-100 text-[#001730] hover:bg-gray-200"
+                                    }`}
+                                >
+                                  {agent}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+
+                {/* 5. Project Section - Hidden on home page */}
+                {!hideNewFilters && (
+                  <div className="mb-6">
+                    <button
+                      onClick={() => toggleSection("project")}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Briefcase size={18} className="text-[#001730]" />
+                        <span className="font-medium text-[#001730]">Project</span>
+                      </div>
+                      <ArrowDown
+                        size={16}
+                        className={`text-gray-600 transition-transform ${openSections.project ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+
+                    {openSections.project && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-3 overflow-hidden"
+                      >
+                        <div className="p-3 bg-white border border-gray-200 rounded-[5px]">
+                          {/* Search Input Box */}
+                          <div className="flex items-center px-3 sm:px-4 bg-white rounded-[3px] border border-gray-300 py-2 mb-4">
+                            <div className="p-1 sm:p-1.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[24px] w-[24px] sm:h-[28px] sm:w-[28px]">
+                              <Search className="text-white h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                            </div>
+                            <input
+                              type="text"
+                              placeholder="Search project..."
+                              value={projectSearch}
+                              onChange={(e) => setProjectSearch(e.target.value)}
+                              className="flex-1 ml-2 sm:ml-3 outline-none text-xs sm:text-sm"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            {projectOptions
+                              .filter(project => project.toLowerCase().includes(projectSearch.toLowerCase()))
+                              .map((project, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => setSelectedProject(selectedProject === project ? "" : project)}
+                                  className={`px-4 py-2 rounded-[5px] text-sm font-medium transition text-left ${selectedProject === project
+                                    ? "bg-[#001730] text-white"
+                                    : "bg-gray-100 text-[#001730] hover:bg-gray-200"
+                                    }`}
+                                >
+                                  {project}
+                                </button>
+                              ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+
+
+
+                {/* 6. Bedrooms Section */}
                 <div className="mb-6">
                   <button
                     onClick={() => toggleSection("bedrooms")}
@@ -266,20 +476,73 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
                                 }
                               }}
                               className={`px-4 py-2 rounded-[5px] text-sm font-medium transition ${selectedBedrooms.includes(option)
-                              ? "bg-[#001730] text-white"
-                              : "bg-gray-100 text-[#001730] hover:bg-gray-200"
-                              }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
+                                ? "bg-[#001730] text-white"
+                                : "bg-gray-100 text-[#001730] hover:bg-gray-200"
+                                }`}
+                            >
+                              {option}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </motion.div>
                   )}
                 </div>
 
-                {/* 4. Price Range Section */}
+                {/* 7. Bathroom Section - Hidden on home page */}
+                {!hideNewFilters && (
+                  <div className="mb-6">
+                    <button
+                      onClick={() => toggleSection("bathrooms")}
+                      className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-md hover:bg-gray-100 transition"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Bath size={18} className="text-[#001730]" />
+                        <span className="font-medium text-[#001730]">Bathroom</span>
+                      </div>
+                      <ArrowDown
+                        size={16}
+                        className={`text-gray-600 transition-transform ${openSections.bathrooms ? "rotate-180" : ""
+                          }`}
+                      />
+                    </button>
+
+                    {openSections.bathrooms && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="mt-3 overflow-hidden"
+                      >
+                        <div className="p-3 bg-white border border-gray-200 rounded-[5px]">
+                          <div className="flex flex-wrap gap-2 justify-start items-center">
+                            {bathroomOptions.map((option, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  if (selectedBathrooms.includes(option)) {
+                                    setSelectedBathrooms(selectedBathrooms.filter(b => b !== option));
+                                  } else {
+                                    setSelectedBathrooms([...selectedBathrooms, option]);
+                                  }
+                                }}
+                                className={`px-4 py-2 rounded-[5px] text-sm font-medium transition ${selectedBathrooms.includes(option)
+                                  ? "bg-[#001730] text-white"
+                                  : "bg-gray-100 text-[#001730] hover:bg-gray-200"
+                                  }`}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                )}
+
+                {/* 8. Price Range Section */}
                 <div className="mb-6">
                   <button
                     onClick={() => toggleSection("priceRange")}
@@ -330,7 +593,7 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
                           ></div>
 
                           {/* Min Price Slider */}
-                        <input
+                          <input
                             type="range"
                             min="1000"
                             max={maxPrice}
@@ -351,7 +614,7 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
                           />
 
                           {/* Max Price Slider */}
-                        <input
+                          <input
                             type="range"
                             min={minPrice}
                             max="10000000"
@@ -407,7 +670,7 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults }) {
                   )}
                 </div>
 
-                {/* 5. Amenities Section */}
+                {/* 9. Amenities Section */}
                 <div className="mb-6">
                   <button
                     onClick={() => toggleSection("amenities")}
