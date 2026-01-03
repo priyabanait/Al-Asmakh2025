@@ -1,15 +1,12 @@
 import axios from "axios";
 
-// TEMPORARY: Use dummy data instead of API calls (set to false when Azure is available)
-const USE_DUMMY_DATA = true;
+// Use dummy data only if explicitly enabled via environment variable or when API fails
+// Set NEXT_PUBLIC_USE_DUMMY_DATA=true in .env.local to enable manual data injection for testing
+const USE_DUMMY_DATA = process.env.NEXT_PUBLIC_USE_DUMMY_DATA === 'true' || false;
 
-// Production URLs - AKS LoadBalancer IP: 40.81.255.90
-// Services are accessed through nginx on port 80
-// Use Next.js API proxy to avoid mixed content issues (HTTPS frontend -> HTTP backend)
-const PRODUCTION_BASE_URL = "http://40.81.255.90";
-
-// Local development URL - NGINX gateway on port 8080
-// const PRODUCTION_BASE_URL = "http://localhost:3002";
+// API Base URL - ALWAYS use Next.js proxy to avoid mixed content (HTTPS -> HTTP) issues
+// The proxy handles server-side requests, so no ERR_NETWORK errors
+const API_BASE_URL = '/api/proxy/properties';
 
 // Dummy property data for testing when Azure subscription is unavailable
 const DUMMY_PROPERTIES = [
@@ -316,29 +313,9 @@ const DUMMY_PROPERTIES = [
     }
 ];
 
-// Helper function to get API base URL (called at runtime to detect HTTPS)
-const getApiBaseUrl = () => {
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-        // On HTTPS (Vercel) - use proxy to avoid mixed content
-        return `${window.location.origin}/api/proxy/api/v1`;
-    }
-    // On HTTP (local dev) - use direct backend
-    return `${PRODUCTION_BASE_URL}/api/v1`;
-};
-
-// Helper function to get Auth base URL
-const getAuthBaseUrl = () => {
-    if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
-        // On HTTPS (Vercel) - use proxy
-        return `${window.location.origin}/api/proxy`;
-    }
-    // On HTTP (local dev) - use direct backend
-    return PRODUCTION_BASE_URL;
-};
-
-// These will be set at runtime when functions are called
-let API_BASE_URL = `${PRODUCTION_BASE_URL}/api/v1`;
-let AUTH_API_BASE_URL = PRODUCTION_BASE_URL;
+// All API calls use Next.js proxy - no direct backend calls
+// This prevents ERR_NETWORK errors from mixed content (HTTPS -> HTTP)
+// The proxy runs server-side, so no CORS or mixed content issues
 
 /**
  * Format property data for PropertyListView component
@@ -494,10 +471,7 @@ export const fetchProperties = async (params = {}) => {
         };
     }
 
-    // Original API call code
-    // Update URLs at runtime to handle HTTPS proxy
-    API_BASE_URL = getApiBaseUrl();
-
+    // API call using Next.js proxy (always same-origin, no ERR_NETWORK)
     try {
         let {
             priceType = "rent",
@@ -543,7 +517,8 @@ export const fetchProperties = async (params = {}) => {
         if (minPrice) queryParams.append("minPrice", minPrice);
         if (maxPrice) queryParams.append("maxPrice", maxPrice);
 
-        const response = await axios.get(`${API_BASE_URL}/properties?${queryParams.toString()}`);
+        // Call Next.js proxy (same-origin, no mixed content issues)
+        const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);
 
         if (response.data) {
             const propertiesData = response.data.properties || [];
@@ -572,7 +547,33 @@ export const fetchProperties = async (params = {}) => {
             };
         }
     } catch (error) {
-        console.error("Error fetching properties:", error);
+        console.error("Error fetching properties from API:", error);
+
+        // Fallback to manual data if available (for testing when backend is down)
+        // Check if manual data is stored in localStorage
+        if (typeof window !== 'undefined') {
+            try {
+                const manualData = localStorage.getItem('manual_properties_data');
+                if (manualData) {
+                    console.log("Using manual data from localStorage as fallback");
+                    const parsedData = JSON.parse(manualData);
+                    const formattedProperties = (parsedData.properties || []).map(formatProperty);
+                    return {
+                        properties: formattedProperties,
+                        totalProperties: parsedData.pagination?.total || formattedProperties.length,
+                        pagination: parsedData.pagination || {
+                            total: formattedProperties.length,
+                            page: page,
+                            limit: limit,
+                            pages: Math.ceil((parsedData.pagination?.total || formattedProperties.length) / limit),
+                        },
+                    };
+                }
+            } catch (e) {
+                console.error("Error parsing manual data:", e);
+            }
+        }
+
         throw {
             message: error.response?.data?.message || error.message || "Failed to load properties",
             status: error.response?.status,
@@ -685,10 +686,7 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
         return mappedProperties.slice(startIndex, endIndex);
     }
 
-    // Original API call code
-    // Update URLs at runtime to handle HTTPS proxy
-    API_BASE_URL = getApiBaseUrl();
-
+    // API call using Next.js proxy (always same-origin, no ERR_NETWORK)
     // Normalize offeringType to priceType for API
     // Convert "lease" to "rent" (backend uses "rent", frontend may use "lease")
     const normalizedOfferingType = offeringType?.toLowerCase();
@@ -732,8 +730,8 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
 
         console.log("API Query Params:", queryParams.toString());
 
-        // Fetch raw data from API
-        const response = await axios.get(`${API_BASE_URL}/properties?${queryParams.toString()}`);
+        // Call Next.js proxy (same-origin, no mixed content issues)
+        const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);
 
         console.log("API Response:", {
             totalProperties: response.data?.properties?.length || 0,
@@ -812,7 +810,85 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
             return [];
         }
     } catch (error) {
-        console.error("Error fetching properties by offering type:", error);
+        console.error("Error fetching properties by offering type from API:", error);
+
+        // Fallback to manual data if available (for testing when backend is down)
+        if (typeof window !== 'undefined') {
+            try {
+                const manualData = localStorage.getItem('manual_properties_data');
+                if (manualData) {
+                    console.log("Using manual data from localStorage as fallback");
+                    const parsedData = JSON.parse(manualData);
+                    const propertiesData = parsedData.properties || [];
+
+                    // Filter by priceType
+                    let filteredProperties = propertiesData.filter(p =>
+                        p.priceType?.toLowerCase() === priceType.toLowerCase()
+                    );
+
+                    // Apply additional filters
+                    if (type) filteredProperties = filteredProperties.filter(p => p.type === type);
+                    if (category) filteredProperties = filteredProperties.filter(p => p.category === category);
+                    if (luxury === "true" || category === "luxury") {
+                        filteredProperties = filteredProperties.filter(p =>
+                            p.priceAmount >= 5000000 || p.category === "luxury" || p.type === "luxury"
+                        );
+                    }
+
+                    // Map to component format
+                    const mappedProperties = filteredProperties.map((prop) => {
+                        let location = prop.locationLevel1 || "Location not specified";
+                        if (prop.locationLevel2) location += `, ${prop.locationLevel2}`;
+                        if (prop.locationLevel3) location += `, ${prop.locationLevel3}`;
+
+                        let price = "Price on request";
+                        if (prop.priceAmount) {
+                            price = `QAR ${prop.priceAmount.toLocaleString()}`;
+                        }
+
+                        let image = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80";
+                        if (prop.images && Array.isArray(prop.images) && prop.images.length > 0) {
+                            image = prop.images[0].url || prop.images[0].thumbnailUrl || image;
+                        }
+
+                        const year = prop.createdAt
+                            ? new Date(prop.createdAt).getFullYear().toString()
+                            : new Date().getFullYear().toString();
+
+                        let status = "100% Completed";
+                        let statusType = "completed";
+                        if (prop.projectStatus) {
+                            if (prop.projectStatus === "completed") {
+                                status = "100% Completed";
+                                statusType = "completed";
+                            } else if (prop.projectStatus === "off_plan" || prop.projectStatus === "ongoing") {
+                                status = "30% Ongoing";
+                                statusType = "ongoing";
+                            }
+                        }
+
+                        return {
+                            id: prop.id || prop._id,
+                            title: prop.titleEn || prop.title || "Untitled Property",
+                            location: location,
+                            year: year,
+                            units: prop.bedrooms || prop.units || "N/A",
+                            status: status,
+                            statusType: statusType,
+                            price: price,
+                            image: image,
+                        };
+                    });
+
+                    const startIndex = (page - 1) * limit;
+                    const endIndex = startIndex + limit;
+                    return mappedProperties.slice(startIndex, endIndex);
+                }
+            } catch (e) {
+                console.error("Error parsing manual data:", e);
+            }
+        }
+
         throw {
             message: error.response?.data?.message || error.message || "Failed to load properties",
             status: error.response?.status,
@@ -842,12 +918,9 @@ export const fetchPropertyById = async (propertyId) => {
         }
     }
 
-    // Original API call code
-    // Update URLs at runtime to handle HTTPS proxy
-    API_BASE_URL = getApiBaseUrl();
-
+    // API call using Next.js proxy (always same-origin, no ERR_NETWORK)
     try {
-        const response = await axios.get(`${API_BASE_URL}/properties/${propertyId}`);
+        const response = await axios.get(`/api/proxy/properties/${propertyId}`);
 
         if (response.data) {
             const propertyData = response.data.property || response.data;
@@ -944,9 +1017,7 @@ export const formatAgent = (agent) => {
  * @returns {Promise<Object>} Object containing agents array and pagination info
  */
 export const fetchAgents = async (params = {}) => {
-    // Update URLs at runtime to handle HTTPS proxy
-    AUTH_API_BASE_URL = getAuthBaseUrl();
-
+    // API call using Next.js proxy (always same-origin, no ERR_NETWORK)
     try {
         const {
             page = 1,
@@ -965,8 +1036,8 @@ export const fetchAgents = async (params = {}) => {
             queryParams.append("status", status);
         }
 
-        // Fetch from public agents endpoint
-        const response = await axios.get(`${AUTH_API_BASE_URL}/users/agents?${queryParams.toString()}`);
+        // Call Next.js proxy (same-origin, no mixed content issues)
+        const response = await axios.get(`/api/proxy/agents?${queryParams.toString()}`);
 
         if (response.data) {
             const agentsData = response.data.agents || [];

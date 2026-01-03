@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { ArrowDown, X, Sofa, Ruler, Gem, MapPin, Building, ListChecks, Search, Mic, Bed, DollarSign, User, Briefcase, Bath } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import LocationAutocomplete from "./LocationAutocomplete";
+import { searchProperties, convertModalFiltersToSearchParams } from "../utils/searchApi";
 
 export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false }) {
   const [openSections, setOpenSections] = useState({
@@ -54,6 +56,10 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
   const [sevenPlusChecked, setSevenPlusChecked] = useState(false);
   const [minPrice, setMinPrice] = useState(1000);
   const [maxPrice, setMaxPrice] = useState(10000000);
+  const [selectedPropertyType, setSelectedPropertyType] = useState(null);
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+  const [priceType, setPriceType] = useState("sale"); // 'sale' or 'rent'
+  const [isSearching, setIsSearching] = useState(false);
 
   // const locations = [
   //   "West Bay",
@@ -74,7 +80,6 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
     "Office",
   ];
 
-  const bedOptions = ["1", "2", "3", "4", "5", "6+"];
 
   const bedroomOptions = ["Studio", "1", "2", "3", "4", "5", "6", "7+"];
 
@@ -107,20 +112,8 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
     "West Bay Plaza",
   ];
 
-  const priceRanges = [
-    "0 - 500,000 QAR",
-    "500,000 - 1,000,000 QAR",
-    "1,000,000 - 2,000,000 QAR",
-    "2,000,000 - 5,000,000 QAR",
-    "5,000,000+ QAR",
-  ];
 
-  const furnishingOptions = [
-    "All furnishings",
-    "Furnished",
-    "Unfurnished",
-    "Partly furnished",
-  ];
+
 
   const amenities = [
     "Central A/C",
@@ -137,11 +130,47 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
     "Study",
   ];
 
-  const handleShowResults = () => {
-    if (onShowResults) {
-      onShowResults();
+  const handleShowResults = async () => {
+    try {
+      setIsSearching(true);
+
+      // Collect all filter state
+      const filterState = {
+        locationSearch,
+        selectedBedrooms,
+        selectedBathrooms,
+        selectedSize,
+        selectedAgent,
+        selectedProject,
+        minPrice,
+        maxPrice,
+        selectedAmenities,
+        selectedPropertyType,
+        priceType,
+      };
+
+      // Convert to search params
+      const searchParams = convertModalFiltersToSearchParams(filterState);
+
+      // Add pagination
+      searchParams.page = 1;
+      searchParams.limit = 20;
+
+      // Call search API
+      const results = await searchProperties(searchParams);
+
+      // Pass results to parent component
+      if (onShowResults) {
+        onShowResults(results);
+      }
+
+      onClose();
+    } catch (error) {
+      console.error("Search error:", error);
+      alert("Search failed: " + (error.message || "Please try again"));
+    } finally {
+      setIsSearching(false);
     }
-    onClose();
   };
 
   return (
@@ -208,17 +237,15 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                       transition={{ duration: 0.3 }}
                       className="mt-3 overflow-hidden"
                     >
-                      {/* Search Input Box */}
-                      <div className="flex items-center px-3 sm:px-4 md:px-5 lg:px-6 bg-white rounded-[3px] border border-gray-300 py-2 sm:py-2.5 md:py-3 lg:py-4 mb-4">
-                        <div className="p-1 sm:p-1.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[24px] w-[24px] sm:h-[28px] sm:w-[28px]">
-                          <Search className="text-white h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                        </div>
-                        <input
-                          type="text"
-                          placeholder="Search location..."
+                      {/* Location Autocomplete */}
+                      <div className="mb-4">
+                        <LocationAutocomplete
                           value={locationSearch}
-                          onChange={(e) => setLocationSearch(e.target.value)}
-                          className="flex-1 ml-2 sm:ml-3 md:ml-4 outline-none text-xs sm:text-sm md:text-[10px] lg:text-sm xl:text-base 2xl:text-lg"
+                          onChange={(value) => setLocationSearch(value)}
+                          onSelect={(value) => {
+                            setLocationSearch(value);
+                          }}
+                          placeholder="Search location..."
                         />
                       </div>
                     </motion.div>
@@ -254,7 +281,13 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                         {propertyTypes.map((type, index) => (
                           <button
                             key={index}
-                            className="px-4 py-2 rounded-[5px] text-sm font-medium transition bg-gray-100 text-[#001730] hover:bg-gray-200"
+                            onClick={() => setSelectedPropertyType(
+                              selectedPropertyType === type ? null : type
+                            )}
+                            className={`px-4 py-2 rounded-[5px] text-sm font-medium transition ${selectedPropertyType === type
+                              ? "bg-[#001730] text-white"
+                              : "bg-gray-100 text-[#001730] hover:bg-gray-200"
+                              }`}
                           >
                             {type}
                           </button>
@@ -703,6 +736,14 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                           >
                             <input
                               type="checkbox"
+                              checked={selectedAmenities.includes(amenity)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedAmenities([...selectedAmenities, amenity]);
+                                } else {
+                                  setSelectedAmenities(selectedAmenities.filter(a => a !== amenity));
+                                }
+                              }}
                               className="w-4 h-4 text-[#001730] border-gray-300 rounded focus:ring-[#001730]"
                             />
                             <span className="text-sm text-gray-700">{amenity}</span>
@@ -720,9 +761,18 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                 <div className="p-4 sm:p-6">
                   <button
                     onClick={handleShowResults}
-                    className="w-full bg-[#001730] hover:bg-[#002d52] text-white font-medium py-3 px-6 rounded-md transition"
+                    disabled={isSearching}
+                    className={`w-full bg-[#001730] hover:bg-[#002d52] text-white font-medium py-3 px-6 rounded-md transition ${isSearching ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
                   >
-                    Show 8,859 results
+                    {isSearching ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        Searching...
+                      </span>
+                    ) : (
+                      "Show Results"
+                    )}
                   </button>
                 </div>
               </div>

@@ -20,7 +20,7 @@ export default function FeaturedProperties() {
         const result = await fetchProperties({
           page: 1,
           limit: 4,
-          status: "published",
+          status: "",
         });
 
         console.log("Properties loaded:", result.properties.length);
@@ -258,7 +258,7 @@ export default function FeaturedProperties() {
 
             {/* View All Button - Moved inside max-w container */}
             <div className="flex justify-center mt-4 lg:mt-6 mb-5">
-              <Link href="/listing/rent">
+              <Link href="/listings/rent">
                 <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
                   <span>View All</span>
                   <FaArrowRight

@@ -1,15 +1,15 @@
 "use client";
 import Image from "next/image";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, Suspense } from "react";
 import { ArrowLeft, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaArrowRight, FaArrowLeft, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
-import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaElevator, FaTv, FaUtensils } from "react-icons/fa";
+import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp } from "react-icons/fa";
 import { Md360 } from "react-icons/md";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../utils/propertyapi";
 
-export default function PropertyDetails() {
+function PropertyDetailsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const propertyId = searchParams.get("id");

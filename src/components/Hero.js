@@ -4,9 +4,11 @@ import { Search, Mic, ArrowDown } from "lucide-react";
 import { VscSettings } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import MoreFiltersModal from "./MoreFiltersModal";
+import LocationAutocomplete from "./LocationAutocomplete";
 
 export default function Hero() {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [locationSearch, setLocationSearch] = useState("");
   // Initialize with a check if window is available (client-side)
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window !== "undefined") {
@@ -292,17 +294,18 @@ export default function Hero() {
           {/* SEARCH BAR WITH FILTER - SAME LINE */}
           <div className="bg-white/20 rounded-[3px] mt-2 p-2 sm:p-3 md:p-4 lg:p-5 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Search Input Section */}
-              <div className="flex items-center flex-1 px-3 sm:px-4 md:px-5 lg:px-6 bg-white rounded-[3px] shadow-md py-2 sm:py-2.5 md:py-3 lg:py-4">
-                <div className="p-1.5 sm:p-2 md:p-2.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[28px] w-[28px] sm:h-[32px] sm:w-[32px] md:h-[36px] md:w-[36px] lg:h-[40px] lg:w-[40px] flex-shrink-0">
-                  <Search className="text-white h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 lg:h-6 lg:w-6" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Your search starts here..."
-                  className="flex-1 ml-2 sm:ml-3 md:ml-4 outline-none text-xs sm:text-sm md:text-[10px] lg:text-sm xl:text-base 2xl:text-lg bg-transparent"
+              {/* Search Input Section with Location Autocomplete */}
+              <div className="flex-1">
+                <LocationAutocomplete
+                  value={locationSearch}
+                  onChange={(value) => setLocationSearch(value)}
+                  onSelect={(value) => {
+                    setLocationSearch(value);
+                    // Trigger search or navigate to results
+                  }}
+                  placeholder="Search location..."
+                  className="w-full"
                 />
-                <Mic className="text-gray-500 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 flex-shrink-0" />
               </div>
 
               {/* Filter Button */}

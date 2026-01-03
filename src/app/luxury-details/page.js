@@ -1,15 +1,15 @@
 "use client";
 import Image from "next/image";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, Suspense } from "react";
 import { ArrowLeft, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { FaArrowRight, FaArrowLeft, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
-import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaElevator, FaTv, FaUtensils } from "react-icons/fa";
+import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp } from "react-icons/fa";
 import { Md360 } from "react-icons/md";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../../utils/propertyapi";
 
-export default function PropertyDetails() {
+function PropertyDetailsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const propertyId = searchParams.get("id");
@@ -550,7 +550,7 @@ export default function PropertyDetails() {
                                             if (name.includes('ac') || name.includes('air conditioning')) return <FaSnowflake className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
                                             if (name.includes('pet') || name.includes('dog')) return <FaDog className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
                                             if (name.includes('security') || name.includes('guard')) return <FaShieldAlt className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
-                                            if (name.includes('elevator') || name.includes('lift')) return <FaElevator className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                                            if (name.includes('elevator') || name.includes('lift')) return <FaArrowUp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
                                             if (name.includes('tv') || name.includes('television')) return <FaTv className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
                                             if (name.includes('kitchen') || name.includes('restaurant')) return <FaUtensils className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
                                             return <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
@@ -958,6 +958,20 @@ export default function PropertyDetails() {
 
 
         </div>
+    );
+}
+
+export default function PropertyDetails() {
+    return (
+        <Suspense fallback={
+            <div className="w-full bg-[#F5F7FA] p-4 sm:p-6 mt-20 min-h-screen flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                    <p className="text-xl">Loading property details...</p>
+                </div>
+            </div>
+        }>
+            <PropertyDetailsContent />
+        </Suspense>
     );
 }
 
