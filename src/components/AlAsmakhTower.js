@@ -571,6 +571,15 @@ export default function AlAsmakhTower() {
                   />
                   {/* Light Black Overlay on Hover */}
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
+
+                  {/* View More - Center of card, appears on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white text-base lg:text-lg font-semibold">View More</span>
+                      <FaArrowRight size={16} className="text-white" />
+                    </div>
+                  </div>
+
                   {/* Hover Overlay - Title and Arrow */}
                   <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
                     <div
@@ -608,6 +617,15 @@ export default function AlAsmakhTower() {
                   />
                   {/* Light Black Overlay on Hover */}
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
+
+                  {/* View More - Center of card, appears on hover */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white text-base lg:text-lg font-semibold">View More</span>
+                      <FaArrowRight size={16} className="text-white" />
+                    </div>
+                  </div>
+
                   {/* Hover Overlay - Title and Arrow */}
                   <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
                     <div

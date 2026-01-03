@@ -346,24 +346,24 @@ export default function PrivilegeProgram() {
                 className={`
                   bg-white shadow-sm p-6 3xl:p-8 4xl:p-10
                   hover:shadow-lg hover:scale-105 hover:-translate-y-2
-                  transition-all duration-500 text-center
+                  transition-all duration-200 text-center
                   ${isVisible
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-12'
                   }
                 `}
               >
-                <div className="flex justify-center items-center h-[70px] mb-4 3xl:mb-5 4xl:mb-6 transform transition-transform duration-300 hover:scale-110">
+                <div className="flex justify-center items-center h-[70px] mb-4 3xl:mb-5 4xl:mb-6 transform transition-transform duration-200 hover:scale-110">
                   {item.icon}
                 </div>
 
                 <h3
                   style={{ fontSize: "16px", color: "#2D3748" }}
-                  className=" mb-3 3xl:mb-4 4xl:mb-5 transition-colors duration-300 hover:text-[#001730] text-[16px] md:text-[16px]"
+                  className=" mb-3 3xl:mb-4 4xl:mb-5 transition-colors duration-200 hover:text-[#001730] text-[16px] md:text-[16px]"
                 >
                   {item.title}
                 </h3>
-                <div className="w-[90%] h-[0.5px] bg-gray-300 mx-auto my-2 transition-all duration-300 group-hover:w-full"></div>
+                <div className="w-[90%] h-[0.5px] bg-gray-300 mx-auto my-2 transition-all duration-200 group-hover:w-full"></div>
                 <p
                   style={{ color: "#4A5568", fontSize: "clamp(13px, 0.8vw, 17px)" }}
                   className="p-0 leading-relaxed mb-0  "
@@ -392,24 +392,24 @@ export default function PrivilegeProgram() {
                 className={`
                   bg-white shadow-sm p-6 3xl:p-8 4xl:p-10
                   hover:shadow-lg hover:scale-105 hover:-translate-y-2
-                  transition-all duration-500 text-center
+                  transition-all duration-200 text-center
                   ${isVisible
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-12'
                   }
                 `}
               >
-                <div className="flex justify-center items-center h-[70px] mb-4 3xl:mb-5 4xl:mb-6 transform transition-transform duration-300 hover:scale-110">
+                <div className="flex justify-center items-center h-[70px] mb-4 3xl:mb-5 4xl:mb-6 transform transition-transform duration-200 hover:scale-110">
                   {item.icon}
                 </div>
 
                 <h3
                   style={{ fontSize: "16px", color: "#2D3748" }}
-                  className=" mb-3 3xl:mb-4 4xl:mb-5 transition-colors duration-300 hover:text-[#001730] text-[16px] md:text-[16px]"
+                  className=" mb-3 3xl:mb-4 4xl:mb-5 transition-colors duration-200 hover:text-[#001730] text-[16px] md:text-[16px]"
                 >
                   {item.title}
                 </h3>
-                <div className="w-[90%] h-[0.5px] bg-gray-300 mx-auto my-2 transition-all duration-300 group-hover:w-full"></div>
+                <div className="w-[90%] h-[0.5px] bg-gray-300 mx-auto my-2 transition-all duration-200 group-hover:w-full"></div>
                 <p
                   style={{ fontSize: "clamp(13px, 0.8vw, 17px)", color: "#4A5568" }}
                   className="p-0 leading-relaxed mb-0 "

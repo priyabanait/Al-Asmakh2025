@@ -84,7 +84,7 @@ export default function Header() {
       { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
     ],
     'ABOUT US': [
-      { label: 'About Us', path: '/aboutus' },
+      { label: 'About Us', path: '/about-us' },
     ],
     SERVICES: [
       { label: 'Leasing Services', path: '/listings/services-lease' },

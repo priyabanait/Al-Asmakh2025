@@ -162,9 +162,9 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                                         <span className="text-xs font-semibold">
                                             {property.status || "100%"}
                                         </span>
-                                        <span className="text-xs text-gray-500">
+                                        {/* <span className="text-xs text-gray-500">
                                             {property.statusType === "completed" ? "Completed" : "Ongoing"}
-                                        </span>
+                                        </span> */}
                                     </div>
 
                                     {/* <div className="w-full h-1 bg-green-200 rounded-full mt-1">

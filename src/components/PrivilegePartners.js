@@ -42,6 +42,7 @@ export default function Profit() {
 
   const [startIndex, setStartIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [selectedCountryCode, setSelectedCountryCode] = useState("+974"); // Default to Qatar
   const testimonialsPerSlide = 3;
   const totalTestimonialSlides = Math.ceil(testimonials.length / testimonialsPerSlide);
 
@@ -598,7 +599,7 @@ export default function Profit() {
 
 
       {/* Latest Real Estate Blogs Section */}
-      <section className="bg-white py-4 lg:py-12 px-4">
+      <section className="bg-white py-8 lg:py-16 3xl:py-20 4xl:py-24 5xl:py-28 px-4 lg:mb-[30px]">
         {/* Section Heading */}
         <div className="lg:hidden text-center mb-8 lg:mb-12 px-4">
           <h2 className="text-[22px] lg:text-[36px] font-semibold text-[#001730] uppercase mb-2 text-center 3xl:mb-3 4xl:mb-4">
@@ -855,18 +856,86 @@ export default function Profit() {
 
                   {/* Second Row: Phone and Property Type */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                    <div>
+                    <div className="flex flex-col">
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
-                      <input
-                        type="text"
-                        placeholder="(123) 456 - 789"
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                      />
+                      <div className="flex">
+                        {/* <div className="relative">
+                          <select
+                            value={selectedCountryCode}
+                            onChange={(e) => setSelectedCountryCode(e.target.value)}
+                            className="bg-white border border-gray-300 rounded-l-md px-2 lg:px-3 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] appearance-none cursor-pointer pr-6 lg:pr-8 h-[42px] lg:h-[45px]"
+                            style={{ minWidth: '40px' }}
+                          >
+                            <option value="+974">🇶🇦 +974</option>
+                            <option value="+971">🇦🇪 +971</option>
+                            <option value="+966">🇸🇦 +966</option>
+                            <option value="+965">🇰🇼 +965</option>
+                            <option value="+973">🇧🇭 +973</option>
+                            <option value="+968">🇴🇲 +968</option>
+                            <option value="+961">🇱🇧 +961</option>
+                            <option value="+962">🇯🇴 +962</option>
+                            <option value="+964">🇮🇶 +964</option>
+                            <option value="+972">🇮🇱 +972</option>
+                            <option value="+20">🇪🇬 +20</option>
+                            <option value="+212">🇲🇦 +212</option>
+                            <option value="+90">🇹🇷 +90</option>
+                            <option value="+98">🇮🇷 +98</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+44">🇬🇧 +44</option>
+                            <option value="+33">🇫🇷 +33</option>
+                            <option value="+49">🇩🇪 +49</option>
+                            <option value="+39">🇮🇹 +39</option>
+                            <option value="+34">🇪🇸 +34</option>
+                            <option value="+61">🇦🇺 +61</option>
+                            <option value="+91">🇮🇳 +91</option>
+                            <option value="+86">🇨🇳 +86</option>
+                            <option value="+81">🇯🇵 +81</option>
+                            <option value="+82">🇰🇷 +82</option>
+                            <option value="+65">🇸🇬 +65</option>
+                            <option value="+60">🇲🇾 +60</option>
+                            <option value="+66">🇹🇭 +66</option>
+                            <option value="+62">🇮🇩 +62</option>
+                            <option value="+63">🇵🇭 +63</option>
+                            <option value="+84">🇻🇳 +84</option>
+                            <option value="+92">🇵🇰 +92</option>
+                            <option value="+880">🇧🇩 +880</option>
+                            <option value="+7">🇷🇺 +7</option>
+                            <option value="+55">🇧🇷 +55</option>
+                            <option value="+52">🇲🇽 +52</option>
+                            <option value="+54">🇦🇷 +54</option>
+                            <option value="+27">🇿🇦 +27</option>
+                            <option value="+46">🇸🇪 +46</option>
+                            <option value="+47">🇳🇴 +47</option>
+                            <option value="+45">🇩🇰 +45</option>
+                            <option value="+31">🇳🇱 +31</option>
+                            <option value="+32">🇧🇪 +32</option>
+                            <option value="+41">🇨🇭 +41</option>
+                            <option value="+43">🇦🇹 +43</option>
+                            <option value="+351">🇵🇹 +351</option>
+                            <option value="+30">🇬🇷 +30</option>
+                            <option value="+353">🇮🇪 +353</option>
+                            <option value="+358">🇫🇮 +358</option>
+                            <option value="+48">🇵🇱 +48</option>
+                            <option value="+64">🇳🇿 +64</option>
+                            <option value="+971">🇦🇪 +971</option>
+                          </select>
+                          <div className="absolute right-1 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </div>
+                        </div> */}
+                        <input
+                          type="text"
+                          placeholder="(123) 456 - 789"
+                          className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                        />
+                      </div>
                     </div>
-                    <div>
+                    <div className="flex flex-col">
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
                       <select
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730]"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
                       >
                         <option>Choose a Type</option>
                         <option>Apartment</option>

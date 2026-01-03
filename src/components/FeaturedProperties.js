@@ -148,7 +148,7 @@ export default function FeaturedProperties() {
                 <div
                   key={property.id || index}
                   className={`
-          w-[250px]  lg:w-[333px]
+          w-[250px]  lg:w-[335px]
           p-4
           bg-[#E9E9E9] border border-gray-200 
           rounded-md overflow-hidden shadow-md 
@@ -173,7 +173,7 @@ export default function FeaturedProperties() {
 
                   {/* Property Info */}
                   <div className="py-2">
-                    <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2">
+                    <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2 min-h-[2.5rem] lg:min-h-[3.125rem]">
                       {property.title}
                     </h3>
 

@@ -91,17 +91,17 @@ export default function Hero() {
           transition={{ duration: 1 }}
           className="
         relative z-10 lg:text-left text-center  fone-semibold text-[#001730]
-        px-4 md:px-4 lg:px-8
+        px-4 md:px-4 lg:px-8 3xl:px-10 4xl:px-12 5xl:px-14
         border border-white/10 backdrop-blur-sm bg-white/20 
-        p-5 sm:p-6 md:p-5 lg:p-8 
+        p-5 sm:p-6 md:p-5 lg:p-8 3xl:p-10 4xl:p-12 5xl:p-14
   
         mx-auto
         mt-16 sm:mt-24 md:mt-30 lg:mt-30
         
-        w-[92%] sm:w-[96%] md:w-[90%] lg:w-[85%]
-        max-w-[360px] sm:max-w-[550px] md:max-w-[770px] lg:max-w-[900px]
+        w-[92%] sm:w-[96%] md:w-[90%] lg:w-[85%] 3xl:w-[80%] 4xl:w-[75%] 5xl:w-[70%]
+        max-w-[360px] sm:max-w-[550px] md:max-w-[770px] lg:max-w-[900px] 3xl:max-w-[1100px] 4xl:max-w-[1300px] 5xl:max-w-[1500px]
   
-        max-h-[750px] sm:max-h-[550px] md:max-h-[430px] lg:max-h-[500px]
+        max-h-[750px] sm:max-h-[550px] md:max-h-[430px] lg:max-h-[500px] 3xl:max-h-[600px] 4xl:max-h-[700px] 5xl:max-h-[800px]
         rounded-[3px]
       "
         >

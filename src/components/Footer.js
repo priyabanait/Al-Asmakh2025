@@ -95,6 +95,25 @@ export default function Footer() {
               }}
             />
           </Link>
+
+          {/* Navigation Links */}
+          <nav className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-4 md:gap-5 text-white">
+            <Link href="/" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
+              Home
+            </Link>
+            <Link href="/about-us" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
+              About Us
+            </Link>
+            <Link href="/listings/rent" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
+              Listings
+            </Link>
+            <Link href="/services/services-sales" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
+              Services
+            </Link>
+            <Link href="/contact" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
+              Contact
+            </Link>
+          </nav>
         </div>
 
         {/* Social + Newsletter */}
