@@ -3,17 +3,21 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Share2, Heart, GitCompare } from 'lucide-react';
+import { useCompare } from '../contexts/CompareContext';
 
-export default function ShareButton({ 
-  propertyTitle, 
-  propertyLocation, 
+export default function ShareButton({
+  propertyTitle,
+  propertyLocation,
   propertyUrl,
+  property, // Full property object for comparison
   className = '',
   size = 'default'
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [isCompared, setIsCompared] = useState(false);
+  const { addToCompare, removeFromCompare, isInCompare, setShowCompareModal, compareProperties } = useCompare();
+
+  const isCompared = property ? isInCompare(property.id) : false;
 
   const shareUrl = propertyUrl || (typeof window !== 'undefined' ? window.location.href : '');
   const shareText = `${propertyTitle} - ${propertyLocation}`;
@@ -40,9 +44,25 @@ export default function ShareButton({
   };
 
   const handleCompare = () => {
-    setIsCompared(!isCompared);
-    // Add your compare logic here
-    console.log('Property added to compare:', propertyTitle);
+    if (!property) {
+      console.warn('Property object is required for comparison');
+      return;
+    }
+
+    if (isCompared) {
+      removeFromCompare(property.id);
+    } else {
+      // Check if we'll have 2 properties after adding
+      const willHaveTwo = compareProperties.length === 1;
+      addToCompare(property);
+      // Auto-open modal when 2 properties are selected
+      if (willHaveTwo) {
+        setTimeout(() => {
+          setShowCompareModal(true);
+        }, 100);
+      }
+    }
+    setIsOpen(false);
   };
 
   const buttonSize = size === 'sm' ? 'p-1.5' : 'p-2';
@@ -104,16 +124,15 @@ export default function ShareButton({
                   e.stopPropagation();
                   handleFavorite();
                 }}
-                className={`rounded-full p-2 shadow-lg hover:shadow-xl transition-all ${
-                  isFavorited ? 'bg-red-50' : 'bg-white'
-                }`}
+                className={`rounded-full p-2 shadow-lg hover:shadow-xl transition-all ${isFavorited ? 'bg-red-50' : 'bg-white'
+                  }`}
                 whileHover={{ scale: 1.15, y: -5 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label="Add to favorites"
               >
-                <Heart 
-                  size={18} 
-                  className={isFavorited ? 'text-red-500 fill-red-500' : 'text-[#001730]'} 
+                <Heart
+                  size={18}
+                  className={isFavorited ? 'text-red-500 fill-red-500' : 'text-[#001730]'}
                 />
               </motion.button>
 
@@ -123,16 +142,15 @@ export default function ShareButton({
                   e.stopPropagation();
                   handleCompare();
                 }}
-                className={`rounded-full p-2 shadow-lg hover:shadow-xl transition-all ${
-                  isCompared ? 'bg-blue-50' : 'bg-white'
-                }`}
+                className={`rounded-full p-2 shadow-lg hover:shadow-xl transition-all ${isCompared ? 'bg-blue-50' : 'bg-white'
+                  }`}
                 whileHover={{ scale: 1.15, y: -5 }}
                 whileTap={{ scale: 0.9 }}
                 aria-label="Add to compare"
               >
-                <GitCompare 
-                  size={18} 
-                  className={isCompared ? 'text-blue-500' : 'text-[#001730]'} 
+                <GitCompare
+                  size={18}
+                  className={isCompared ? 'text-blue-500' : 'text-[#001730]'}
                 />
               </motion.button>
             </motion.div>

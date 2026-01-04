@@ -290,58 +290,79 @@ export default function Profit() {
           priority
         />
       </div> */}
-      <section className="relative h-[100vh] lg:h-screen w-full text-white">
-        {/* Background Image */}
+      <section className="relative h-[100vh] lg:h-screen w-full text-white overflow-hidden">
+
+        {/* BACKGROUND IMAGE */}
         <Image
           src="WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"
           alt="City Skyline"
           fill
           priority
           className="object-cover lg:object-fill"
-          style={{ objectPosition: 'left center' }}
+          style={{ objectPosition: "left center" }}
         />
 
-        {/* Content */}
+        {/* CONTENT WRAPPER */}
         <div
           className="
-      absolute lg:static
-      bottom-0 left-0 right-0
-      z-10
-      flex items-center justify-center lg:justify-end
-      h-full
-      px-3 sm:px-4 lg:px-20
-      py-6 lg:py-0
-    "
+    absolute lg:static
+    bottom-0 left-0 right-0
+    z-10
+    flex items-center justify-center lg:justify-end
+    h-full
+    px-3 sm:px-4 lg:px-20
+    py-6 lg:py-0
+  "
         >
           <div
             className="
-        w-full max-w-md lg:max-w-lg
-        space-y-3 lg:space-y-6
-        text-center lg:text-left
+      w-full max-w-md lg:max-w-lg
+      space-y-3 lg:space-y-6
+      text-center lg:text-left
 
-        /* MOBILE BACKGROUND */
-        bg-white/20 backdrop-blur-md
-        p-4 sm:p-5
-        rounded-t-xl
+      /* MOBILE OVERLAY */
+      bg-white/20 backdrop-blur-md
+      p-4 sm:p-5
+      rounded-t-xl
 
-        lg:bg-transparent lg:backdrop-blur-0 lg:p-0 lg:rounded-none
-      "
+      lg:bg-transparent lg:backdrop-blur-0 lg:p-0 lg:rounded-none
+    "
           >
-            {/* Heading */}
+
+            {/* HEADING BLOCK */}
             <div>
-              <h1 className="text-sm sm:text-base lg:text-2xl font-semibold leading-tight">
+              <h1
+                className="font-semibold leading-tight"
+                style={{
+                  fontSize: "clamp(16px, 1.2vw, 30px)"
+                }}
+              >
                 Partnering to Grow the Value of Your Property
               </h1>
 
               <div className="h-[0.5px] bg-gray-300 my-3 lg:my-4" />
 
-              <p className="text-[0.7rem] sm:text-xs lg:text-[0.8rem] text-white lg:text-gray-400">
-                For owners and investors who want clarity, consistency, and care, we provide end-to-end support across Qatar's real estate market.
+              <p
+                className="text-white lg:text-gray-400"
+                style={{
+                  fontSize: "clamp(12px, 0.85vw, 18px)",
+                  lineHeight: "1.6"
+                }}
+              >
+                For owners and investors who want clarity, consistency, and care,
+                we provide end-to-end support across Qatar's real estate market.
               </p>
             </div>
 
-            {/* Info Boxes */}
-            <div ref={infoBoxesRef} className="space-y-2 lg:space-y-3 mt-3 lg:mt-6">
+            {/* INFO BOXES */}
+            <div
+              ref={infoBoxesRef}
+              className="
+        space-y-2 sm:space-y-3 lg:space-y-4
+        mt-3 sm:mt-4 lg:mt-6
+        flex flex-col justify-center
+      "
+            >
               {[
                 {
                   title: "Expert Knowledge",
@@ -366,7 +387,7 @@ export default function Profit() {
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  className="bg-white/30 p-3 sm:p-4 rounded-md"
+                  className="bg-white/30 p-3 sm:p-4 lg:p-5 rounded-md"
                   initial={{ opacity: 0, x: -50 }}
                   animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
                   transition={{
@@ -375,18 +396,32 @@ export default function Profit() {
                     ease: [0.25, 0.46, 0.45, 0.94]
                   }}
                 >
-                  <h3 className="font-semibold text-xs sm:text-sm lg:text-base">
+                  <h3
+                    className="font-semibold"
+                    style={{
+                      fontSize: "clamp(13px, 0.9vw, 18px)"
+                    }}
+                  >
                     {item.title}
                   </h3>
-                  <p className="text-[0.65rem] sm:text-xs lg:text-sm mt-1 text-white lg:text-gray-400">
+
+                  <p
+                    className="mt-1 text-white lg:text-gray-400"
+                    style={{
+                      fontSize: "clamp(12px, 0.8vw, 16px)",
+                      lineHeight: "1.6"
+                    }}
+                  >
                     {item.text}
                   </p>
                 </motion.div>
               ))}
             </div>
+
           </div>
         </div>
       </section>
+
 
       {/* Featured Properties Section */}
       <FeaturedProperties />

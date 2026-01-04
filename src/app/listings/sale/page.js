@@ -8,7 +8,7 @@ export default function SalePage() {
   return (
     <main className="min-h-screen relative">
       <Header />
-      <Sale />
+      <Sale priceType="sale" />
       <Footer />
     </main>
   )

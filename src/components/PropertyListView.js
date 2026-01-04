@@ -8,6 +8,8 @@ import { FaArrowRight } from "react-icons/fa6";
 import { FaMapLocationDot } from "react-icons/fa6";
 import Link from "next/link";
 import { FaList } from "react-icons/fa";
+import CompareButton from "./CompareButton";
+import CompareModal from "./CompareModal";
 
 export default function PropertyListView({ properties = [], totalProperties = 0 }) {
     const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
@@ -80,6 +82,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                         propertyTitle={property.title}
                                         propertyLocation={property.location}
                                         propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                                        property={property}
                                     />
                                 </div>
                             </div>
@@ -183,6 +186,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                     propertyTitle={property.title}
                                                     propertyLocation={property.location}
                                                     propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                                                    property={property}
                                                 />
                                             </div>
                                         </div>
@@ -298,6 +302,10 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                     </div>
                 </div>
             )}
+
+            {/* Compare Button and Modal */}
+            <CompareButton />
+            <CompareModal />
         </div>
     );
 }

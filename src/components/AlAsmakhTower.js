@@ -170,127 +170,106 @@ export default function AlAsmakhTower() {
             priority
           />
 
-          {/* FROSTED GLASS CARD OVERLAY */}
+          {/* FROSTED GLASS CARD */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ padding: "16px" }}
+            className="absolute inset-0 flex items-center justify-center px-4"
           >
             <div
-              className="relative bg-white/20 w-full max-w-md mx-auto p-4 md:p-8 rounded-2xl"
-              style={{
-
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.1)",
-                margin: "0 auto",
-              }}
+              className="w-full max-w-sm rounded-2xl p-4 bg-white/20 backdrop-blur-xl shadow-lg"
             >
-              {/* CONTENT */}
-              <div className="relative text-center md:text-left ">
-                {/* TITLE */}
+              <div className="text-center">
+
+                {/* HEADING */}
                 <h2
-                  id="my-heading"
-                  className=" text-[#001730] mb-2 md:mb-4 uppercase "
+                  className="
+              text-[#001730]
+              uppercase
+              font-semibold
+              text-lg
+              leading-tight
+              mb-2
+            "
                 >
                   {projects[activeSlide].title}
                 </h2>
 
                 {/* SUBHEADING */}
                 {projects[activeSlide].subheading && (
-                  <p className="text-[#001730] text-xs md:text-sm font-light mb-2 md:mb-3">
+                  <p className="text-[#001730] text-xs mb-2">
                     {projects[activeSlide].subheading}
                   </p>
                 )}
 
-                <div className="w-[90%] h-[1px] bg-gray-300 mx-auto my-2"></div>
-                {/* SEPARATOR LINE */}
-
+                <div className="w-16 h-[1px] bg-[#001730]/40 mx-auto my-3" />
 
                 {/* LOCATION */}
-                <div className="flex items-center gap-1.5 md:gap-2 mb-3 md:mb-5 justify-center md:justify-start text-center md:text-left">
-
-                  <MapPin
-                    size={16}
-                    className="text-[#001730] md:w-[18px] md:h-[18px]"
-                  />
-
-                  <span
-                    className="text-[#001730] text-sm md:text-base"
-                    style={{ fontSize: "clamp(13px, 1vw, 16px)" }}
-                  >
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <MapPin size={14} className="text-[#001730]" />
+                  <span className="text-[#001730] text-sm">
                     {projects[activeSlide].location}
                   </span>
-
                 </div>
 
-
                 {/* DESCRIPTION */}
-                <p
-                  className="text-gray-400  mb-4 md:mb-8 leading-relaxed text-sm md:text-base"
-                  style={{ fontSize: "13px" }}
-                >
+                <p className="text-[#001730] text-sm leading-relaxed mb-4">
                   {projects[activeSlide].description}
                 </p>
 
-                {/* DETAILS BUTTON */}
-                <div className="flex justify-center md:justify-start">
-                  <button
-                    className="flex items-center justify-between gap-2 bg-[#001730] text-white px-4 md:px-6 py-2 md:py-3 rounded-md font-medium shadow-lg transition-all  hover:bg-[#002d52] text-sm md:text-base"
-                    style={{ fontSize: "clamp(13px, 1.1vw, 16px)" }}
-                  >
-                    <span>Details</span>
-                    <FaArrowRight size={12} className="md:w-[14px] md:h-[14px]" />
-                  </button>
-                </div>
+                {/* BUTTON */}
+                <button
+                  className="
+              mx-auto
+              flex items-center gap-2
+              bg-[#001730]
+              text-white
+              px-5
+              py-2.5
+              rounded-md
+              text-sm
+              font-medium
+              shadow-md
+              hover:bg-[#002d52]
+              transition
+            "
+                >
+                  <span>Details</span>
+                  <FaArrowRight size={12} />
+                </button>
 
               </div>
             </div>
           </motion.div>
 
-          {/* NAVIGATION DOTS - Pill Style Below the card */}
-          <div className="absolute bottom-4 md:bottom-6 left-0 right-0 flex items-center justify-center gap-2">
+          {/* DOT NAVIGATION */}
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
             {projects.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleSlideChange(index)}
-                className="relative flex items-center justify-center"
                 aria-label={`Go to slide ${index + 1}`}
               >
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  initial={false}
-                  animate={{
-                    scale: index === activeSlide ? 1.2 : 1,
-                    opacity: index === activeSlide ? 1 : 0.5,
-                  }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                />
                 <motion.span
-                  className={`
-                    block rounded-full
-                    ${index === activeSlide
-                      ? "bg-[#001730]"
-                      : "bg-gray-400"
-                    }
-                  `}
+                  className={`block rounded-full ${index === activeSlide ? "bg-[#001730]" : "bg-gray-400"
+                    }`}
                   animate={{
-                    width: index === activeSlide ? "24px" : "8px",
-                    height: index === activeSlide ? "8px" : "8px",
+                    width: index === activeSlide ? "20px" : "8px",
+                    height: "8px",
                   }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: 0.3 }}
                 />
               </button>
             ))}
           </div>
+
         </motion.div>
       </div>
 
       {/* DESKTOP - Grid Layout */}
-      <div className="hidden lg:grid grid-cols-[60%_40%] gap-6 md:gap-10 3xl:gap-10 4xl:gap-12 relative min-h-screen items-center ">
+      <div className="hidden lg:grid grid-cols-[60%_40%] gap-6 md:gap-10 3xl:gap-10 4xl:gap-12 relative min-h-screen items-center">
 
         {/* LEFT IMAGE */}
         <motion.div
@@ -299,7 +278,6 @@ export default function AlAsmakhTower() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
           className="relative w-full h-full min-h-[500px]"
-          style={{ marginLeft: 0, paddingLeft: 0, width: "100%" }}
         >
           <Image
             src={projects[activeSlide].img || "/407.png"}
@@ -310,7 +288,7 @@ export default function AlAsmakhTower() {
           />
         </motion.div>
 
-        {/* DESKTOP RIGHT CONTENT */}
+        {/* RIGHT CONTENT */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -318,86 +296,99 @@ export default function AlAsmakhTower() {
           viewport={{ once: true }}
           className="hidden lg:flex flex-col justify-center pl-6"
         >
+
+          {/* TITLE */}
           <h2
-            className="font-semibold text-[#00254D] text-[18px] md:text-[22px] uppercase tracking-wide"
+            className="font-semibold text-[#00254D] uppercase tracking-wide"
+            style={{
+              fontSize: "clamp(20px, 2.5vw, 28px)",
+            }}
           >
             {projects[activeSlide].title}
           </h2>
 
           {/* SUBHEADING */}
           {projects[activeSlide].subheading && (
-            <p className="text-gray text-xs md:text-sm font-light mb-3 ">
+            <p
+              className="text-gray font-light mb-3"
+              style={{
+                fontSize: "clamp(12px, 0.8vw, 18px)",
+              }}
+            >
               {projects[activeSlide].subheading}
             </p>
           )}
 
-          <div className="w-[30%] h-[1px]  bg-gray-300  my-4 "></div>
+          {/* DIVIDER */}
+          <div className="w-[30%] h-[1px] bg-gray-300 my-4"></div>
+
+          {/* LOCATION */}
           <div className="flex items-center gap-2 mb-4 md:mb-5">
             <MapPin
-              size={20}
               className="text-gray-600"
-              style={{ width: "clamp(16px, 1.2vw, 20px)" }}
+              style={{
+                width: "clamp(16px, 1vw, 20px)",
+                height: "clamp(16px, 1vw, 20px)",
+              }}
             />
             <span
-              className="text-gray-600 text-[18px] md:text-[22px]"
-              style={{ fontSize: "clamp(12px, 1vw, 16px)" }}
+              className="text-gray-600"
+              style={{
+                fontSize: "clamp(14px, 1vw, 20px)",
+              }}
             >
               {projects[activeSlide].location}
             </span>
           </div>
 
+          {/* DESCRIPTION */}
           <p
-            style={{ color: "#919191", fontSize: "clamp(13px, 0.8vw, 17px)" }}
-            className="mb-6 mr-60 lg:mb-16 leading-relaxed text-[15px] md:text-[15px]"
+            className="mb-6 mr-60 lg:mb-16 leading-relaxed"
+            style={{
+              color: "#919191",
+              fontSize: "clamp(14px, 0.9vw, 18px)",
+              lineHeight: "1.65",
+            }}
           >
             {projects[activeSlide].description}
           </p>
 
+          {/* BUTTON */}
           <div className="flex justify-center md:justify-start">
-            <button className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md text-[12px] hover:bg-[#002d52] transition-colors">
+            <button
+              className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md hover:bg-[#002d52] transition-colors"
+              style={{
+                fontSize: "clamp(12px, 0.75vw, 16px)",
+              }}
+            >
               <span>Details</span>
-              <FaArrowRight size={12} className="md:w-[12px] md:h-[12px] ml-4 lg:ml-32" />
+              <FaArrowRight
+                style={{
+                  width: "clamp(12px, 0.75vw, 16px)",
+                  height: "clamp(12px, 0.75vw, 16px)",
+                }}
+                className="ml-4 lg:ml-32"
+              />
             </button>
           </div>
 
-
-          {/* <button
-            className="flex items-center justify-center gap-2 bg-[#001730] text-white px-6 md:px-8 py-3 md:py-3.5 rounded-md hover:bg-[#022d5e] transition-all  shadow-md hover:shadow-lg w-fit text-[18px] md:text-[22px]"
-            style={{ fontSize: "clamp(12px, 1.1vw, 16px)" }}
-          >
-            <span>Details</span>
-            <FaArrowRight size={16} className="ml-16" />
-          </button> */}
-
-          {/* PILL STYLE NAVIGATION DOTS */}
+          {/* NAVIGATION DOTS */}
           <div className="flex items-center gap-2 mt-[60px] ml-[40px]">
             {projects.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleSlideChange(index)}
-                className="relative flex items-center justify-center"
                 aria-label={`Go to slide ${index + 1}`}
+                className="relative flex items-center justify-center"
               >
-                <motion.div
-                  className="absolute inset-0 rounded-full"
-                  initial={false}
-                  animate={{
-                    scale: index === activeSlide ? 1.2 : 1,
-                    opacity: index === activeSlide ? 1 : 0.5,
-                  }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                />
                 <motion.span
-                  className={`
-                    block rounded-full
-                    ${index === activeSlide
-                      ? "bg-[#001730]"
-                      : "bg-gray-400"
-                    }
-                  `}
+                  className={`block rounded-full ${index === activeSlide ? "bg-[#001730]" : "bg-gray-400"
+                    }`}
                   animate={{
-                    width: index === activeSlide ? "32px" : "8px",
-                    height: index === activeSlide ? "8px" : "8px",
+                    width: index === activeSlide
+                      ? "clamp(22px, 1.8vw, 32px)"
+                      : "8px",
+                    height: "8px",
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 />
@@ -407,6 +398,8 @@ export default function AlAsmakhTower() {
 
         </motion.div>
       </div>
+
+
 
 
       {/* === EXPLORE OUR AREA SECTION === */}

@@ -5,10 +5,15 @@ import { VscSettings } from "react-icons/vsc";
 import { motion } from "framer-motion";
 import MoreFiltersModal from "./MoreFiltersModal";
 import LocationAutocomplete from "./LocationAutocomplete";
+import SpeechToTextModal from "./SpeechToTextModal";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [showSpeechModal, setShowSpeechModal] = useState(false);
   const [locationSearch, setLocationSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
   // Initialize with a check if window is available (client-side)
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window !== "undefined") {
@@ -62,6 +67,18 @@ export default function Hero() {
       }
     }
   }, [isDesktop]);
+
+  // Handle search functionality
+  const handleSearch = () => {
+    const query = searchQuery.trim() || locationSearch.trim();
+    if (query) {
+      // Navigate to listings page with search query
+      router.push(`/listings/rent?search=${encodeURIComponent(query)}`);
+    } else {
+      // If no query, just navigate to listings
+      router.push("/listings/rent");
+    }
+  };
 
   return (
     <div>
@@ -203,15 +220,29 @@ export default function Hero() {
 
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Describe your dream Property by searching all our properties . . ."
                 className="flex-1 bg-transparent outline-none text-[8px] md:text-[10px] lg:text-[13px] text-[#001730] placeholder:text-gray-500 placeholder:text-[7px] md:placeholder:text-[7px] lg:placeholder:text-[11px]"
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
               />
 
-              <Mic className="text-[#001730] h-6 w-6 ml-2" />
+              <button
+                type="button"
+                onClick={() => setShowSpeechModal(true)}
+                className="text-[#001730] h-6 w-6 ml-2 hover:opacity-70 transition-opacity cursor-pointer"
+              >
+                <Mic className="h-6 w-6" />
+              </button>
             </div>
 
             {/* Search Button */}
             <button
+              onClick={handleSearch}
               className="w-full  lg:w-[210px]
                      text-white text-[11px] md:text-[12px] lg:text-[13px]
                      shadow-lg hover:bg-[#022d5e]
@@ -252,18 +283,18 @@ export default function Hero() {
         <div className="absolute bottom-[-90px] text-center justify-center flex flex-col items-center w-full h-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-24">
 
           {/* GLASS CARD */}
-          <div className="backdrop-blur-sm bg-white/20 rounded-[3px] p-4 sm:p-5 md:p-6 lg:p-8 xl:p-10 2xl:p-12 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl text-center shadow-lg border border-white/10">
+          <div className="backdrop-blur-sm bg-white/20 rounded-[3px] p-4 sm:p-5 md:p-6 lg:p-8 xl:p-10 2xl:p-12 3xl:p-14 4xl:p-16 5xl:p-20 6xl:p-24 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2400px] 6xl:max-w-[3200px] text-center shadow-lg border border-white/10">
 
-            <h2 className="text-xl sm:text-2xl md:text-[27px] lg:text-3xl xl:text-4xl 2xl:text-5xl font-semibold tracking-wider text-gray-800 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12">
+            <h2 className="text-xl sm:text-2xl md:text-[27px] lg:text-3xl xl:text-4xl 2xl:text-5xl 3xl:text-6xl 4xl:text-7xl 5xl:text-8xl 6xl:text-9xl font-semibold tracking-wider text-gray-800 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 3xl:px-20 4xl:px-24 5xl:px-28 6xl:px-32">
               REDEFINING  REAL ESTATE
             </h2>
 
 
 
             {/* Underline */}
-            <div className="w-[80%] h-[0.5px] bg-gray-300 mx-auto mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-14 my-2"></div>
+            <div className="w-[80%] h-[0.5px] bg-gray-300 mx-auto mt-6 sm:mt-8 md:mt-10 lg:mt-12 xl:mt-14 2xl:mt-16 3xl:mt-20 4xl:mt-24 5xl:mt-28 6xl:mt-32 my-2"></div>
 
-            <p className="text-xs sm:text-sm md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg font-semibold mt-3 sm:mt-4 md:mt-5 lg:mt-6 leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl 6xl:text-4xl font-semibold mt-3 sm:mt-4 md:mt-5 lg:mt-6 2xl:mt-8 3xl:mt-10 4xl:mt-12 5xl:mt-14 6xl:mt-16 leading-relaxed px-2 sm:px-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12 3xl:px-16 4xl:px-20 5xl:px-24 6xl:px-28">
               Our commitment goes beyond buildings. We craft experiences,
               transform spaces into iconic destinations, and leave a legacy of
               sophistication and innovation across Qatar.
@@ -272,7 +303,7 @@ export default function Hero() {
           </div>
 
           {/* BUTTONS */}
-          <div className="bg-white/20 rounded-[3px] mt-2 p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
+          <div className="bg-white/20 rounded-[3px] mt-2 p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 2xl:p-10 3xl:p-12 4xl:p-14 5xl:p-16 6xl:p-20 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2400px] 6xl:max-w-[3200px]">
             <div className="flex gap-3 sm:gap-4 md:gap-5 lg:gap-6 justify-center">
               <button
                 className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 2xl:px-20 py-2 sm:py-2.5 md:py-3 lg:py-4 xl:py-5 bg-[#0A2A4C] text-white text-[11px] sm:text-xs md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg rounded-[3px] font-semibold shadow-md relative overflow-hidden"
@@ -292,7 +323,7 @@ export default function Hero() {
           </div>
 
           {/* SEARCH BAR WITH FILTER - SAME LINE */}
-          <div className="bg-white/20 rounded-[3px] mt-2 p-2 sm:p-3 md:p-4 lg:p-5 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl">
+          <div className="bg-white/20 rounded-[3px] mt-2 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 2xl:p-8 3xl:p-10 4xl:p-12 5xl:p-14 6xl:p-16 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2400px] 6xl:max-w-[3200px]">
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Search Input Section with Location Autocomplete */}
               <div className="flex-1">
@@ -331,6 +362,15 @@ export default function Hero() {
           console.log("Show results clicked");
         }}
         hideNewFilters={true}
+      />
+
+      {/* Speech to Text Modal */}
+      <SpeechToTextModal
+        isOpen={showSpeechModal}
+        onClose={() => setShowSpeechModal(false)}
+        onSearch={handleSearch}
+        searchQuery={searchQuery}
+        onQueryChange={setSearchQuery}
       />
     </div>
   );
