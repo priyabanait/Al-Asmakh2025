@@ -189,7 +189,7 @@ export default function AlAsmakhTower() {
               text-[#001730]
               uppercase
               font-semibold
-              text-lg
+              text-[25px]
               leading-tight
               mb-2
             "

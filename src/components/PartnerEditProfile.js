@@ -197,8 +197,8 @@ export default function PartnerEditProfile() {
             {/* Success/Error Message */}
             {message.text && (
               <div className={`mb-4 p-3 rounded-md ${message.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
+                ? 'bg-green-50 text-green-800 border border-green-200'
+                : 'bg-red-50 text-red-800 border border-red-200'
                 }`}>
                 <div className="flex items-center">
                   {message.type === 'success' ? (
@@ -330,7 +330,7 @@ export default function PartnerEditProfile() {
                 {/* Upload Profile Picture */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                    Upload Profile Picture
+                    Upload Profile
                   </label>
                   <input
                     type="file"
@@ -432,8 +432,8 @@ export default function PartnerEditProfile() {
                   disabled={submitting}
                   style={{ borderRadius: "5px" }}
                   className={`bg-[#001730] text-white px-6 py-2 rounded-md text-xs font-medium transition-colors ${submitting
-                      ? 'opacity-50 cursor-not-allowed'
-                      : 'hover:bg-[#17395e]'
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-[#17395e]'
                     }`}
                 >
                   {submitting ? 'Updating...' : 'Submit For Approval'}

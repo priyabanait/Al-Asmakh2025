@@ -18,7 +18,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
         <div className="hidden lg:block lg:py-4 py-4">
             {/* Header Bar */}
             <div className="bg-white border-gray-200 px-2 lg:px-4">
-                <div className="hidden lg:flex max-w-full mb-4 bg-gray-50 mx-auto items-center gap-4">
+                <div className="hidden lg:flex max-w-full mb-4 bg-white mx-auto items-center gap-4">
                     {/* Showing Count (Left) */}
                     <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
                         Showing {properties.length} of {totalProperties || properties.length}

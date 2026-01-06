@@ -461,7 +461,7 @@ export default function EditProfile() {
           <div className="mb-3">
             {/* Upload Profile Picture */}
             <div>
-              <label className="block text-xs font-medium text-[#2D3748] mb-1.5">Upload Profile Picture</label>
+              <label className="block text-xs font-medium text-[#2D3748] mb-1.5">Upload Profile</label>
               <input
                 type="file"
                 name="profilePicture"
@@ -578,8 +578,8 @@ export default function EditProfile() {
           {/* Message */}
           {message.text && (
             <div className={`mt-3 p-2 rounded-[5px] text-xs ${message.type === 'success'
-                ? 'bg-green-100 text-green-700 border border-green-400'
-                : 'bg-red-100 text-red-700 border border-red-400'
+              ? 'bg-green-100 text-green-700 border border-green-400'
+              : 'bg-red-100 text-red-700 border border-red-400'
               }`}>
               {message.text}
             </div>
@@ -611,8 +611,8 @@ export default function EditProfile() {
                   key={member._id || index}
                   onClick={() => setActiveMemberIndex(index)}
                   className={`px-3 py-1.5 rounded-[5px] text-xs font-medium ${activeMemberIndex === index
-                      ? 'bg-[#001730] text-white'
-                      : 'bg-gray-200 text-[#2D3748]'
+                    ? 'bg-[#001730] text-white'
+                    : 'bg-gray-200 text-[#2D3748]'
                     }`}
                 >
                   Member {index + 1}
@@ -838,8 +838,8 @@ export default function EditProfile() {
           {/* Message */}
           {message.text && (
             <div className={`mt-3 p-2 rounded-[5px] text-xs ${message.type === 'success'
-                ? 'bg-green-100 text-green-700 border border-green-400'
-                : 'bg-red-100 text-red-700 border border-red-400'
+              ? 'bg-green-100 text-green-700 border border-green-400'
+              : 'bg-red-100 text-red-700 border border-red-400'
               }`}>
               {message.text}
             </div>
@@ -863,8 +863,8 @@ export default function EditProfile() {
             onClick={addFamilyMember}
             disabled={familyMembers.length >= 5}
             className={`px-6 py-2 rounded-[5px] text-xs font-medium ${familyMembers.length >= 5
-                ? 'bg-gray-400 text-white cursor-not-allowed'
-                : 'bg-[#001730] text-white hover:bg-blue-800'
+              ? 'bg-gray-400 text-white cursor-not-allowed'
+              : 'bg-[#001730] text-white hover:bg-blue-800'
               }`}
           >
             {familyMembers.length >= 5 ? 'Maximum 5 Family Members Reached' : 'Add More Family Members'}

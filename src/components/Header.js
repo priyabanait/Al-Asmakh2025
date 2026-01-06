@@ -17,6 +17,7 @@ export default function Header() {
   const [isClosing, setIsClosing] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
+  const [mobileActiveDropdown, setMobileActiveDropdown] = useState(null)
   const dropdownRef = useRef(null)
   const { language, switchLanguage, isTranslating } = useTranslation()
   const { isAuthenticated, isPartner, user, partner } = useAuth()
@@ -24,6 +25,7 @@ export default function Header() {
   // Close mobile menu with animation
   const closeMobileMenu = () => {
     setIsClosing(true)
+    setMobileActiveDropdown(null) // Reset mobile dropdowns when closing menu
     setTimeout(() => {
       setMobileMenuOpen(false)
       setIsClosing(false)
@@ -135,6 +137,11 @@ export default function Header() {
     setActiveDropdown(activeDropdown === key ? null : key)
   }
 
+  // Toggle mobile dropdown
+  const toggleMobileDropdown = (key) => {
+    setMobileActiveDropdown(mobileActiveDropdown === key ? null : key)
+  }
+
   // Handle dropdown item click
   const handleDropdownItemClick = (item) => {
     if (item.external) {
@@ -143,6 +150,28 @@ export default function Header() {
       router.push(item.path)
     }
     setActiveDropdown(null)
+    closeMobileMenu()
+  }
+
+  // Handle mobile dropdown item click
+  const handleMobileDropdownItemClick = (item) => {
+    if (item.external) {
+      window.open(item.path, '_blank', 'noopener,noreferrer')
+    } else {
+      router.push(item.path)
+    }
+    setMobileActiveDropdown(null)
+    closeMobileMenu()
+  }
+
+  // Handle mobile menu item click (for items without dropdowns)
+  const handleMobileMenuItemClick = (item) => {
+    if (item.key === 'HOME') {
+      router.push('/')
+    } else {
+      router.push(`/${item.key.toLowerCase().replace(' ', '-')}`)
+    }
+    closeMobileMenu()
   }
 
   // Close dropdown when clicking outside
@@ -406,7 +435,7 @@ export default function Header() {
             }`}
           style={{
             background: 'rgba(107, 107, 107, 0.87)',
-            borderRadius: language === 'ar' ? '16px 0 0 16px' : '0 16px 16px 0',
+            borderRadius: language === 'ar' ? '0 5px 0 0' : '5px 0 0 0',
             boxShadow: isClosing
               ? '0 4px 30px rgba(0, 0, 0, 0.05)'
               : '0 4px 30px rgba(0, 0, 0, 0.1)',
@@ -416,9 +445,12 @@ export default function Header() {
             pointerEvents: isClosing ? 'none' : 'auto',
             transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), scale 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
             transformOrigin: language === 'ar' ? 'left center' : 'right center',
+            top: 0,
+            right: language === 'ar' ? 'auto' : 0,
+            left: language === 'ar' ? 0 : 'auto',
           }}
         >
-          <div className="relative h-full flex flex-col p-6 text-white">
+          <div className="relative h-full flex flex-col text-white" style={{ padding: '24px 0 24px 24px' }}>
             {/* Close Icon on Start - Mobile */}
             <button
               onClick={closeMobileMenu}
@@ -430,7 +462,7 @@ export default function Header() {
             </button>
 
             {/* Logo Section - Align to End */}
-            <div className="flex flex-col items-end mb-6 w-full">
+            <div className="flex flex-col items-end mb-6 w-full pr-6">
               <div className="relative w-[140px]">
                 <Image
                   src="/images/w-alasmakh.png"
@@ -443,83 +475,85 @@ export default function Header() {
               <div className="w-60 border-b border-white/30 mt-3" />
             </div>
 
-            {/* Menu Content */}
+            {/* Menu Content - Scrollable */}
             <div
-              className={`flex-1 flex flex-col gap-6 transition-opacity duration-600 ${isClosing ? 'opacity-0' : 'opacity-100'
+              className={`flex-1 overflow-y-auto overflow-x-hidden transition-opacity duration-600 ${isClosing ? 'opacity-0' : 'opacity-100'
                 }`}
               style={{
                 transitionDelay: isClosing ? '0ms' : '0ms',
-                transition: 'opacity 0.6s ease-in-out'
+                transition: 'opacity 0.6s ease-in-out',
+                paddingRight: '0',
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent',
               }}
             >
-              {/* Privileged Tenet Section */}
-              <div className="flex flex-col gap-3">
-                <h2 className="text-base font-normal text-white mb-2 ms-auto">Privileged Tenent / Staff</h2>
+              {/* Navigation Menu Items with Dropdowns */}
+              <div className="flex flex-col gap-3 pr-0">
+                {menuItems.map((item) => {
+                  const hasDropdown = dropdowns[item.key] && dropdowns[item.key].length > 0
+                  const isMobileDropdownOpen = mobileActiveDropdown === item.key
 
-                <button
-                  onClick={() => handleNavigation('Sign In')}
-                  className="w-56 ms-auto py-3 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
-                           bg-[rgba(160, 166, 176, 0.4)] hover:bg-[rgba(160, 166, 176, 0.5)] 
-                           border border-white/20 flex items-center justify-between shadow-sm"
-                  style={{ fontSize: '15px' }}
-                >
-                  <span>Sign In</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-4 h-4 text-white [dir='rtl']:rotate-180"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+                  return (
+                    <div key={item.key} className="flex flex-col gap-2">
+                      <button
+                        onClick={() => {
+                          if (hasDropdown) {
+                            toggleMobileDropdown(item.key)
+                          } else {
+                            handleMobileMenuItemClick(item)
+                          }
+                        }}
+                        className="w-56 ms-auto py-3 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
+                                 bg-[rgba(160, 166, 176, 0.4)] hover:bg-[rgba(160, 166, 176, 0.5)] 
+                                 border border-white/20 flex items-center justify-between shadow-sm"
+                        style={{ fontSize: '15px' }}
+                      >
+                        <span>{item.label}</span>
+                        {hasDropdown && (
+                          <IoIosArrowDown
+                            className={`w-4 h-4 text-white transition-transform duration-300 ${isMobileDropdownOpen ? 'rotate-180' : ''}`}
+                          />
+                        )}
+                      </button>
 
-                <button
-                  onClick={() => handleNavigation('Sign Up')}
-                  className="w-56 ms-auto py-3 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
-                           bg-[rgba(160, 166, 176, 0.4)] hover:bg-[rgba(160, 166, 176, 0.5)] 
-                           border border-white/20 flex items-center justify-between shadow-sm"
-                  style={{ fontSize: '15px' }}
-                >
-                  <span>Sign Up</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-4 h-4 text-white [dir='rtl']:rotate-180"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Partner / Staff Section */}
-              <div className="flex flex-col gap-3">
-                <h2 className="text-base font-normal text-white mb-2 ms-auto">Partner </h2>
-
-                <button
-                  onClick={() => handleNavigation('Partner / Staff')}
-                  className="w-56 ms-auto py-3 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
-                           bg-[rgba(160, 166, 176, 0.4)] hover:bg-[rgba(160, 166, 176, 0.5)] 
-                           border border-white/20 flex items-center justify-between shadow-sm"
-                  style={{ fontSize: '15px' }}
-                >
-                  <span>Log In</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-4 h-4 text-white [dir='rtl']:rotate-180"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+                      {/* Mobile Dropdown Items */}
+                      {hasDropdown && isMobileDropdownOpen && (
+                        <div className="w-56 ms-0 flex flex-col gap-2 pl-2">
+                          {dropdowns[item.key].map((dropdownItem, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleMobileDropdownItemClick(dropdownItem)}
+                              className="w-full py-2 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
+                                       border border-white/10 flex items-center justify-between shadow-sm"
+                              style={{ 
+                                fontSize: '14px',
+                                backgroundColor: 'rgb(42 44 57 / 87%)',
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgb(42 44 57 / 95%)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'rgb(42 44 57 / 87%)';
+                              }}
+                            >
+                              <span>{dropdownItem.label}</span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className="w-4 h-4 text-white [dir='rtl']:rotate-180"
+                              >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                              </svg>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
 
               {/* Change Language Section */}

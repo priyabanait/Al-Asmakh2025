@@ -247,6 +247,10 @@ export default function BecomeAnAgent({ mode = "agent" }) {
         message: "",
     });
 
+
+    const [selectedCountryCode, setSelectedCountryCode] = useState("+974"); // Default to Qatar
+    const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+    const countryDropdownRef = useRef(null);
     // Handle video playback for both modes
     useEffect(() => {
         if (mode === "partner" && partnerVideoRef.current) {
@@ -534,117 +538,202 @@ export default function BecomeAnAgent({ mode = "agent" }) {
             <section className="w-full">
 
 
-                {/* Contact Form Card - Full Width */}
+             
+
+
+
                 <section className="relative w-full h-auto lg:min-h-screen flex items-center py-8 lg:py-12 xl:py-16 2xl:py-20 overflow-hidden">
-                    {/* Background Image */}
-                    <Image
-                        src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
-                        alt="Background"
-                        fill
-                        className="object-cover"
-                    />
+        {/* Background Image */}
+        <Image
+          src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
+          alt="Background"
+          fill
+          className="object-cover"
+        />
 
-                    {/* Content Container - Full Width */}
-                    <div className="relative z-10 w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20 3xl:px-24 4xl:px-32 5xl:px-40 6xl:px-48">
-                        <div className="flex flex-col lg:flex-row w-full items-start justify-between gap-6 lg:gap-8 xl:gap-12">
-                            {/* Left Side Title - Overlaid on background */}
-                            <div className="text-white lg:w-1/2 flex flex-col justify-center lg:mt-0">
-                                <h2 className="text-base lg:text-2xl xl:text-3xl 2xl:text-4xl text-center lg:text-left mb-2 lg:mb-3">
-                                    Join a platform built to support professional agents operating at a higher standard.
-                                </h2>
-                                <div className="h-[0.5px] w-[75%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
-                            </div>
+        {/* Content Container */}
+        <div className="relative z-10 max-w-[1200px] xl:max-w-[1400px] 2xl:max-w-[1600px] 3xl:max-w-[1920px] 4xl:max-w-[2560px] mx-auto w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 2xl:px-20">
+          <div className="flex flex-col lg:flex-row w-full items-start justify-between gap-6 lg:gap-8 xl:gap-12">
+            {/* Left Side Title - Overlaid on background */}
+            <div className="text-white lg:w-1/2 flex flex-col justify-center lg:mt-0">
+              <h2 className="text-base lg:text-2xl xl:text-3xl 2xl:text-4xl text-center lg:text-left mb-2 lg:mb-3">
+              Join a platform built to support professional agents operating at a higher standard.
+              </h2>
+              <div className="h-[0.5px] w-[75%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
+            </div>
 
-                            {/* Right Side - Form Panel and Map */}
-                            <div className="lg:w-1/2 w-full flex flex-col">
-                                {/* Form Panel - Translucent */}
-                                <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 xl:p-8 lg:px-8 xl:px-12 2xl:px-16 rounded-md shadow-xl relative overflow-hidden">
-                                    {/* Form Header */}
-                                    <h3 className="text-[#001730] text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
-                                        Connect with our developer partnerships team ,
-                                        . Execute with precision. Deliver results.
-                                    </h3>
-                                    <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
+            {/* Right Side - Form Panel and Map */}
+            <div className="lg:w-1/2 w-full flex flex-col">
+              {/* Form Panel - Translucent */}
+              <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 xl:p-8 lg:px-8 xl:px-12 2xl:px-16 rounded-md shadow-xl relative overflow-hidden">
+                {/* Form Header */}
+                <h3 className="text-[#001730] text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
+                Connect with our developer partnerships team , . Execute with precision. Deliver results.
+
+                </h3>
+                <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
 
 
-                                    <form className="space-y-3 lg:space-y-4">
-                                        {/* First Row: Name and Email */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                                            <div>
-                                                <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="John Carter"
-                                                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
-                                                <input
-                                                    type="email"
-                                                    placeholder="example@email.com"
-                                                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Second Row: Phone and Property Type */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                                            <div>
-                                                <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="(123) 456 - 789"
-                                                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
-                                                <select
-                                                    className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730]"
-                                                >
-                                                    <option>Choose a Type</option>
-                                                    <option>Apartment</option>
-                                                    <option>Villa</option>
-                                                    <option>Commercial</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        {/* Message Textarea */}
-                                        <div>
-                                            <label className="block text-[#001730] text-xs lg:text-sm mb-1.5 lg:mb-2">Message</label>
-                                            <textarea
-                                                placeholder={content.formPlaceholder}
-                                                rows={3}
-                                                className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
-                                            ></textarea>
-                                        </div>
-
-                                        {/* Submit Button */}
-                                        <button
-                                            type="submit"
-                                            className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
-                                        >
-                                            <span className="text-[12px]">Submit</span>
-                                            <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
-                                        </button>
-                                    </form>
-                                </div>
-
-                                {/* Map Section - Below the blur card */}
-                                <div className="mt-4 lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
-                                    <Image
-                                        src="/675.png"
-                                        alt="Map"
-                                        fill
-                                        className="object-cover rounded-md"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                <form className="space-y-3 lg:space-y-4">
+                  {/* First Row: Name and Email */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-2">
+                    <div>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
+                      <input
+                        type="text"
+                        placeholder="Enter Your Name"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                      />
                     </div>
-                </section>
+                    <div>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
+                      <input
+                        type="email"
+                        placeholder="Enter Your Email"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Second Row: Phone and Property Type */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                    <div className="flex flex-col">
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
+                      <div className="flex relative h-[42px] lg:h-[45px]" ref={countryDropdownRef}>
+                        {/* Country Code Dropdown - Left Side */}
+                        <div className="relative flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                            className="h-[42px] lg:h-[45px] px-2 flex items-center justify-center gap-0 outline-none hover:bg-gray-50 bg-white border border-r-0 border-gray-300 rounded-l-md"
+                            style={{ fontSize: '12px', color: "#001730" }}
+                          >
+                            <span>{selectedCountryCode}</span>
+                            <svg
+                              className={`w-3 h-3 transition-transform ${showCountryDropdown ? 'rotate-180' : ''}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          {/* Divider */}
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-5 bg-gray-300"></div>
+                          {/* Country Dropdown Menu */}
+                          {showCountryDropdown && (
+                            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto z-50 min-w-[280px]">
+                              {[
+                                { code: "+974", country: "Qatar", flag: "🇶🇦" },
+                                { code: "+971", country: "UAE", flag: "🇦🇪" },
+                                { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+                                { code: "+965", country: "Kuwait", flag: "🇰🇼" },
+                                { code: "+973", country: "Bahrain", flag: "🇧🇭" },
+                                { code: "+968", country: "Oman", flag: "🇴🇲" },
+                                { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
+                                { code: "+44", country: "UK", flag: "🇬🇧" },
+                                { code: "+91", country: "India", flag: "🇮🇳" },
+                                { code: "+86", country: "China", flag: "🇨🇳" },
+                                { code: "+81", country: "Japan", flag: "🇯🇵" },
+                                { code: "+82", country: "South Korea", flag: "🇰🇷" },
+                                { code: "+33", country: "France", flag: "🇫🇷" },
+                                { code: "+49", country: "Germany", flag: "🇩🇪" },
+                                { code: "+39", country: "Italy", flag: "🇮🇹" },
+                                { code: "+34", country: "Spain", flag: "🇪🇸" },
+                                { code: "+61", country: "Australia", flag: "🇦🇺" },
+                                { code: "+27", country: "South Africa", flag: "🇿🇦" },
+                                { code: "+20", country: "Egypt", flag: "🇪🇬" },
+                                { code: "+212", country: "Morocco", flag: "🇲🇦" },
+                                { code: "+90", country: "Turkey", flag: "🇹🇷" },
+                                { code: "+7", country: "Russia", flag: "🇷🇺" },
+                                { code: "+55", country: "Brazil", flag: "🇧🇷" },
+                                { code: "+52", country: "Mexico", flag: "🇲🇽" },
+                                { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+                                { code: "+92", country: "Pakistan", flag: "🇵🇰" },
+                                { code: "+880", country: "Bangladesh", flag: "🇧🇩" },
+                                { code: "+62", country: "Indonesia", flag: "🇮🇩" },
+                                { code: "+60", country: "Malaysia", flag: "🇲🇾" },
+                                { code: "+65", country: "Singapore", flag: "🇸🇬" },
+                                { code: "+66", country: "Thailand", flag: "🇹🇭" },
+                                { code: "+84", country: "Vietnam", flag: "🇻🇳" },
+                                { code: "+63", country: "Philippines", flag: "🇵🇭" },
+                              ].map((item) => (
+                                <button
+                                  key={item.code}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedCountryCode(item.code);
+                                    setShowCountryDropdown(false);
+                                  }}
+                                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 ${
+                                    selectedCountryCode === item.code ? 'bg-gray-100 font-semibold' : ''
+                                  }`}
+                                  style={{ fontSize: '12px' }}
+                                >
+                                  <span>{item.flag}</span>
+                                  <span className="flex-1">{item.country}</span>
+                                  <span className="text-gray-600">{item.code}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {/* Phone Number Input - Right Side */}
+                        <input
+                          type="text"
+                          placeholder="(123) 456 - 789"
+                          className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
+                      <select
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                      >
+                        <option>Choose a Type</option>
+                        <option>Apartment</option>
+                        <option>Villa</option>
+                        <option>Commercial</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Message Textarea */}
+                  <div>
+                    <label className="block text-[#001730] text-xs lg:text-sm mb-1.5 lg:mb-2">Message</label>
+                    <textarea
+                      placeholder="Tell us more about your requirement like budget ,area & others .."
+                      rows={3}
+                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
+                    ></textarea>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
+                  >
+                    <span className="text-[12px]">Submit</span>
+                    <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
+                  </button>
+                </form>
+              </div>
+
+              {/* Map Section - Below the blur card */}
+              <div className="mt-4 lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
+                <Image
+                  src="/675.png"
+                  alt="Map"
+                  fill
+                  className="object-cover rounded-md"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
             </section>
         </div>
     );

@@ -305,8 +305,8 @@ export default function Sale() {
 
 
         {/* Header Bar */}
-        <div className="bg-white border-gray-200 px-2 bg-gray-50 mt-6 lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-5 bg-gray-50 mx-auto items-center gap-4">
+        <div className="bg-white border-gray-200 px-2 bg-white mt-6 lg:px-4">
+          <div className="hidden lg:flex max-w-full mb-5 bg-white mx-auto items-center gap-4">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">

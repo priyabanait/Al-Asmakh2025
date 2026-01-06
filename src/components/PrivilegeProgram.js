@@ -200,7 +200,7 @@ export default function PrivilegeProgram() {
           </p></div>
 
         {/* Motion Carousel - Mobile Only */}
-        <div className="block lg:hidden relative w-full py-2 px-2 sm:px-4">
+        <div className="block lg:hidden relative w-full py-2 px-2 sm:px-4 ">
           {isMounted && isMobile ? (
             <MotionCarousel
               slides={services.map((item, index) => (
@@ -210,7 +210,7 @@ export default function PrivilegeProgram() {
                     borderRadius: "8px",
                     width: "100%",
                     height: "auto",
-                    minHeight: "280px",
+                    minHeight: "200px",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "flex-start",

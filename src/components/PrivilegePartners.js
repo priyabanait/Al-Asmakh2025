@@ -43,6 +43,25 @@ export default function Profit() {
   const [startIndex, setStartIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
   const [selectedCountryCode, setSelectedCountryCode] = useState("+974"); // Default to Qatar
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const countryDropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target)) {
+        setShowCountryDropdown(false);
+      }
+    };
+
+    if (showCountryDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCountryDropdown]);
   const testimonialsPerSlide = 3;
   const totalTestimonialSlides = Math.ceil(testimonials.length / testimonialsPerSlide);
 
@@ -870,21 +889,21 @@ export default function Profit() {
 
                 <form className="space-y-3 lg:space-y-4">
                   {/* First Row: Name and Email */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-2">
                     <div>
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
                       <input
                         type="text"
-                        placeholder="John Carter"
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                        placeholder="Enter Your Name"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
                       />
                     </div>
                     <div>
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
                       <input
                         type="email"
-                        placeholder="example@email.com"
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730]"
+                        placeholder="Enter Your Email"
+                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
                       />
                     </div>
                   </div>
@@ -893,77 +912,90 @@ export default function Profit() {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                     <div className="flex flex-col">
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
-                      <div className="flex">
-                        {/* <div className="relative">
-                          <select
-                            value={selectedCountryCode}
-                            onChange={(e) => setSelectedCountryCode(e.target.value)}
-                            className="bg-white border border-gray-300 rounded-l-md px-2 lg:px-3 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] appearance-none cursor-pointer pr-6 lg:pr-8 h-[42px] lg:h-[45px]"
-                            style={{ minWidth: '40px' }}
+                      <div className="flex relative h-[42px] lg:h-[45px]" ref={countryDropdownRef}>
+                        {/* Country Code Dropdown - Left Side */}
+                        <div className="relative flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                            className="h-[42px] lg:h-[45px] px-2 flex items-center justify-center gap-0 outline-none hover:bg-gray-50 bg-white border border-r-0 border-gray-300 rounded-l-md"
+                            style={{ fontSize: '12px', color: "#001730" }}
                           >
-                            <option value="+974">🇶🇦 +974</option>
-                            <option value="+971">🇦🇪 +971</option>
-                            <option value="+966">🇸🇦 +966</option>
-                            <option value="+965">🇰🇼 +965</option>
-                            <option value="+973">🇧🇭 +973</option>
-                            <option value="+968">🇴🇲 +968</option>
-                            <option value="+961">🇱🇧 +961</option>
-                            <option value="+962">🇯🇴 +962</option>
-                            <option value="+964">🇮🇶 +964</option>
-                            <option value="+972">🇮🇱 +972</option>
-                            <option value="+20">🇪🇬 +20</option>
-                            <option value="+212">🇲🇦 +212</option>
-                            <option value="+90">🇹🇷 +90</option>
-                            <option value="+98">🇮🇷 +98</option>
-                            <option value="+1">🇺🇸 +1</option>
-                            <option value="+44">🇬🇧 +44</option>
-                            <option value="+33">🇫🇷 +33</option>
-                            <option value="+49">🇩🇪 +49</option>
-                            <option value="+39">🇮🇹 +39</option>
-                            <option value="+34">🇪🇸 +34</option>
-                            <option value="+61">🇦🇺 +61</option>
-                            <option value="+91">🇮🇳 +91</option>
-                            <option value="+86">🇨🇳 +86</option>
-                            <option value="+81">🇯🇵 +81</option>
-                            <option value="+82">🇰🇷 +82</option>
-                            <option value="+65">🇸🇬 +65</option>
-                            <option value="+60">🇲🇾 +60</option>
-                            <option value="+66">🇹🇭 +66</option>
-                            <option value="+62">🇮🇩 +62</option>
-                            <option value="+63">🇵🇭 +63</option>
-                            <option value="+84">🇻🇳 +84</option>
-                            <option value="+92">🇵🇰 +92</option>
-                            <option value="+880">🇧🇩 +880</option>
-                            <option value="+7">🇷🇺 +7</option>
-                            <option value="+55">🇧🇷 +55</option>
-                            <option value="+52">🇲🇽 +52</option>
-                            <option value="+54">🇦🇷 +54</option>
-                            <option value="+27">🇿🇦 +27</option>
-                            <option value="+46">🇸🇪 +46</option>
-                            <option value="+47">🇳🇴 +47</option>
-                            <option value="+45">🇩🇰 +45</option>
-                            <option value="+31">🇳🇱 +31</option>
-                            <option value="+32">🇧🇪 +32</option>
-                            <option value="+41">🇨🇭 +41</option>
-                            <option value="+43">🇦🇹 +43</option>
-                            <option value="+351">🇵🇹 +351</option>
-                            <option value="+30">🇬🇷 +30</option>
-                            <option value="+353">🇮🇪 +353</option>
-                            <option value="+358">🇫🇮 +358</option>
-                            <option value="+48">🇵🇱 +48</option>
-                            <option value="+64">🇳🇿 +64</option>
-                            <option value="+971">🇦🇪 +971</option>
-                          </select>
-                          <div className="absolute right-1 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span>{selectedCountryCode}</span>
+                            <svg
+                              className={`w-3 h-3 transition-transform ${showCountryDropdown ? 'rotate-180' : ''}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
-                          </div>
-                        </div> */}
+                          </button>
+                          {/* Divider */}
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-5 bg-gray-300"></div>
+                          {/* Country Dropdown Menu */}
+                          {showCountryDropdown && (
+                            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto z-50 min-w-[280px]">
+                              {[
+                                { code: "+974", country: "Qatar", flag: "🇶🇦" },
+                                { code: "+971", country: "UAE", flag: "🇦🇪" },
+                                { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+                                { code: "+965", country: "Kuwait", flag: "🇰🇼" },
+                                { code: "+973", country: "Bahrain", flag: "🇧🇭" },
+                                { code: "+968", country: "Oman", flag: "🇴🇲" },
+                                { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
+                                { code: "+44", country: "UK", flag: "🇬🇧" },
+                                { code: "+91", country: "India", flag: "🇮🇳" },
+                                { code: "+86", country: "China", flag: "🇨🇳" },
+                                { code: "+81", country: "Japan", flag: "🇯🇵" },
+                                { code: "+82", country: "South Korea", flag: "🇰🇷" },
+                                { code: "+33", country: "France", flag: "🇫🇷" },
+                                { code: "+49", country: "Germany", flag: "🇩🇪" },
+                                { code: "+39", country: "Italy", flag: "🇮🇹" },
+                                { code: "+34", country: "Spain", flag: "🇪🇸" },
+                                { code: "+61", country: "Australia", flag: "🇦🇺" },
+                                { code: "+27", country: "South Africa", flag: "🇿🇦" },
+                                { code: "+20", country: "Egypt", flag: "🇪🇬" },
+                                { code: "+212", country: "Morocco", flag: "🇲🇦" },
+                                { code: "+90", country: "Turkey", flag: "🇹🇷" },
+                                { code: "+7", country: "Russia", flag: "🇷🇺" },
+                                { code: "+55", country: "Brazil", flag: "🇧🇷" },
+                                { code: "+52", country: "Mexico", flag: "🇲🇽" },
+                                { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+                                { code: "+92", country: "Pakistan", flag: "🇵🇰" },
+                                { code: "+880", country: "Bangladesh", flag: "🇧🇩" },
+                                { code: "+62", country: "Indonesia", flag: "🇮🇩" },
+                                { code: "+60", country: "Malaysia", flag: "🇲🇾" },
+                                { code: "+65", country: "Singapore", flag: "🇸🇬" },
+                                { code: "+66", country: "Thailand", flag: "🇹🇭" },
+                                { code: "+84", country: "Vietnam", flag: "🇻🇳" },
+                                { code: "+63", country: "Philippines", flag: "🇵🇭" },
+                              ].map((item) => (
+                                <button
+                                  key={item.code}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedCountryCode(item.code);
+                                    setShowCountryDropdown(false);
+                                  }}
+                                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 ${
+                                    selectedCountryCode === item.code ? 'bg-gray-100 font-semibold' : ''
+                                  }`}
+                                  style={{ fontSize: '12px' }}
+                                >
+                                  <span>{item.flag}</span>
+                                  <span className="flex-1">{item.country}</span>
+                                  <span className="text-gray-600">{item.code}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {/* Phone Number Input - Right Side */}
                         <input
                           type="text"
                           placeholder="(123) 456 - 789"
-                          className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                          className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-full"
                         />
                       </div>
                     </div>

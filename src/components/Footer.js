@@ -97,7 +97,7 @@ export default function Footer() {
           </Link>
 
           {/* Navigation Links */}
-          <nav className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-4 md:gap-5 text-white">
+          {/* <nav className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-4 md:gap-5 text-white">
             <Link href="/" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
               Home
             </Link>
@@ -113,7 +113,7 @@ export default function Footer() {
             <Link href="/contact" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
               Contact
             </Link>
-          </nav>
+          </nav> */}
         </div>
 
         {/* Social + Newsletter */}
