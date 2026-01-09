@@ -6,24 +6,59 @@ import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { fetchProperties } from "../utils/propertyapi";
 
-export default function FeaturedProperties() {
+/**
+ * FeaturedProperties Component
+ * @param {Object} props
+ * @param {string} props.priceType - Filter by price type: 'sale' or 'rent' (optional)
+ * @param {number} props.limit - Number of properties to fetch (default: 4)
+ * @param {string} props.status - Property status filter (default: 'published')
+ * @param {string} props.viewAllLink - Link for View All button (default: '/listings/rent')
+ * @param {string} props.type - Property type filter (optional)
+ * @param {string} props.locationLevel1 - Location level 1 filter (optional)
+ */
+export default function FeaturedProperties({ 
+  priceType = "", 
+  limit = 4, 
+  status = "published",
+  viewAllLink = "/listings/rent",
+  type = "",
+  locationLevel1 = ""
+}) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch properties from API (or dummy data)
+  // Fetch properties from API with filters
   useEffect(() => {
     const loadProperties = async () => {
       try {
         setLoading(true);
-        // Use fetchProperties from propertyapi.js which handles dummy data
-        const result = await fetchProperties({
+        // Build filters object - always use "published" status if not explicitly set otherwise
+        const filters = {
           page: 1,
-          limit: 4,
-          status: "",
-        });
+          limit: limit,
+          status: status || "published", // Default to published/active properties
+        };
 
-        console.log("Properties loaded:", result.properties.length);
+        // Add priceType filter if provided
+        if (priceType) {
+          filters.priceType = priceType;
+        }
+
+        // Add type filter if provided
+        if (type) {
+          filters.type = type;
+        }
+
+        // Add location filter if provided
+        if (locationLevel1) {
+          filters.locationLevel1 = locationLevel1;
+        }
+
+        // Use fetchProperties from propertyapi.js
+        const result = await fetchProperties(filters);
+
+        console.log(`Properties loaded (priceType: ${priceType || 'all'}):`, result.properties.length);
         setProperties(result.properties);
         setError(null);
       } catch (err) {
@@ -36,7 +71,7 @@ export default function FeaturedProperties() {
     };
 
     loadProperties();
-  }, []);
+  }, [priceType, limit, status, type, locationLevel1]);
 
 
   // Helper function to format property data (handles both raw and pre-formatted properties)
@@ -235,7 +270,7 @@ export default function FeaturedProperties() {
                     {/* Price and Button */}
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
-                        {property.price} QAR
+                        {property.price && !property.price.includes('QAR') ? `${property.price} QAR` : property.price}
                       </p>
 
                       <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
@@ -258,7 +293,7 @@ export default function FeaturedProperties() {
 
             {/* View All Button - Moved inside max-w container */}
             <div className="flex justify-center mt-4 lg:mt-6 mb-5">
-              <Link href="/listings/rent">
+              <Link href={viewAllLink}>
                 <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
                   <span>View All</span>
                   <FaArrowRight

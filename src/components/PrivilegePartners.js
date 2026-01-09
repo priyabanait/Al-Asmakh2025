@@ -443,7 +443,12 @@ export default function Profit() {
 
 
       {/* Featured Properties Section */}
-      <FeaturedProperties />
+      <FeaturedProperties 
+        priceType="rent"
+        limit={4}
+        status="published"
+        viewAllLink="/listings/rent"
+      />
 
       <section className="bg-gray-100 py-8 lg:py-16 px-4 relative overflow-visible">
         {/* Background Image */}

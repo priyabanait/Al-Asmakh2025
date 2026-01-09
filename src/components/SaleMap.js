@@ -36,7 +36,7 @@ export default function Sale({ priceType: initialPriceType = "sale" }) {
           priceType: priceType, // "rent" or "sale"
           page: 1,
           limit: 50,
-          // status: "published", // Removed - show all properties (including draft) for now
+          status: "published", // Only show published/active properties
         });
 
         setProperties(result.properties);

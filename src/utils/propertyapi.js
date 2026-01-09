@@ -501,10 +501,10 @@ export const fetchProperties = async (params = {}) => {
             priceType: priceType,
         });
 
-        // Only add status filter if explicitly provided
-        if (status) {
-            queryParams.append("status", status);
-        }
+        // Add status filter - default to "published" if not provided
+        // This ensures only active/published properties are shown
+        const statusFilter = status || "published";
+        queryParams.append("status", statusFilter);
 
         // Add optional filters
         if (type) queryParams.append("type", type);

@@ -276,9 +276,16 @@ export default function LocationAutocomplete({
   };
 
   return (
-    <div className={`relative w-full ${className}`}>
+    <div 
+      className={`relative w-full ${className}`} 
+      style={{ 
+        zIndex: showSuggestions ? 10000 : 'auto',
+        position: 'relative',
+        isolation: 'isolate'
+      }}
+    >
       {/* Search Input */}
-      <div className="relative">
+      <div className="relative z-10">
         <div className="flex items-center px-3 sm:px-4 md:px-5 lg:px-6 bg-white rounded-[3px] border border-gray-300 py-2 sm:py-2.5 md:py-3 lg:py-4 focus-within:border-[#001730] focus-within:ring-2 focus-within:ring-[#001730]/20 transition">
           <div className="p-1 sm:p-1.5 bg-[#001730] rounded-[3px] flex items-center justify-center h-[24px] w-[24px] sm:h-[28px] sm:w-[28px] flex-shrink-0">
             <Search className="text-white h-2.5 w-2.5 sm:h-3 sm:w-3" />
@@ -320,7 +327,14 @@ export default function LocationAutocomplete({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto"
+            className="absolute top-full left-0 right-0 z-[10000] w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-2xl max-h-64 overflow-y-auto"
+            style={{ 
+              zIndex: 10000,
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0
+            }}
           >
             {suggestions.map((location, index) => (
               <button
@@ -368,7 +382,14 @@ export default function LocationAutocomplete({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center"
+              className="absolute top-full left-0 right-0 z-[10000] w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-2xl p-4 text-center"
+              style={{ 
+                zIndex: 10000,
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0
+              }}
             >
               <p className="text-sm text-gray-500">No locations found</p>
               <p className="text-xs text-gray-400 mt-1">
