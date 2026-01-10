@@ -69,13 +69,14 @@ export default function ListingHeroSection({
   }, []);
 
   const handleFilterSelect = (filterName, value) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [filterName]: prev[filterName] === value ? null : value,
-    }));
+    const newFilters = {
+      ...selectedFilters,
+      [filterName]: selectedFilters[filterName] === value ? null : value,
+    };
+    setSelectedFilters(newFilters);
     setOpenDropdown(null);
     if (onFilterChange) {
-      onFilterChange({ ...selectedFilters, [filterName]: value });
+      onFilterChange(newFilters);
     }
   };
 
@@ -166,13 +167,13 @@ export default function ListingHeroSection({
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1 text-gray-800 text-sm bg-transparent outline-none placeholder:text-gray-400"
                   />
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setShowSpeechModal(true)}
                     className="p-2 bg-[#001730] rounded-md ml-2 flex items-center justify-center h-8 w-8 flex-shrink-0 hover:bg-[#022d5e] transition-colors cursor-pointer"
                   >
                     <Mic className="text-white h-4 w-4" />
-                  </button>
+                  </button> */}
                 </div>
               </form>
             </div>

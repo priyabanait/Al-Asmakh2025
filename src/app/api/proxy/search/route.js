@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 
 // Backend API base URL
-const BACKEND_URL = process.env.BACKEND_API_URL || 'http://4.213.213.99';
-const FETCH_TIMEOUT = 10000; // 10 seconds timeout
+// Use localhost for local development, production URL for deployed environments
+const BACKEND_URL = process.env.BACKEND_API_URL || 
+    (process.env.NODE_ENV === 'production' || process.env.VERCEL ? 'http://4.213.213.99' : 'http://localhost:3003');
+const FETCH_TIMEOUT = 15000; // 15 seconds timeout (increased for Elasticsearch queries)
 
 // Helper function to create a fetch with timeout
 async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT) {
@@ -476,6 +478,40 @@ export async function GET(request) {
                 limit: parseInt(searchParams.get('limit')) || 20,
                 pages: Math.ceil((responseData.total || 0) / (parseInt(searchParams.get('limit')) || 20))
             };
+        }
+
+        // If Elasticsearch returns empty results and no fallback was indicated, try fallback search
+        const totalResults = responseData.pagination?.total || responseData.total || 0;
+        const hasResults = (responseData.properties?.length || responseData.hits?.length || 0) > 0;
+        const isFallback = responseData.fallback === true;
+        
+        // If no results and no fallback flag, try property service fallback
+        if (totalResults === 0 && !hasResults && !isFallback) {
+            const hasSearchQuery = searchParams.get('q') || searchParams.get('locationSearch');
+            const hasFilters = Array.from(searchParams.keys()).some(key => 
+                !['q', 'locationSearch', 'page', 'limit', 'status'].includes(key)
+            );
+            
+            // Only fallback if there are filters or search query (not just empty initial load)
+            if (hasSearchQuery || hasFilters) {
+                console.log('[Search Proxy] Empty Elasticsearch results, trying property service fallback');
+                try {
+                    const fallbackResults = await fallbackSearch(searchParams);
+                    // Only use fallback if it has results
+                    if (fallbackResults.properties?.length > 0 || fallbackResults.total > 0) {
+                        return NextResponse.json(fallbackResults, {
+                            status: 200,
+                            headers: {
+                                'Cache-Control': 'no-store, no-cache, must-revalidate',
+                                'X-Fallback-Search': 'true'
+                            },
+                        });
+                    }
+                } catch (fallbackError) {
+                    console.error('[Search Proxy] Fallback search failed:', fallbackError);
+                    // Continue with empty Elasticsearch results
+                }
+            }
         }
 
         // Return response with proper headers

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ShareButton from "./ShareButton";
 import MoreFiltersModal from "./MoreFiltersModal";
 import { FaArrowRight } from "react-icons/fa6";
@@ -10,6 +10,7 @@ import { FaList } from "react-icons/fa";
 import DreamPropertySection from "./DreamPropertySection";
 import PropertyListView from "./PropertyListView";
 import { fetchProperties } from "../utils/propertyapi";
+import { searchProperties } from "../utils/searchApi";
 import ListingHeroSection from "./ListingHeroSection";
 
 export default function Sale({ priceType: initialPriceType = "rent" }) {
@@ -19,52 +20,143 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalProperties, setTotalProperties] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState({});
 
   // Update priceType when prop changes
   useEffect(() => {
     setPriceType(initialPriceType);
   }, [initialPriceType]);
 
-  // Fetch properties from backend
-  useEffect(() => {
-    const loadProperties = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+  // Load properties using search API or fallback to fetchProperties
+  const loadProperties = useCallback(async (searchText = "", filters = {}) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const result = await fetchProperties({
-          priceType: priceType, // "rent" or "sale"
+      // Use search API if there's a search query or filters, otherwise use regular fetch
+      const hasSearchOrFilters = searchText || Object.keys(filters).length > 0;
+
+      if (hasSearchOrFilters) {
+        // Use search API with all filters
+        const searchFilters = {
+          q: searchText,
+          priceType: priceType,
+          status: "published",
           page: 1,
           limit: 50,
-          status: "published", // Only show published/active properties
+          ...filters,
+        };
+
+        const result = await searchProperties(searchFilters);
+        setProperties(result.properties || []);
+        setTotalProperties(result.pagination?.total || result.total || 0);
+      } else {
+        // Use regular fetch for initial load
+        const result = await fetchProperties({
+          priceType: priceType,
+          page: 1,
+          limit: 50,
+          status: "published",
         });
 
-        setProperties(result.properties);
-        setTotalProperties(result.totalProperties);
-      } catch (err) {
-        console.error("Error fetching properties:", err);
-        setError(err.message || "Failed to load properties");
-        setProperties([]);
-        setTotalProperties(0);
-      } finally {
-        setLoading(false);
+        setProperties(result.properties || []);
+        setTotalProperties(result.totalProperties || 0);
       }
-    };
-
-    loadProperties();
+    } catch (err) {
+      console.error("Error loading properties:", err);
+      setError(err.message || "Failed to load properties");
+      setProperties([]);
+      setTotalProperties(0);
+    } finally {
+      setLoading(false);
+    }
   }, [priceType]);
 
-  const handleSearch = (query) => {
-    // Handle search functionality
-    console.log("Search query:", query);
-    // You can add search logic here
-  };
+  // Initial load
+  useEffect(() => {
+    loadProperties();
+  }, [priceType]); // Only reload when priceType changes
+  
+  // Note: loadProperties is intentionally not in dependencies to avoid infinite loops
+  // It uses useCallback with proper dependencies (priceType) which will update when needed
 
-  const handleFilterChange = (filters) => {
-    // Handle filter changes
-    console.log("Filters changed:", filters);
-    // You can add filter logic here to refetch properties
-  };
+  // Handle search from ListingHeroSection
+  const handleSearch = useCallback(async (query) => {
+    setSearchQuery(query || "");
+    await loadProperties(query || "", activeFilters);
+  }, [loadProperties, activeFilters]);
+
+  // Handle filter changes from ListingHeroSection
+  const handleFilterChange = useCallback(async (filters) => {
+    // Map filter labels to API parameter names
+    const mappedFilters = {};
+    
+    if (filters["Property Type"]) {
+      const typeMap = {
+        "Apartment": "apartment",
+        "Villa": "villa",
+        "Townhouse": "townhouse",
+        "Penthouse": "luxury",
+        "Studio": "studio",
+      };
+      mappedFilters.type = typeMap[filters["Property Type"]] || filters["Property Type"].toLowerCase();
+    }
+    
+    if (filters["Location"]) {
+      mappedFilters.locationLevel1 = filters["Location"];
+    }
+    
+    if (filters["Beds"]) {
+      // Handle "Studio" and "5+" formats
+      if (filters["Beds"] === "Studio") {
+        mappedFilters.bedrooms = "0";
+      } else if (filters["Beds"].endsWith("+")) {
+        const num = filters["Beds"].replace("+", "");
+        mappedFilters.bedrooms = `${num}+`;
+      } else {
+        mappedFilters.bedrooms = filters["Beds"];
+      }
+    }
+    
+    if (filters["Baths"]) {
+      if (filters["Baths"].endsWith("+")) {
+        const num = filters["Baths"].replace("+", "");
+        mappedFilters.bathrooms = `${num}+`;
+      } else {
+        mappedFilters.bathrooms = filters["Baths"];
+      }
+    }
+    
+    if (filters["Price"]) {
+      // Parse price range like "0-5000" or "50000+"
+      if (filters["Price"].includes("-")) {
+        const [min, max] = filters["Price"].split("-");
+        mappedFilters.minPrice = min;
+        mappedFilters.maxPrice = max;
+      } else if (filters["Price"].endsWith("+")) {
+        mappedFilters.minPrice = filters["Price"].replace("+", "");
+      }
+    }
+
+    setActiveFilters(mappedFilters);
+    await loadProperties(searchQuery, mappedFilters);
+  }, [loadProperties, searchQuery]);
+
+  // Handle search results from MoreFiltersModal
+  const handleMoreFiltersSearch = useCallback((results) => {
+    // MoreFiltersModal already calls searchProperties, so we just update state with results
+    if (results && results.properties) {
+      setProperties(results.properties || []);
+      setTotalProperties(results.pagination?.total || results.total || 0);
+      setShowMoreFilters(false);
+      setError(null);
+    } else {
+      setProperties([]);
+      setTotalProperties(0);
+      setError("No properties found");
+    }
+  }, []);
 
   return (
     <div>
@@ -145,10 +237,8 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       <MoreFiltersModal
         isOpen={showMoreFilters}
         onClose={() => setShowMoreFilters(false)}
-        onShowResults={() => {
-          // Handle show results action
-          console.log("Show results clicked");
-        }}
+        onShowResults={handleMoreFiltersSearch}
+        priceType={priceType}
       />
 
       <DreamPropertySection />

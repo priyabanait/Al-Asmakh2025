@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowDown, X, Sofa, Ruler, Gem, MapPin, Building, ListChecks, Search, Mic, Bed, DollarSign, User, Briefcase, Bath } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LocationAutocomplete from "./LocationAutocomplete";
 import { searchProperties, convertModalFiltersToSearchParams } from "../utils/searchApi";
 
-export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false }) {
+export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false, priceType: propPriceType = "rent" }) {
   const [openSections, setOpenSections] = useState({
     location: false,
     propertyType: false,
@@ -58,8 +58,13 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
   const [maxPrice, setMaxPrice] = useState(10000000);
   const [selectedPropertyType, setSelectedPropertyType] = useState(null);
   const [selectedAmenities, setSelectedAmenities] = useState([]);
-  const [priceType, setPriceType] = useState("sale"); // 'sale' or 'rent'
+  const [priceType, setPriceType] = useState(propPriceType); // Use prop value
   const [isSearching, setIsSearching] = useState(false);
+
+  // Update priceType when prop changes
+  useEffect(() => {
+    setPriceType(propPriceType);
+  }, [propPriceType]);
 
   // const locations = [
   //   "West Bay",
@@ -152,9 +157,11 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
       // Convert to search params
       const searchParams = convertModalFiltersToSearchParams(filterState);
 
-      // Add pagination
+      // Add priceType, pagination, and status
+      searchParams.priceType = priceType || propPriceType || "rent";
+      searchParams.status = "published";
       searchParams.page = 1;
-      searchParams.limit = 20;
+      searchParams.limit = 50;
 
       // Call search API
       const results = await searchProperties(searchParams);
