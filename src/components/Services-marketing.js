@@ -117,14 +117,12 @@ export default function Rent() {
 
             {/* Title */}
             <h2 className="heading font-semibold text-[#001730] mb-3 sm:mb-4 lg:mr-60">
-              PRESTIGIOUS MARKETING
+              PREMIUM PROPERTY MARKETING
             </h2>
             <div className=" h-[0.5px] bg-gray-300 my-3 sm:my-4 l"></div>
             {/* Subtitle */}
             <p className="subheading mb-10 font-semibold text-[#001730] lg:mr-40">
-              We develop sophisticated marketing strategies that understand discerning
-              client needs, maximizing occupancy rates and positioning each luxury property
-              as the most desirable choice in the premium market.
+              We help premium properties stand out for the right reasons through thoughtful strategy, high-quality presentation, and campaigns that connect with qualified buyers and tenants.
             </p>
 
             {/* Stats Section */}
@@ -132,25 +130,25 @@ export default function Rent() {
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">500+</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Increase in Property Views</p>
+                <p className="subheading text-[#001730]">Increased Property Views</p>
               </div>
 
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[140px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">60%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Faster Luxury Sale Times</p>
+                <p className="subheading text-[#001730]">Faster Luxury Sale Cycles</p>
               </div>
 
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[140px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">25%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Higher Sale Prices Achieved</p>
+                <p className="subheading text-[#001730]">Improved Sale Price Performance</p>
               </div>
 
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[140px] md:min-w-[160px]">
                 <p className="text-xl sm:text-2xl font-bold text-[#001730]">98%</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Elite Client Satisfaction Rate</p>
+                <p className="subheading text-[#001730]">Client Satisfaction</p>
               </div>
             </div>
           </div>
@@ -185,12 +183,11 @@ export default function Rent() {
         {/* Section Heading */}
         <div className="text-center mb-12">
           <h2 className="text-2xl  text-[#001730] mb-2">
-            Luxury Marketing
-            <br></br> Process
+            OUR LUXURY MARKETING PROCESS
           </h2>
           <div className="w-[20%] h-[0.5px] bg-gray-300 my-4 mx-auto "></div>
           <p className="subheading text-gray-500">
-            Our sophisticated approach to premium property marketing
+            A premium process built for consistency, so every touchpoint supports your property's value.
 
           </p>
         </div>
@@ -213,7 +210,7 @@ export default function Rent() {
               </h3>
             </div>
             <p className="list-disc list-inside text-gray-600 subheading space-y-1">
-              We analyze your property's unique selling points and target the right luxury market segments.
+              We clarify your property's unique value, define the ideal audience, and shape the story that guides the campaign.
 
             </p>
           </div>
@@ -234,8 +231,7 @@ export default function Rent() {
               </h3>
             </div>
             <p className="list-disc list-inside text-gray-600 subheading space-y-1">
-
-              Professional photography, videography, and content creation that showcases luxury and exclusivity.
+              Photography, video, and brand-aligned messaging that make key details easy to understand and easy to trust.
             </p>
           </div>
 
@@ -252,7 +248,7 @@ export default function Rent() {
               <h3 className="text-[#001730] font-semibold text-lg">Multi-Channel Campaign</h3>
             </div>
             <p className="list-disc list-inside text-gray-600 subheading space-y-1">
-              Deploy across premium platforms and exclusive networks to reach qualified luxury buyers.
+              Carefully selected placements across platforms and networks to generate relevant interest and enquiries.
             </p>
           </div>
 
@@ -272,7 +268,7 @@ export default function Rent() {
               </h3>
             </div>
             <p className="list-disc list-inside text-gray-600 subheading space-y-1">
-              Continuous monitoring and optimization to maximize exposure and generate qualified leads.
+              We review performance regularly and refine what's working to improve relevance, reach, and lead quality.
             </p>
           </div>
 
@@ -295,11 +291,11 @@ export default function Rent() {
         {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-2xl text-[#001730] mb-2">
-            Honors & Awards
+            HONOURS & AWARDS
           </h2>
           <div className="w-[30%] h-[0.5px] bg-gray-300 my-4 mx-auto "></div>
           <p className="subheading text-gray-500">
-            Recognized excellence in luxury real estate marketing
+            Recognition for excellence in luxury real estate marketing.
 
           </p>
         </div>

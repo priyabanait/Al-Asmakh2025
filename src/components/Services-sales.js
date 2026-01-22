@@ -31,14 +31,13 @@ export default function Rent() {
 
             {/* Title */}
             <h2 className="heading px-10 lg:px-0 font-semibold text-[#001730] mb-2 sm:mb-3 md:mb-4 lg:mr-40">
-              EXPERT REAL ESTATE SALES
+              YOUR TRUSTED<br />PARTNER IN PROPERTY SALES
             </h2>
             {/* Divider */}
             <div className="w-[80%] h-[0.5px] bg-gray-300 my-3 sm:my-4 lg:mr-40"></div>
             {/* Subtitle */}
             <p className="subheading mb-10 font-semibold text-[#001730] lg:mr-40">
-              Whether buying or selling, our experienced team provides personalized
-              service and market expertise to achieve your real estate goals.
+              Buying or selling a property is a big decision. We simplify the journey through clear communication, market insights, and a dedicated team to manage every detail.
             </p>
 
             {/* Stats Section */}
@@ -54,14 +53,14 @@ export default function Rent() {
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
                 <p className="text-xl lg:text-2xl font-bold text-[#001730]">500+</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Properties Sold</p>
+                <p className="subheading text-[#001730]">Successful Sales</p>
               </div>
 
               {/* Card 2 */}
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
-                <p className="text-xl sm:text-2xl font-bold text-[#001730]">30</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#001730]">30 Days</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Days Average Sale</p>
+                <p className="subheading text-[#001730]">Average Sale Timeline</p>
               </div>
 
               {/* Card 3 */}
@@ -73,9 +72,9 @@ export default function Rent() {
 
               {/* Card 4 */}
               <div className="glass-effect rounded-lg shadow p-3 sm:p-4 min-w-[150px] md:min-w-[160px]">
-                <p className="text-xl sm:text-2xl font-bold text-[#001730]">$2.5M</p>
+                <p className="text-xl sm:text-2xl font-bold text-[#001730]">2.5M</p>
                 <div className="w-[70%] h-[0.5px] bg-gray-300 my-1 sm:my-2 mx-auto"></div>
-                <p className="subheading text-[#001730]">Average Sale Price</p>
+                <p className="subheading text-[#001730]">Average Sale Value</p>
               </div>
 
             </div>
@@ -83,13 +82,13 @@ export default function Rent() {
 
 
           {/* Contact Team Button - Below the box */}
-          <div className="w-full max-w-5xl mx-auto mt-4 lg:mt-6">
-
-            <button className="bg-[#001730] w-[24%] text-white px-6 py-4 rounded-md font-medium text-[12px] lg:text-[12px] hover:bg-[#002d52] transition-all duration-300 flex items-center justify-between shadow-lg">
-              <span>Contact Team</span>
-              <FaArrowRight size={16} />
-            </button>
-
+          <div className="mt-4 lg:mt-6">
+            <div className="flex-shrink-0 lg:mr-40">
+              <button className="btn-details text-[12px]">
+                <span>Speak to a Sales Advisor</span>
+                <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -97,6 +96,13 @@ export default function Rent() {
 
 
       {/* Featured Properties Section - Using FeaturedProperties component with sales filter */}
+      <section className="w-full bg-gray-50 py-8 px-6 md:px-10">
+        <div className="text-center mb-8">
+          <p className="subheading text-gray-600 max-w-3xl mx-auto">
+            Explore a selection of homes and investment-ready properties currently available for sale. Compare key details, shortlist your favourites, and book a viewing when you're ready.
+          </p>
+        </div>
+      </section>
       <FeaturedProperties 
         priceType="sale"
         limit={4}
@@ -114,11 +120,11 @@ export default function Rent() {
         {/* Section Heading */}
         <div className="text-center mb-12">
           <h2 className="text-2xl text-[#001730]  mb-2">
-            COMPREHENSIVE SALES SERVICES
+            FULL-SERVICE SALES SUPPORT
           </h2>
           <div className="w-[30%] h-[0.5px] bg-gray-300  my-2  mx-auto md:my-3"></div>
           <p className="subheading text-gray-500">
-            From initial consultation to closing, we provide full-service real estate sales support.
+            We help you make every move with confidence, from the first consultation to closing day. We provide support that keeps your process organised, transparent, and moving forward.
           </p>
         </div>
 
@@ -128,39 +134,39 @@ export default function Rent() {
           <div className="glass-effect rounded-md p-6 bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Market Analysis</h3>
             <p className="subheading text-gray-600">
-              Comprehensive market research and competitive analysis to price your property optimally.
+              Thorough market research and comparable insights to position your property effectively.
             </p>
           </div>
 
           {/* Card 2 */}
           <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
-            <h3 className="text-[#001730] font-semibold mb-2">Property Valuation</h3>
+            <h3 className="text-[#001730] font-semibold mb-2">Expert Negotiation</h3>
             <p className="subheading text-gray-600">
-              Professional property appraisal and valuation services using latest market data.
+              Skilled guidance to navigate offers and agree on terms that work for you.
             </p>
           </div>
 
           {/* Card 3 */}
           <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
-            <h3 className="text-[#001730] font-semibold mb-2">Expert Negotiation</h3>
+            <h3 className="text-[#001730] font-semibold mb-2">Buyer Matching</h3>
             <p className="subheading text-gray-600">
-              Skilled negotiation to secure the best possible terms for buyers and sellers.
+              Targeted exposure and qualified buyer matching to keep the process focused.
             </p>
           </div>
 
           {/* Card 4 */}
           <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
-            <h3 className="text-[#001730] font-semibold mb-2">Transaction Management</h3>
+            <h3 className="text-[#001730] font-semibold mb-2">Property Valuation</h3>
             <p className="subheading text-gray-600">
-              Complete transaction coordination from contract to closing with legal support.
+              Professional appraisal support informed by current market conditions.
             </p>
           </div>
 
           {/* Card 5 */}
           <div className="glass-effect rounded-md p-6  bg-[#EEEEEE] shadow-md hover:shadow-xl transition-all">
-            <h3 className="text-[#001730] font-semibold mb-2">Buyer Matching</h3>
+            <h3 className="text-[#001730] font-semibold mb-2">Transaction Management</h3>
             <p className="subheading text-gray-600">
-              Extensive network and marketing to connect sellers with qualified buyers.
+              End-to-end coordination from contract preparation through to completion.
             </p>
           </div>
 
@@ -168,12 +174,28 @@ export default function Rent() {
           <div className="glass-effect rounded-md p-6 shadow-md bg-[#EEEEEE] hover:shadow-xl transition-all">
             <h3 className="text-[#001730] font-semibold mb-2">Closing Support</h3>
             <p className="subheading text-gray-600">
-              Full support through the closing process ensuring smooth transactions.
+              Practical support through the final steps to ensure a well-managed closing.
             </p>
           </div>
         </div>
       </section>
 
+
+      {/* CTA Section */}
+      <section className="w-full bg-gray-50 py-16 px-6 md:px-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl text-[#001730] mb-4 font-semibold">
+            Ready to take the next step?
+          </h2>
+          <p className="subheading text-gray-600 mb-8">
+            If you're buying your next home or selling your current property, we're here to guide you with clear advice and responsive support. Share your goals and timeline, and we'll recommend the most suitable path forward.
+          </p>
+          <button className="btn-details text-[12px]">
+            <span>Contact Us Today</span>
+            <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
+          </button>
+        </div>
+      </section>
 
       <DreamPropertySection />
 

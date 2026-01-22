@@ -12,42 +12,42 @@ export default function Rent() {
     {
       percent: "8%",
       title: "Essential Management",
-      description: "Core property management services",
+      description: "",
       features: [
-        "Rent collection & financial reporting",
-        "Basic maintenance coordination",
-        "Tenant screening & lease management",
-        "Monthly financial statements",
-        "Legal compliance support",
+        "Rent collection and financial reporting",
+        "Maintenance requests coordination",
+        "Tenant screening support and lease administration",
+        "Monthly reporting",
+        "Compliance support",
       ],
       highlighted: false,
     },
     {
       percent: "10%",
       title: "Premium Management",
-      description: "Core property management services",
+      description: "",
       features: [
-        "All Essential features",
-        "24/7 emergency support",
-        "Regular property inspections",
-        "Vendor management & coordination",
-        "Facility management services",
+        "All Essential Management services",
+        "24/7 emergency coverage",
+        "Regular inspections and reporting",
+        "Vendor management and coordination",
+        "Facility services coordination",
         "Quality control programs",
-        "Tenant relations management",
+        "Tenant relations oversight",
       ],
       highlighted: true,
     },
     {
       percent: "12%",
       title: "Elite Management",
-      description: "Comprehensive property management",
+      description: "",
       features: [
-        "All Premium features",
+        "All Essential and Premium Management services",
         "Dedicated property manager",
-        "Concierge services",
-        "Investment consulting",
-        "Portfolio optimization",
-        "Custom reporting & Priority support",
+        "Concierge support",
+        "Expanded reporting and priority handling",
+        "Property performance reviews and improvement recommendations",
+        "Custom reporting and priority support",
       ],
       highlighted: false,
     },
@@ -136,17 +136,13 @@ export default function Rent() {
 
             {/* Title */}
             <h2 className="heading font-semibold text-[#001730] mb-3 sm:mb-4 lg:mr-40">
-              PROPERTY MANAGEMENT
+              THE SMARTER WAY TO<br />MANAGE YOUR PROPERTY IN QATAR
             </h2>
             {/* Divider */}
             <div className="w-[80%] h-[0.5px] bg-gray-300 my-3 sm:my-4 lg:mr-40"></div>
             {/* Subtitle */}
             <p className="subheading mb-10 font-semibold text-[#001730] lg:mr-40">
-              We have pioneered property management across Qatar by applying world-class
-              standards and yet delivering personalized service. Our professional team
-              acquires a deep insight into what's required to manage a property in Qatar's
-              real estate market, enabling us to supervise the property life cycle from
-              acquisition to disposition fully.
+              We offer a more reliable, structured approach to managing your property, covering tenants, operations, reporting, and standards, so your asset stays well-run and well-presented.
             </p>
 
             {/* Stats Section */}
@@ -192,13 +188,13 @@ export default function Rent() {
           </div>
 
           {/* Contact Team Button - Below the box */}
-          <div className="w-full max-w-5xl mx-auto mt-4 lg:mt-6">
-
-            <button className="bg-[#001730] w-[24%] text-white px-6 py-4 rounded-md font-medium text-[12px] lg:text-[12px] hover:bg-[#002d52] transition-all duration-300 flex items-center justify-between shadow-lg">
-              <span>Contact Team</span>
-              <FaArrowRight size={16} />
-            </button>
-
+          <div className="mt-4 lg:mt-6">
+            <div className="flex-shrink-0 lg:mr-40">
+              <button className="btn-details text-[12px]">
+                <span>View Premium Portfolio</span>
+                <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -211,12 +207,11 @@ export default function Rent() {
         {/* Section Heading */}
         <div className="text-center mb-12">
           <h2 className="text-2xl text-[#001730] mb-2">
-            COMPLETE PROPERTY <br></br> MANAGEMENT SOLUTIONS
+            OUR PROPERTY MANAGEMENT SERVICES
           </h2>
           <div className="w-[20%] h-[0.5px] bg-gray-300 my-4 mx-auto "></div>
           <p className="subheading text-gray-500">
-            From tenant relations to facility management, we provide end-to-end property management
-            solutions tailored to Qatar’s real estate market.
+            Comprehensive services designed to keep your property well-managed and well-presented.
           </p>
         </div>
 
@@ -238,9 +233,10 @@ export default function Rent() {
               </h3>
             </div>
             <ul className="list-disc list-inside text-gray-600 subheading space-y-1">
-              <li>Seamless transition management for your properties</li>
-              <li>Preparation of vacant units in a quick and efficient manner</li>
-              <li>Management of all inventory protocols after tenant vacancy</li>
+              <li>Managed move-in/move-out scheduling and handovers</li>
+              <li>Vacant unit preparation and readiness checks</li>
+              <li>Inventory checklists for check-in/check-out</li>
+              <li>Condition inspections after tenant vacancy</li>
             </ul>
           </div>
 
@@ -260,9 +256,10 @@ export default function Rent() {
               </h3>
             </div>
             <ul className="list-disc list-inside text-gray-600 subheading space-y-1">
-              <li>Comprehensive financial management and reporting</li>
-              <li>Preparing monthly and yearly account statements</li>
-              <li>Fetching reliable vendors & establishing property budgets</li>
+              <li>Consistent owner reporting and financial visibility</li>
+              <li>Monthly/quarterly statements and expense tracking</li>
+              <li>Budget setup with variance monitoring</li>
+              <li>Vendor sourcing and cost control coordination</li>
             </ul>
           </div>
 
@@ -279,9 +276,10 @@ export default function Rent() {
               <h3 className="text-[#001730] font-semibold text-lg">Lease Contracts</h3>
             </div>
             <ul className="list-disc list-inside text-gray-600 subheading space-y-1">
-              <li>Complete lease management and legal compliance</li>
-              <li>Preparing lease agreements & enforcing leases</li>
-              <li>Ensuring legal compliance and managing evictions</li>
+              <li>Drafting and managing leases, renewals, and notices</li>
+              <li>Documentation control and compliance support</li>
+              <li>Guidance through terminations and formal steps, when required</li>
+              <li>Coordination with legal support as needed</li>
             </ul>
           </div>
 
@@ -297,13 +295,14 @@ export default function Rent() {
               </div>
 
               <h3 className="text-[#001730] font-semibold text-lg">
-                Communication With Tenant
+                Communication with Tenants
               </h3>
             </div>
             <ul className="list-disc list-inside text-gray-600 subheading space-y-1">
-              <li>Professional tenant relations and communication</li>
-              <li>Handling deposits and tenant-related matters</li>
-              <li>Setting property rules and contract guidelines</li>
+              <li>Tenant queries, follow-ups, and relationship management</li>
+              <li>Deposit handling processes and documentation</li>
+              <li>Clear communication of rules, regulations, and responsibilities</li>
+              <li>Coordinating requirements with relevant third parties when needed</li>
             </ul>
           </div>
 
@@ -322,9 +321,10 @@ export default function Rent() {
               </h3>
             </div>
             <ul className="list-disc list-inside text-gray-600 subheading space-y-1">
-              <li>Operations & maintenance of HVAC, MEP, and lift systems</li>
-              <li>EHS compliance and waste management</li>
-              <li>Project management and maintenance services</li>
+              <li>Operational oversight for building systems and services</li>
+              <li>Maintenance scheduling for HVAC, MEP, and lifts</li>
+              <li>Housekeeping, façade cleaning, and pest control</li>
+              <li>Common-area and pool maintenance coordination</li>
             </ul>
           </div>
 
@@ -344,9 +344,10 @@ export default function Rent() {
               </h3>
             </div>
             <ul className="list-disc list-inside text-gray-600 subheading space-y-1">
-              <li>Comprehensive quality assurance programs</li>
-              <li>Providing preventive maintenance documentation</li>
-              <li>Creating detailed policies and AREDC standards</li>
+              <li>Routine inspections and service quality checks</li>
+              <li>Preventive maintenance coordination and reporting</li>
+              <li>Detailed documentation and continuous improvement</li>
+              <li>Procedures aligned with AREDC Standards</li>
             </ul>
           </div>
         </div>
@@ -364,11 +365,11 @@ export default function Rent() {
         {/* Heading */}
         <div className="text-center mb-12">
           <h2 className="text-2xl text-[#001730] mb-2">
-            CHOOSE YOUR <br></br> MANAGEMENT LEVEL
+            SELECT YOUR MANAGEMENT PLAN
           </h2>
           <div className="w-[30%] h-[0.5px] bg-gray-300 my-4 mx-auto "></div>
           <p className="subheading text-gray-500">
-            From initial consultation to closing, we provide full-service real estate sales support.
+            Pick a level of service that fits your property and priorities, then scale up when needed.
           </p>
         </div>
 
@@ -385,8 +386,7 @@ export default function Rent() {
               <div className="text-[#001730] font-bold text-3xl mb-1">{plan.percent}</div>
               <p className="text-gray-500 text-sm ">Per Month</p>
               <div className="w-[60%] h-[0.5px] bg-gray-300 my-4 mx-auto "></div>
-              <h3 className="text-lg font-semibold text-[#001730] mb-2">{plan.title}</h3>
-              <p className="subheading text-gray-500 mb-6">{plan.description}</p>
+              <h3 className="text-lg font-semibold text-[#001730] mb-6">{plan.title}</h3>
 
               <ul className="text-left text-gray-600 subheading space-y-2 mb-8">
                 {plan.features.map((feature, i) => (
@@ -409,6 +409,25 @@ export default function Rent() {
           ))}
         </div>
       </div>
+
+      {/* CTA Section */}
+      <section className="w-full bg-gray-50 py-16 px-6 md:px-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl text-[#001730] mb-4 font-semibold">
+            Ready for a smarter, easier way to manage your property?
+          </h2>
+          <p className="subheading text-gray-600 mb-8">
+            Let our team handle day-to-day operations with consistent standards and clear reporting, so you can stay informed, stay compliant, and enjoy peace of mind.
+          </p>
+          <p className="subheading text-gray-600 mb-8">
+            Share your property details and preferred service level, and we'll recommend the best next steps.
+          </p>
+          <button className="btn-details text-[12px]">
+            <span>Contact Us Now</span>
+            <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
+          </button>
+        </div>
+      </section>
 
       <DreamPropertySection />
     </div>
