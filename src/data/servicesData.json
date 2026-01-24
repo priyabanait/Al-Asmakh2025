@@ -1,0 +1,144 @@
+{
+  "services": [
+    {
+      "id": "services-sales",
+      "path": "/services/services-sales",
+      "title": "YOUR TRUSTED\nPARTNER IN PROPERTY SALES",
+      "description": "Buying or selling a property is a big decision. We simplify the journey through clear communication, market insights, and a dedicated team to manage every detail.",
+      "backgroundImage": "/rep_img/sales.png",
+      "backgroundVideo": null,
+      "buttonText": "Speak to a Sales Advisor",
+      "buttonLink": "/services/services-sales",
+      "stats": [
+        {
+          "value": "500+",
+          "label": "Successful Sales"
+        },
+        {
+          "value": "30 Days",
+          "label": "Average Sale Timeline"
+        },
+        {
+          "value": "98%",
+          "label": "Client Satisfaction"
+        },
+        {
+          "value": "2.5M",
+          "label": "Average Sale Value"
+        }
+      ]
+    },
+    {
+      "id": "project-development",
+      "path": "/services/project-devlopment",
+      "title": "REDEFINING LUXURY\nIN REAL ESTATE DEVELOPMENT",
+      "description": "From concept to completion, we deliver exceptional residential, commercial, and mixed-use developments that set new standards in luxury living and investment value.",
+      "backgroundImage": "/images_pages/services lease.png",
+      "backgroundVideo": null,
+      "buttonText": "Explore Our Projects",
+      "buttonLink": "/services/project-devlopment",
+      "stats": [
+        {
+          "value": "50+",
+          "label": "Active Projects"
+        },
+        {
+          "value": "25",
+          "label": "Completed Developments"
+        },
+        {
+          "value": "15",
+          "label": "Ongoing Projects"
+        },
+        {
+          "value": "10",
+          "label": "Upcoming Launches"
+        }
+      ]
+    },
+    {
+      "id": "property-management",
+      "path": "/services/propertyManagement",
+      "title": "COMPREHENSIVE\nPROPERTY MANAGEMENT SOLUTIONS",
+      "description": "We provide end-to-end property management services that maximize your investment returns while ensuring tenant satisfaction and property value appreciation.",
+      "backgroundImage": "/images_pages/services lease.png",
+      "backgroundVideo": null,
+      "buttonText": "Learn More",
+      "buttonLink": "/services/propertyManagement",
+      "stats": [
+        {
+          "value": "1000+",
+          "label": "Managed Properties"
+        },
+        {
+          "value": "95%",
+          "label": "Tenant Retention"
+        },
+        {
+          "value": "24/7",
+          "label": "Support Available"
+        },
+        {
+          "value": "15+",
+          "label": "Years Experience"
+        }
+      ]
+    },
+    {
+      "id": "marketing",
+      "path": "/services/marketing",
+      "title": "STRATEGIC MARKETING\nFOR REAL ESTATE SUCCESS",
+      "description": "Our innovative marketing strategies drive visibility, engagement, and conversions for your properties through digital excellence and targeted campaigns.",
+      "backgroundImage": "/images_pages/services lease.png",
+      "backgroundVideo": null,
+      "buttonText": "View Our Services",
+      "buttonLink": "/services/marketing",
+      "stats": [
+        {
+          "value": "200%",
+          "label": "Average ROI Increase"
+        },
+        {
+          "value": "50K+",
+          "label": "Monthly Impressions"
+        },
+        {
+          "value": "85%",
+          "label": "Lead Conversion Rate"
+        },
+        {
+          "value": "100+",
+          "label": "Successful Campaigns"
+        }
+      ]
+    },
+    {
+      "id": "become-an-agent",
+      "path": "/services/become-an-agent",
+      "title": "JOIN OUR\nELITE AGENT NETWORK",
+      "description": "Become part of Qatar's leading real estate network. Access premium tools, training, and support to build a successful real estate career.",
+      "backgroundImage": "/images_pages/services lease.png",
+      "backgroundVideo": null,
+      "buttonText": "Apply Now",
+      "buttonLink": "/services/become-an-agent",
+      "stats": [
+        {
+          "value": "500+",
+          "label": "Active Agents"
+        },
+        {
+          "value": "10M+",
+          "label": "Annual Sales Volume"
+        },
+        {
+          "value": "98%",
+          "label": "Agent Satisfaction"
+        },
+        {
+          "value": "24/7",
+          "label": "Support & Training"
+        }
+      ]
+    }
+  ]
+}

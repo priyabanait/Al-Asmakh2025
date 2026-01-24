@@ -83,20 +83,20 @@ export default function Header() {
   const dropdowns = {
     HOME: [
       { label: 'Home', path: '/', external: false },
-      { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
+      // { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
     ],
     'ABOUT US': [
-      { label: 'About Us', path: '/about-us' },
+      { label: 'About Us', path: '/aboutUs' },
     ],
     SERVICES: [
-      { label: 'Leasing Services', path: '/listings/services-lease' },
+      { label: 'Leasing Services', path: '/listings/lease-services' },
       { label: 'Sales Services', path: '/services/services-sales' },
       { label: 'Project Development', path: '/services/project-devlopment' },
       { label: 'Property Management', path: '/services/propertyManagement' },
       { label: 'Marketing', path: '/services/marketing' },
       { label: 'Facilities Management', path: '/services/facilities-management' },
       { label: 'Become an Agent', path: '/services/become-an-agent' },
-      { label: 'Other Services', path: '/services/all-services' },
+      { label: 'Other Services', path: '/other-services' },
     ],
     LISTINGS: [
       { label: 'Rent', path: '/listings/rent' },
@@ -294,9 +294,9 @@ export default function Header() {
                       fontSize: 'clamp(11px, 0.8vw, 14px)',
                       fontWeight: '500',
                       ...(activeDropdown === item.key && {
-                        backdropFilter: 'blur(45px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                        backdropFilter: 'blur(60px) saturate(180%)',
+                        WebkitBackdropFilter: 'blur(60px) saturate(180%)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.5)',
                       }),
                     }}
                   >
@@ -316,9 +316,9 @@ export default function Header() {
                         <div
                           className="absolute inset-0"
                           style={{
-                            backdropFilter: 'blur(45px) saturate(180%)',
-                            WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-                            backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                            backdropFilter: 'blur(60px) saturate(180%)',
+                            WebkitBackdropFilter: 'blur(60px) saturate(180%)',
+                            backgroundColor: 'rgba(255, 255, 255, 0.5)',
                           }}
                         />
 
@@ -328,7 +328,7 @@ export default function Header() {
                             <button
                               key={index}
                               onClick={() => handleDropdownItemClick(dropdownItem)}
-                              className="w-full text-left px-4 py-2 text-sm font-medium text-[#001730] hover:bg-white/30 transition-all duration-200"
+                              className="w-full text-left px-4 py-2 text-sm font-medium text-[#001730] hover:bg-white/50 transition-all duration-200"
                             >
                               {dropdownItem.label}
                             </button>

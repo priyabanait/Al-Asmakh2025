@@ -4,19 +4,22 @@ import React from "react";
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
 import Link from "next/link";
+import Header from "../../../components/Header";
+import Footer from "../../../components/Footer";
+import DreamPropertySection from "../../../components/DreamPropertySection";
+import FeaturedProperties from "../../../components/FeaturedProperties";
 
-import DreamPropertySection from "./DreamPropertySection";
-import FeaturedProperties from "./FeaturedProperties";
-
-export default function Rent() {
+export default function  leaseServices() {
 
   return (
-    <div>
+    <main className="min-h-screen relative">
+      <Header />
       {/* ---------- HERO SECTION ---------- */}
       <section className="relative w-full bg-gray-200 min-h-screen flex items-center justify-center overflow-visible">
         {/* Background Image - Full Background */}
         <Image
-          src="/rep_img/sales.png"
+                   src="/images_pages/services lease.png"
+
           alt="City Skyline"
           fill
           className="object-cover"
@@ -95,19 +98,19 @@ export default function Rent() {
       </section>
 
 
-      {/* Featured Properties Section - Using FeaturedProperties component with sales filter */}
+      {/* Featured Properties Section - Using proper FeaturedProperties component */}
       <section className="w-full bg-gray-50 py-8 px-6 md:px-10">
         <div className="text-center mb-8">
           <p className="subheading text-gray-600 max-w-3xl mx-auto">
-            Explore a selection of homes and investment-ready properties currently available for sale. Compare key details, shortlist your favourites, and book a viewing when you're ready.
+            Explore a selection of homes and investment-ready properties currently available for lease. Compare key details, shortlist your favourites, and book a viewing when you're ready.
           </p>
         </div>
       </section>
       <FeaturedProperties 
-        priceType="sale"
+        offeringType="lease"
         limit={4}
         status="published"
-        viewAllLink="/listings/sale"
+        viewAllLink="/listings/lease"
       />
 
 
@@ -182,10 +185,9 @@ export default function Rent() {
 
 
       {/* CTA Section */}
-      <section className="w-full bg-gray-50 py-16 px-6 md:px-10">
+      {/* <section className="w-full bg-gray-50 py-16 px-6 md:px-10">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-8">
-            {/* Text Content - Left Aligned */}
             <div className="flex-1 text-left">
               <h2 className="text-2xl md:text-3xl text-[#001730] mb-4 font-semibold">
                 Ready to take the next step?
@@ -195,7 +197,6 @@ export default function Rent() {
               </p>
             </div>
             
-            {/* Button - Right Aligned */}
             <div className="flex-shrink-0">
               <button className="btn-details text-[12px] whitespace-nowrap">
                 <span>Contact Us Today</span>
@@ -204,11 +205,17 @@ export default function Rent() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
-      <DreamPropertySection />
-
-    </div>
+      <DreamPropertySection 
+        title="Ready to Find Your Dream Property ?"
+        description="If you're buying your next home or selling your current property, we're here to guide you with clear advice and responsive support. Share your goals and timeline, and we'll recommend the most suitable path forward."
+        btnText="Contact Us Today"
+        btnLink="/contact"
+      />
+   
+    <Footer />
+    </main>
   );
 }
 

@@ -802,6 +802,18 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
                     statusType: statusType,
                     price: price,
                     image: image,
+                    // Preserve raw property fields for proper formatting
+                    bedrooms: prop.bedrooms,
+                    bathrooms: prop.bathrooms,
+                    size: prop.size,
+                    area: prop.size || prop.area,
+                    images: prop.images, // Preserve images array for formatProperty
+                    priceAmount: prop.priceAmount,
+                    priceCurrency: prop.priceCurrency,
+                    priceFrequency: prop.priceFrequency,
+                    locationLevel1: prop.locationLevel1,
+                    locationLevel2: prop.locationLevel2,
+                    locationLevel3: prop.locationLevel3,
                 };
             });
 

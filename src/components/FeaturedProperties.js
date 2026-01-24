@@ -4,12 +4,13 @@ import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import { fetchProperties } from "../utils/propertyapi";
+import { fetchProperties, fetchPropertiesByOfferingType } from "../utils/propertyapi";
 
 /**
  * FeaturedProperties Component
  * @param {Object} props
  * @param {string} props.priceType - Filter by price type: 'sale' or 'rent' (optional)
+ * @param {string} props.offeringType - Filter by offering type: 'lease', 'sale', 'marketing' (optional, uses same API as Services-lease.js)
  * @param {number} props.limit - Number of properties to fetch (default: 4)
  * @param {string} props.status - Property status filter (default: 'published')
  * @param {string} props.viewAllLink - Link for View All button (default: '/listings/rent')
@@ -18,6 +19,7 @@ import { fetchProperties } from "../utils/propertyapi";
  */
 export default function FeaturedProperties({ 
   priceType = "", 
+  offeringType = "",
   limit = 4, 
   status = "published",
   viewAllLink = "/listings/rent",
@@ -33,33 +35,51 @@ export default function FeaturedProperties({
     const loadProperties = async () => {
       try {
         setLoading(true);
-        // Build filters object - always use "published" status if not explicitly set otherwise
-        const filters = {
-          page: 1,
-          limit: limit,
-          status: status || "published", // Default to published/active properties
-        };
+        
+        // If offeringType is provided, use fetchPropertiesByOfferingType (same as Services-lease.js)
+        if (offeringType) {
+          const fetchedProperties = await fetchPropertiesByOfferingType(offeringType, {
+            page: 1,
+            limit: limit,
+            type: type,
+          });
 
-        // Add priceType filter if provided
-        if (priceType) {
-          filters.priceType = priceType;
+          // Use API response data only
+          if (fetchedProperties && Array.isArray(fetchedProperties)) {
+            setProperties(fetchedProperties);
+          } else {
+            setProperties([]);
+          }
+        } else {
+          // Otherwise use fetchProperties with priceType
+          // Build filters object - always use "published" status if not explicitly set otherwise
+          const filters = {
+            page: 1,
+            limit: limit,
+            status: status || "published", // Default to published/active properties
+          };
+
+          // Add priceType filter if provided
+          if (priceType) {
+            filters.priceType = priceType;
+          }
+
+          // Add type filter if provided
+          if (type) {
+            filters.type = type;
+          }
+
+          // Add location filter if provided
+          if (locationLevel1) {
+            filters.locationLevel1 = locationLevel1;
+          }
+
+          // Use fetchProperties from propertyapi.js
+          const result = await fetchProperties(filters);
+          console.log(`Properties loaded (priceType: ${priceType || 'all'}):`, result.properties.length);
+          setProperties(result.properties);
         }
-
-        // Add type filter if provided
-        if (type) {
-          filters.type = type;
-        }
-
-        // Add location filter if provided
-        if (locationLevel1) {
-          filters.locationLevel1 = locationLevel1;
-        }
-
-        // Use fetchProperties from propertyapi.js
-        const result = await fetchProperties(filters);
-
-        console.log(`Properties loaded (priceType: ${priceType || 'all'}):`, result.properties.length);
-        setProperties(result.properties);
+        
         setError(null);
       } catch (err) {
         console.error("Error fetching properties:", err);
@@ -71,7 +91,7 @@ export default function FeaturedProperties({
     };
 
     loadProperties();
-  }, [priceType, limit, status, type, locationLevel1]);
+  }, [priceType, offeringType, limit, status, type, locationLevel1]);
 
 
   // Helper function to format property data (handles both raw and pre-formatted properties)
@@ -90,36 +110,61 @@ export default function FeaturedProperties({
       };
     }
 
-    // Otherwise, format raw property data
+    // Otherwise, format raw property data or properties from fetchPropertiesByOfferingType
     let imageUrl = "/div.property-thumbnail-wrapper.png";
-    if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+    // First check if image is already set (from fetchPropertiesByOfferingType)
+    if (property.image && property.image !== "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80") {
+      imageUrl = property.image;
+    } else if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+      // Extract from images array (raw API format)
       imageUrl = property.images[0].url || property.images[0].thumbnailUrl || imageUrl;
     }
 
-    let location = "Location not specified";
-    if (property.locationLevel1) {
-      location = property.locationLevel1;
-      if (property.locationLevel2) location += `, ${property.locationLevel2}`;
-      if (property.locationLevel3) location += `, ${property.locationLevel3}`;
-    } else if (property.address) {
-      location = property.address;
+    let location = property.location || "Location not specified";
+    if (!location || location === "Location not specified") {
+      if (property.locationLevel1) {
+        location = property.locationLevel1;
+        if (property.locationLevel2) location += `, ${property.locationLevel2}`;
+        if (property.locationLevel3) location += `, ${property.locationLevel3}`;
+      } else if (property.address) {
+        location = property.address;
+      }
     }
 
-    let price = "Price on request";
-    if (property.priceAmount) {
+    let price = property.price || "Price on request";
+    if (price === "Price on request" && property.priceAmount) {
       const currency = property.priceCurrency || "QAR";
       const frequency = property.priceFrequency ? `/${property.priceFrequency}` : "";
       price = `${property.priceAmount.toLocaleString()} ${currency}${frequency}`;
     }
 
+    // Extract bedrooms - handle both string and number
+    let beds = 0;
+    if (property.bedrooms !== undefined && property.bedrooms !== null) {
+      beds = typeof property.bedrooms === 'string' ? parseInt(property.bedrooms) || 0 : property.bedrooms;
+    } else {
+      beds = property.beds || property.bed || 0;
+    }
+
+    // Extract bathrooms - handle both string and number
+    let baths = 0;
+    if (property.bathrooms !== undefined && property.bathrooms !== null) {
+      baths = typeof property.bathrooms === 'string' ? parseInt(property.bathrooms) || 0 : property.bathrooms;
+    } else {
+      baths = property.baths || property.bath || 0;
+    }
+
+    // Extract area/size
+    const area = property.size || property.area || property.square_feet || 0;
+
     return {
       id: property.id || property._id || Math.random(),
-      title: property.titleEn || property.title || property.name || property.property_name || "Property",
+      title: property.title || property.titleEn || property.name || property.property_name || "Property",
       location: location,
       price: price,
-      beds: property.bedrooms || property.beds || property.bed || 0,
-      baths: property.bathrooms || property.baths || property.bath || 0,
-      area: property.size || property.area || property.square_feet || 0,
+      beds: beds,
+      baths: baths,
+      area: area,
       image: imageUrl,
     };
   };
