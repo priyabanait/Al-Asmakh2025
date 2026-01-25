@@ -417,6 +417,11 @@ export default function AboutUsPage() {
     const scrollCooldown = 1000;
 
     const handleWheel = (e) => {
+      // Allow normal scrolling on footer slide
+      if (showFooter) {
+        return;
+      }
+      
       if (isAnimating) {
         e.preventDefault();
         return;
@@ -451,6 +456,11 @@ export default function AboutUsPage() {
     };
 
     const handleTouchEnd = (e) => {
+      // Allow normal scrolling on footer slide
+      if (showFooter) {
+        return;
+      }
+      
       if (isAnimating) return;
       
       const now = Date.now();
@@ -475,6 +485,11 @@ export default function AboutUsPage() {
     };
 
     const handleKeyDown = (e) => {
+      // Allow normal scrolling on footer slide
+      if (showFooter) {
+        return;
+      }
+      
       if (isAnimating) return;
       
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
@@ -515,7 +530,7 @@ export default function AboutUsPage() {
   }, [currentSlide, isAnimating, navigateToSlide, showFooter]);
 
   return (
-    <div ref={containerRef} className="fixed inset-0 overflow-hidden bg-black">
+    <div ref={containerRef} className={`fixed inset-0 ${showFooter ? 'overflow-auto' : 'overflow-hidden'} bg-black`}>
       <Header />
       
       {/* Progress Indicator */}
@@ -526,13 +541,13 @@ export default function AboutUsPage() {
 
       {/* Main Slides Container */}
       <motion.div
-        animate={{ y: `-${currentSlide * 100}vh` }}
+        animate={{ y: showFooter ? `-${(FOOTER_SLIDE - 1) * 100}vh` : `-${currentSlide * 100}vh` }}
         transition={{ 
-          duration: 0.9,
+          duration: showFooter ? 0 : 0.9,
           ease: [0.43, 0.13, 0.23, 0.96]
         }}
         className="w-full"
-        style={{ height: `${TOTAL_SLIDES * 100}vh` }}
+        style={{ height: showFooter ? 'auto' : `${TOTAL_SLIDES * 100}vh` }}
       >
         {/* Hero Section - Slide 0 */}
         <div className="h-screen w-full">
@@ -552,10 +567,8 @@ export default function AboutUsPage() {
         ))}
 
 {/* Form Section - Slide 7 */}
-<div>
-
-
-<section className="relative w-full h-auto lg:h-screen flex items-center py-6 lg:py-0">
+<div className="w-full flex flex-col min-h-screen">
+<section className="relative w-full flex items-center py-6 lg:py-12 min-h-screen">
         {/* Background Image */}
         <Image
           src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
@@ -745,17 +758,10 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-
-      {/* <div className=" w-full flex flex-col">
-          <div className="flex-1 flex items-end">
-            <div className="w-full">
-              <Footer />
-            </div>
-          </div>
-        </div> */}
-
-
-
+      {/* Footer Section */}
+      <div className="w-full">
+        <Footer />
+      </div>
 </div>
         {/* Footer Section - Slide 7 */}
        

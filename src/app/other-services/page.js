@@ -19,7 +19,7 @@ export default function OtherServicesPage() {
   };
 
   return (
-    <main className="min-h-screen relative">
+    <main className="relative">
       <Header />
       <DynamicServiceHero serviceId={getServiceId()} />
       <Footer />
