@@ -126,34 +126,79 @@ export default function Profit() {
     emblaTestimonialApi.on("reInit", onSelectTestimonial);
   }, [emblaTestimonialApi, onSelectTestimonial]);
 
-  // Blog data
-  const blogs = [
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in banglore",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in mumbai",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in kerla",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-  ];
+  // Blog data - fetched from API
+  const [blogs, setBlogs] = useState([]);
+  const [blogsLoading, setBlogsLoading] = useState(true);
+  const [blogsError, setBlogsError] = useState(null);
+
+  // Fetch blogs from API
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setBlogsLoading(true);
+        setBlogsError(null);
+        
+        // Fetch articles from API
+        const response = await fetch('https://api.alasmakhrealestate.com/articles?page=1&limit=20');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch blogs');
+        }
+        
+        const data = await response.json();
+        
+        // Filter by category "blog" and map to blog structure
+        let blogArticles = [];
+        
+        if (data.articles && Array.isArray(data.articles)) {
+          // Filter by category "blog" (case-insensitive)
+          blogArticles = data.articles
+            .filter(article => 
+              article.category && 
+              article.category.toLowerCase() === 'blog' &&
+              article.status === 'published'
+            )
+            .slice(0, 3) // Limit to 3 blogs
+            .map(article => ({
+              id: article._id || article.id,
+              title: article.title || 'Untitled',
+              description: article.subheading || article.body?.substring(0, 150) || 'No description available',
+              image: article.image || article.featuredImage || '/Image.png',
+              body: article.body || '',
+              createdAt: article.createdAt || article.created_at,
+            }));
+        } else if (Array.isArray(data)) {
+          // Handle case where API returns array directly
+          blogArticles = data
+            .filter(article => 
+              article.category && 
+              article.category.toLowerCase() === 'blog' &&
+              article.status === 'published'
+            )
+            .slice(0, 3)
+            .map(article => ({
+              id: article._id || article.id,
+              title: article.title || 'Untitled',
+              description: article.subheading || article.body?.substring(0, 150) || 'No description available',
+              image: article.image || article.featuredImage || '/Image.png',
+              body: article.body || '',
+              createdAt: article.createdAt || article.created_at,
+            }));
+        }
+        
+        setBlogs(blogArticles);
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+        setBlogsError(error.message);
+        // Set empty array on error
+        setBlogs([]);
+      } finally {
+        setBlogsLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   const [blogStartIndex, setBlogStartIndex] = useState(0);
   const [showAllBlogs, setShowAllBlogs] = useState(false);
@@ -200,6 +245,8 @@ export default function Profit() {
 
   // Automatically move to the next blog card every 5 seconds (desktop only)
   useEffect(() => {
+    if (blogs.length === 0) return; // Don't start interval if no blogs
+    
     const blogInterval = setInterval(() => {
       setBlogStartIndex((prevIndex) => {
         // Continue through all cards, then loop back to start
@@ -207,7 +254,7 @@ export default function Profit() {
       });
     }, 5000);
     return () => clearInterval(blogInterval);
-  }, []);
+  }, [blogs.length]);
   const offices = [
     {
       title: "Head Office",
@@ -673,7 +720,29 @@ export default function Profit() {
           <div className="w-40 h-[0.5px] bg-gray-300 mx-auto"></div>
         </div>
 
+        {/* Loading State */}
+        {blogsLoading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-[#001730] text-lg">Loading blogs...</div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {blogsError && !blogsLoading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-red-600 text-lg">Error loading blogs: {blogsError}</div>
+          </div>
+        )}
+
+        {/* No Blogs State */}
+        {!blogsLoading && !blogsError && blogs.length === 0 && (
+          <div className="flex justify-center items-center py-12">
+            <div className="text-gray-500 text-lg">No blogs available at the moment.</div>
+          </div>
+        )}
+
         {/* Mobile Version - Motion Carousel */}
+        {!blogsLoading && !blogsError && blogs.length > 0 && (
         <div className="block lg:hidden relative w-full py-8 px-2">
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex touch-pan-y" style={{ gap: "1rem", paddingLeft: "1rem", paddingRight: "1rem" }}>
@@ -681,7 +750,7 @@ export default function Profit() {
                 const isActive = index === selectedBlogIndex;
                 return (
                   <motion.div
-                    key={index}
+                    key={blog.id || index}
                     className="flex-shrink-0 w-[92%] sm:w-[80%]"
                     style={{
                       paddingLeft: "0.5rem",
@@ -705,22 +774,25 @@ export default function Profit() {
                           alt={blog.title}
                           fill
                           className="object-fill"
+                          unoptimized={blog.image && blog.image.startsWith('http')}
                         />
                         {/* EXPLORE Button - overlapping top-left corner */}
-                        <motion.button
-                          className="absolute top-6 left-3 bg-[#001730] text-white text-[10px] font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 hover:bg-[#1b3a70] transition z-10 shadow-md"
-                          animate={{
-                            scale: isActive ? 1.05 : 1,
-                          }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 30,
-                          }}
-                        >
-                          <span>EXPLORE</span>
-                          <FaArrowRight size={10} className="ml-2" />
-                        </motion.button>
+                        <Link href={`/blog/${blog.id}`}>
+                          <motion.button
+                            className="absolute top-6 left-3 bg-[#001730] text-white text-[10px] font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 hover:bg-[#1b3a70] transition z-10 shadow-md"
+                            animate={{
+                              scale: isActive ? 1.05 : 1,
+                            }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 300,
+                              damping: 30,
+                            }}
+                          >
+                            <span>EXPLORE</span>
+                            <FaArrowRight size={10} className="ml-2" />
+                          </motion.button>
+                        </Link>
 
                         {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
                         <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-4 px-4 group-hover:pb-4">
@@ -771,8 +843,10 @@ export default function Profit() {
             })}
           </div>
         </div>
+        )}
 
         {/* Desktop Version - Keep carousel/pagination as is */}
+        {!blogsLoading && !blogsError && blogs.length > 0 && (
         <div className="hidden lg:block">
           {/* Blog Cards Row */}
           <div className="flex justify-center overflow-hidden">
@@ -787,7 +861,7 @@ export default function Profit() {
               >
                 {visibleBlogs.map((blog, i) => (
                   <div
-                    key={i}
+                    key={blog.id || i}
                     className="bg-white shadow-md rounded-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
                   >
                     {/* Image Section with Overlapping Button and Text Overlay */}
@@ -797,12 +871,15 @@ export default function Profit() {
                         alt={blog.title}
                         fill
                         className="object-fill"
+                        unoptimized={blog.image && blog.image.startsWith('http')}
                       />
                       {/* EXPLORE Button - overlapping top-left corner, partially on image and white space */}
-                      <button className="absolute top-8 left-4 -translate-y-1/2 bg-[#001730] text-white text-xs font-semibold px-4 py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
-                        <span>EXPLORE</span>
-                        <FaArrowRight size={12} className="ml-6" />
-                      </button>
+                      <Link href={`/blog/${blog.id}`}>
+                        <button className="absolute top-8 left-4 -translate-y-1/2 bg-[#001730] text-white text-xs font-semibold px-4 py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
+                          <span>EXPLORE</span>
+                          <FaArrowRight size={12} className="ml-6" />
+                        </button>
+                      </Link>
 
                       {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
                       <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-6 px-6 group-hover:pb-6">
@@ -826,10 +903,10 @@ export default function Profit() {
 
           {/* Pagination Dots */}
           <div className="flex justify-center mt-8 gap-2">
-            {Array.from({ length: testimonials.length }).map((_, index) => (
+            {Array.from({ length: blogs.length }).map((_, index) => (
               <button
                 key={index}
-                onClick={() => setStartIndex(index)}
+                onClick={() => setBlogStartIndex(index)}
                 className="relative flex items-center justify-center"
                 aria-label={`Go to slide ${index + 1}`}
               >
@@ -837,22 +914,22 @@ export default function Profit() {
                   className="absolute inset-0 rounded-full"
                   initial={false}
                   animate={{
-                    scale: index === startIndex ? 1.2 : 1,
-                    opacity: index === startIndex ? 1 : 0.5,
+                    scale: index === blogStartIndex ? 1.2 : 1,
+                    opacity: index === blogStartIndex ? 1 : 0.5,
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 />
                 <motion.span
                   className={`
                     block rounded-full
-                    ${index === startIndex
+                    ${index === blogStartIndex
                       ? "bg-[#001730]"
                       : "bg-gray-400"
                     }
                   `}
                   animate={{
-                    width: index === startIndex ? "24px" : "8px",
-                    height: index === startIndex ? "8px" : "8px",
+                    width: index === blogStartIndex ? "24px" : "8px",
+                    height: index === blogStartIndex ? "8px" : "8px",
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                 />
@@ -860,6 +937,7 @@ export default function Profit() {
             ))}
           </div>
         </div>
+        )}
       </section>
       <section className="relative w-full h-auto lg:min-h-screen flex items-center py-8 lg:py-12 xl:py-16 2xl:py-20 overflow-hidden">
         {/* Background Image */}

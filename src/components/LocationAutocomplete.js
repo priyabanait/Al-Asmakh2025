@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { getSearchApiUrl } from "@/config/api";
 
 /**
  * LocationAutocomplete Component
@@ -57,7 +58,7 @@ export default function LocationAutocomplete({
     setIsLoading(true);
     try {
       // Search for locations using Elasticsearch
-      const response = await axios.get("/api/proxy/search", {
+      const response = await axios.get(getSearchApiUrl("api/v1/properties/search"), {
         params: {
           q: query,
           limit: 10,

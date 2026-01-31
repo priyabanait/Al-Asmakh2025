@@ -1,12 +1,12 @@
 import axios from "axios";
+import { getApiUrl } from "@/config/api";
 
 // Use dummy data only if explicitly enabled via environment variable or when API fails
 // Set NEXT_PUBLIC_USE_DUMMY_DATA=true in .env.local to enable manual data injection for testing
 const USE_DUMMY_DATA = process.env.NEXT_PUBLIC_USE_DUMMY_DATA === 'true' || false;
 
-// API Base URL - ALWAYS use Next.js proxy to avoid mixed content (HTTPS -> HTTP) issues
-// The proxy handles server-side requests, so no ERR_NETWORK errors
-const API_BASE_URL = '/api/proxy/properties';
+// API Base URL - Direct API calls (no proxy)
+const API_BASE_URL = getApiUrl('api/v1/properties');
 
 // Dummy property data for testing when Azure subscription is unavailable
 const DUMMY_PROPERTIES = [
@@ -517,7 +517,7 @@ export const fetchProperties = async (params = {}) => {
         if (minPrice) queryParams.append("minPrice", minPrice);
         if (maxPrice) queryParams.append("maxPrice", maxPrice);
 
-        // Call Next.js proxy (same-origin, no mixed content issues)
+        // Call API directly
         const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);
 
         if (response.data) {
@@ -730,7 +730,7 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
 
         console.log("API Query Params:", queryParams.toString());
 
-        // Call Next.js proxy (same-origin, no mixed content issues)
+        // Call API directly
         const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);
 
         console.log("API Response:", {
@@ -930,9 +930,9 @@ export const fetchPropertyById = async (propertyId) => {
         }
     }
 
-    // API call using Next.js proxy (always same-origin, no ERR_NETWORK)
+    // API call directly to backend
     try {
-        const response = await axios.get(`/api/proxy/properties/${propertyId}`);
+        const response = await axios.get(getApiUrl(`api/v1/properties/${propertyId}`));
 
         if (response.data) {
             const propertyData = response.data.property || response.data;
@@ -1048,8 +1048,8 @@ export const fetchAgents = async (params = {}) => {
             queryParams.append("status", status);
         }
 
-        // Call Next.js proxy (same-origin, no mixed content issues)
-        const response = await axios.get(`/api/proxy/agents?${queryParams.toString()}`);
+        // Call API directly
+        const response = await axios.get(getApiUrl(`users/agents?${queryParams.toString()}`));
 
         if (response.data) {
             const agentsData = response.data.agents || [];

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getSearchApiUrl } from '@/config/api';
 
 /**
  * Search properties using Elasticsearch with comprehensive filters
@@ -132,8 +133,8 @@ export const searchProperties = async (filters = {}) => {
         queryParams.append('page', page.toString());
         queryParams.append('limit', limit.toString());
 
-        // Call Next.js proxy (same-origin, no ERR_NETWORK)
-        const response = await axios.get(`/api/proxy/search?${queryParams.toString()}`);
+        // Call API directly
+        const response = await axios.get(`${getSearchApiUrl('api/v1/properties/search')}?${queryParams.toString()}`);
 
         if (response.data) {
             return {

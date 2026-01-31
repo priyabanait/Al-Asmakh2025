@@ -5,6 +5,7 @@ import { MapPin } from "lucide-react";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { getApiUrl } from "@/config/api";
 
 export default function AlAsmakhTower() {
   const router = useRouter();
@@ -12,6 +13,8 @@ export default function AlAsmakhTower() {
   const [currentAreaIndex, setCurrentAreaIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [areas, setAreas] = useState([]);
+  const [loadingAreas, setLoadingAreas] = useState(true);
   const areaCarouselRef = useRef(null);
   const autoSlideIntervalRef = useRef(null);
 
@@ -23,6 +26,8 @@ export default function AlAsmakhTower() {
     const slugMap = {
       "Lusail City": "lusail-city",
       "Pearl Island": "pearl-island",
+      "The Pearl": "pearl-island",
+      "The Pearl Island": "pearl-island",
       "West Bay": "west-bay",
       "Doha": "doha",
       "Al Sadd": "al-sadd",
@@ -31,22 +36,60 @@ export default function AlAsmakhTower() {
     return slugMap[areaName] || areaName.toLowerCase().replace(/\s+/g, "-");
   };
 
-  // Function to handle area click
-  const handleAreaClick = (areaName) => {
+  // Function to handle area click - use area ID if available, otherwise use name
+  const handleAreaClick = (area) => {
+    // If area is an object with id, use it; otherwise treat as name string
+    const areaName = typeof area === 'object' ? area.name : area;
+    const areaId = typeof area === 'object' ? area.id : null;
+    
+    // Create slug from name
     const slug = getAreaSlug(areaName);
     router.push(`/towerdetails/${slug}`);
   };
 
-  const areas = [
-    { name: "Lusail City", subheading: "A Future-Focused Tower with Heritage at Its Core.", image: "/images_prop/1.png" },
-    { name: "Pearl Island", subheading: "Sea Views, Smart Living, and a Private Beach Below.", image: "/images_prop/2.png" },
-    { name: "Lusail City", subheading: "A Neighbourhood Feel, with City Life on Your Doorstep.", image: "/images_prop/3.png" },
-    { name: "Doha", subheading: "Experience the Heart of Qatar's Capital City.", image: "/images_prop/4.png" },
-    { name: "Al Sadd", subheading: "Modern Living in a Vibrant Urban District.", image: "/images_prop/5.png" },
-    { name: "Lusail City", subheading: "Premium Properties in Qatar's Newest City.", image: "/images_prop/6.png" },
-    { name: "Al Dafna", subheading: "Luxury Living in Doha's Business District.", image: "/images_prop/7.png" },
-    { name: "West Bay", subheading: "Serviced City Living, with Hotel-Style Comfort Every Day.", image: "/images_prop/8.png" },
-  ];
+  // Fetch areas from API
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        setLoadingAreas(true);
+        const apiUrl = getApiUrl("api/v1/areas/list");
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch areas: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Map API response to component data structure
+        // API returns: { areas: [{ area_id, area_name, area_title, area_image }], count }
+        if (data.areas && Array.isArray(data.areas)) {
+          const mappedAreas = data.areas.map((area) => ({
+            id: area.area_id,
+            name: area.area_name || "",
+            subheading: area.area_title || area.area_name || "",
+            image: area.area_image || "/images_prop/1.png", // Fallback image
+          }));
+          setAreas(mappedAreas);
+          // Reset current area index when areas are loaded
+          setCurrentAreaIndex(0);
+        } else {
+          // Fallback to empty array if no areas
+          setAreas([]);
+          setCurrentAreaIndex(0);
+        }
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+        // Fallback to empty array on error
+        setAreas([]);
+        setCurrentAreaIndex(0);
+      } finally {
+        setLoadingAreas(false);
+      }
+    };
+
+    fetchAreas();
+  }, []);
 
 
   const projects = [
@@ -124,7 +167,7 @@ export default function AlAsmakhTower() {
   };
 
   const handleAreaTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    if (!touchStart || !touchEnd || areas.length === 0) return;
 
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
@@ -143,10 +186,12 @@ export default function AlAsmakhTower() {
   };
 
   const goToPreviousArea = () => {
+    if (areas.length === 0) return;
     setCurrentAreaIndex((prev) => (prev === 0 ? areas.length - 1 : prev - 1));
   };
 
   const goToNextArea = () => {
+    if (areas.length === 0) return;
     setCurrentAreaIndex((prev) => (prev === areas.length - 1 ? 0 : prev + 1));
   };
 
@@ -423,7 +468,22 @@ export default function AlAsmakhTower() {
             each offering its own lifestyle, charm, and opportunity.
           </p>
 
+          {/* Loading State */}
+          {loadingAreas && (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-gray-500">Loading areas...</div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loadingAreas && areas.length === 0 && (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-gray-500">No areas available at the moment.</div>
+            </div>
+          )}
+
           {/* Mobile Carousel - Only visible on mobile */}
+          {!loadingAreas && areas.length > 0 && (
           <div
             className="block lg:hidden relative"
             style={{
@@ -469,7 +529,7 @@ export default function AlAsmakhTower() {
                       }}
                     >
                       <div
-                        onClick={() => handleAreaClick(area.name)}
+                        onClick={() => handleAreaClick(area)}
                         style={{
                           borderRadius: "8px",
                           width: "100%",
@@ -480,7 +540,7 @@ export default function AlAsmakhTower() {
                           margin: "0 auto",
                           cursor: "pointer",
                         }}
-                        className="shadow-lg md:h-[400px] hover:shadow-xl transition-shadow "
+                        className="shadow-lg md:h-[400px] hover:shadow-xl transition-shadow group"
                       >
                         <Image
                           src={area.image}
@@ -500,6 +560,14 @@ export default function AlAsmakhTower() {
                           <span className="text-white font-semibold text-xs md:text-sm">
                             {area.name}
                           </span>
+                        </div>
+                        {/* Subheading on Hover - Center - Show English */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                          <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg max-w-[80%]">
+                            <span className="text-white font-semibold text-sm md:text-base text-center block">
+                              {area.subheading && area.subheading !== area.name ? area.subheading : `Explore ${area.name}`}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -544,15 +612,17 @@ export default function AlAsmakhTower() {
 
             </div>
           </div>
+          )}
 
           {/* Desktop Grid - Hidden on mobile */}
+          {!loadingAreas && areas.length > 0 && (
           <div className="hidden lg:block">
             {/* --- TOP ROW --- */}
             <div className="flex justify-center rounded-lg gap-[10px] mb-[10px]">
-              {[0, 1, 2, 3].map((i) => (
+              {[0, 1, 2, 3].filter(i => areas[i]).map((i) => (
                 <div
                   key={i}
-                  onClick={() => handleAreaClick(areas[i].name)}
+                  onClick={() => handleAreaClick(areas[i])}
                   className={`group relative rounded-lg cursor-pointer hover:opacity-100 transition-opacity  overflow-hidden ${i === 1 ? "w-[865px] h-[300px]" : "w-[430px] h-[300px]"
                     }`}
                 >
@@ -595,10 +665,10 @@ export default function AlAsmakhTower() {
 
             {/* --- BOTTOM ROW --- */}
             <div className="flex justify-center rounded-lg gap-[10px]">
-              {[4, 5, 6, 7].map((i) => (
+              {[4, 5, 6, 7].filter(i => areas[i]).map((i) => (
                 <div
                   key={i}
-                  onClick={() => handleAreaClick(areas[i].name)}
+                  onClick={() => handleAreaClick(areas[i])}
                   className={`group relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity  overflow-hidden ${i === 7 ? "w-[826px] h-[300px]" : "w-[404px] h-[300px]"
                     }`}
                 >
@@ -639,6 +709,7 @@ export default function AlAsmakhTower() {
               ))}
             </div>
           </div>
+          )}
 
         </div>
 

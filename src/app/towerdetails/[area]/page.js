@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MapPin } from 'lucide-react'
 import { FaArrowRight } from 'react-icons/fa6'
 import Link from 'next/link'
@@ -9,8 +9,21 @@ import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
 import ShareButton from '../../../components/ShareButton'
 import { useParams } from 'next/navigation'
+import { getApiUrl } from '@/config/api'
 
-// Hardcoded area data
+// Slug to name mapping for finding areas
+const slugToNameMap = {
+  'west-bay': 'West Bay',
+  'lusail-city': 'Lusail City',
+  'pearl-island': 'Pearl Island',
+  'the-pearl-island': 'Pearl Island',
+  'the-pearl': 'Pearl Island',
+  'doha': 'Doha',
+  'al-sadd': 'Al Sadd',
+  'al-dafna': 'Al Dafna'
+}
+
+// Hardcoded area data (fallback)
 const areaData = {
   'west-bay': {
     name: 'West Bay',
@@ -258,11 +271,141 @@ export default function TowerDetailsPage() {
   const params = useParams()
   const areaSlug = params.area
   const [open, setOpen] = useState(null)
+  const [area, setArea] = useState(null)
+  const [properties, setProperties] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
-  // Get area data or default to West Bay
-  const area = areaData[areaSlug] || areaData['west-bay']
+  // Fetch area data from API
+  useEffect(() => {
+    const fetchAreaData = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+
+        // First, get the area name from slug
+        const areaName = slugToNameMap[areaSlug] || areaSlug.split('-').map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ')
+
+        // Fetch areas list to find the area ID
+        const areasListUrl = getApiUrl('api/v1/areas/list')
+        const areasResponse = await fetch(areasListUrl)
+        
+        if (!areasResponse.ok) {
+          throw new Error('Failed to fetch areas list')
+        }
+
+        const areasData = await areasResponse.json()
+        const foundArea = areasData.areas?.find(a => 
+          a.area_name?.toLowerCase() === areaName.toLowerCase() ||
+          a.area_name?.toLowerCase().includes(areaName.toLowerCase()) ||
+          areaName.toLowerCase().includes(a.area_name?.toLowerCase())
+        )
+
+        if (!foundArea) {
+          // Fallback to hardcoded data
+          const fallbackArea = areaData[areaSlug] || areaData['west-bay']
+          setArea(fallbackArea)
+          setProperties(fallbackArea.properties || [])
+          setLoading(false)
+          return
+        }
+
+        // Fetch full area details with properties
+        const areaDetailsUrl = getApiUrl(`api/v1/areas/${foundArea.area_id}/full-details?page=1&limit=4`)
+        const detailsResponse = await fetch(areaDetailsUrl)
+        
+        if (!detailsResponse.ok) {
+          throw new Error('Failed to fetch area details')
+        }
+
+        const detailsData = await detailsResponse.json()
+        
+        // Map API response to component structure
+        const mappedArea = {
+          id: detailsData.area?.id || foundArea.area_id,
+          name: detailsData.area?.nameEn || foundArea.area_name,
+          title: `Welcome to ${detailsData.area?.nameEn || foundArea.area_name}`,
+          image: detailsData.area?.imageUrl || detailsData.area?.imageUrlEn || foundArea.area_image || '/images_pages/listings.png',
+          description: detailsData.area?.descriptionEn || '',
+          description2: detailsData.area?.descriptionAr || ''
+        }
+
+        // Map properties from API response
+        const mappedProperties = (detailsData.properties || []).slice(0, 4).map((item, index) => {
+          const prop = item.property || item
+          // Build location string
+          const locationParts = [
+            prop.locationLevel2,
+            prop.locationLevel3,
+            prop.locationLevel4
+          ].filter(Boolean)
+          const location = locationParts.length > 0 
+            ? locationParts.join(' – ') 
+            : foundArea.area_name || 'Doha'
+          
+          return {
+            id: prop.id || prop.propertyId || index + 1,
+            image: prop.coverPicture || prop.gallery?.[0] || prop.imageUrl || '/div.property-thumbnail-wrapper.png',
+            location: location,
+            title: prop.titleEn || prop.title || 'Property',
+            price: prop.priceAmount ? prop.priceAmount.toLocaleString() : '0',
+            bedrooms: prop.bedrooms?.toString() || '0',
+            bathrooms: prop.bathrooms?.toString() || '0',
+            area: prop.area ? `${prop.area} sqft` : (prop.areaSqft ? `${prop.areaSqft} sqft` : 'N/A')
+          }
+        })
+
+        setArea(mappedArea)
+        setProperties(mappedProperties.length > 0 ? mappedProperties : (areaData[areaSlug]?.properties || []))
+      } catch (err) {
+        console.error('Error fetching area data:', err)
+        setError(err.message)
+        // Fallback to hardcoded data
+        const fallbackArea = areaData[areaSlug] || areaData['west-bay']
+        setArea(fallbackArea)
+        setProperties(fallbackArea.properties || [])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (areaSlug) {
+      fetchAreaData()
+    }
+  }, [areaSlug])
+
+  // Show loading state
+  if (loading) {
+    return (
+      <main className="min-h-screen relative">
+        <div className="absolute top-0 left-0 right-0 z-30">
+          <Header />
+        </div>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-gray-500">Loading area details...</div>
+        </div>
+      </main>
+    )
+  }
+
+  // Show error or fallback
+  if (!area) {
+    return (
+      <main className="min-h-screen relative">
+        <div className="absolute top-0 left-0 right-0 z-30">
+          <Header />
+        </div>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-gray-500">Area not found</div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen relative">
@@ -270,7 +413,7 @@ export default function TowerDetailsPage() {
       <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Background Image */}
         <Image
-          src={"/images_pages/listings.png"}
+          src={area.image || "/images_pages/listings.png"}
           alt={area.name}
           fill
           className="object-cover"
@@ -341,7 +484,7 @@ export default function TowerDetailsPage() {
 
               {/* 🔹 PROPERTY LIST */}
               <div className="space-y-4 relative z-10">
-                {area.properties.map((property) => (
+                {properties.map((property) => (
                   <div
                     key={property.id}
                     className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow"

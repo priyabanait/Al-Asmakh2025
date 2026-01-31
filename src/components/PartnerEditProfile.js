@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'
+const API_URL = 'https://api.alasmakhrealestate.com' // Hardcoded production URL (CORS configured)
 
 export default function PartnerEditProfile() {
   const { partner, fetchUserData } = useAuth()
