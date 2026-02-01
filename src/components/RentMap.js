@@ -77,7 +77,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
   useEffect(() => {
     loadProperties();
   }, [priceType]); // Only reload when priceType changes
-  
+
   // Note: loadProperties is intentionally not in dependencies to avoid infinite loops
   // It uses useCallback with proper dependencies (priceType) which will update when needed
 
@@ -91,7 +91,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
   const handleFilterChange = useCallback(async (filters) => {
     // Map filter labels to API parameter names
     const mappedFilters = {};
-    
+
     if (filters["Property Type"]) {
       const typeMap = {
         "Apartment": "apartment",
@@ -102,11 +102,11 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       };
       mappedFilters.type = typeMap[filters["Property Type"]] || filters["Property Type"].toLowerCase();
     }
-    
+
     if (filters["Location"]) {
       mappedFilters.locationLevel1 = filters["Location"];
     }
-    
+
     if (filters["Beds"]) {
       // Handle "Studio" and "5+" formats
       if (filters["Beds"] === "Studio") {
@@ -118,7 +118,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         mappedFilters.bedrooms = filters["Beds"];
       }
     }
-    
+
     if (filters["Baths"]) {
       if (filters["Baths"].endsWith("+")) {
         const num = filters["Baths"].replace("+", "");
@@ -127,7 +127,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         mappedFilters.bathrooms = filters["Baths"];
       }
     }
-    
+
     if (filters["Price"]) {
       // Parse price range like "0-5000" or "50000+"
       if (filters["Price"].includes("-")) {

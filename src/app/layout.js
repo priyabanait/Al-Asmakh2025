@@ -4,6 +4,7 @@ import '../styles/globals.css'
 import { TranslationProvider } from '../contexts/TranslationContext'
 import { AuthProvider } from '../contexts/AuthContext'
 import { CompareProvider } from '../contexts/CompareContext'
+import { AlertProvider } from '../contexts/AlertContext'
 import { useEffect } from 'react'
 
 export default function RootLayout({ children }) {
@@ -27,10 +28,12 @@ export default function RootLayout({ children }) {
         <TranslationProvider>
           <AuthProvider>
             <CompareProvider>
-              {/* ✅ UNIVERSAL CONTAINER */}
-              <main className="mx-auto w-full max-w-auto px-0 md:px-0">
-                {children}
-              </main>
+              <AlertProvider>
+                {/* ✅ UNIVERSAL CONTAINER */}
+                <main className="mx-auto w-full max-w-auto px-0 md:px-0">
+                  {children}
+                </main>
+              </AlertProvider>
             </CompareProvider>
           </AuthProvider>
         </TranslationProvider>

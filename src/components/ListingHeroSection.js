@@ -129,21 +129,19 @@ export default function ListingHeroSection({
               <div className="flex justify-center gap-2">
                 <button
                   onClick={() => onPriceTypeChange?.("rent")}
-                  className={`px-8 py-1.5 rounded-md font-medium shadow transition ${
-                    priceType === "rent"
+                  className={`px-8 py-1.5 rounded-md font-medium shadow transition ${priceType === "rent"
                       ? "bg-[#001730] text-white"
                       : "bg-gray-400 text-white"
-                  }`}
+                    }`}
                 >
                   RENT
                 </button>
                 <button
                   onClick={() => onPriceTypeChange?.("sale")}
-                  className={`px-8 py-1.5 rounded-md font-medium shadow transition ${
-                    priceType === "sale"
+                  className={`px-8 py-1.5 rounded-md font-medium shadow transition ${priceType === "sale"
                       ? "bg-[#001730] text-white"
                       : "bg-gray-400 text-white"
-                  }`}
+                    }`}
                 >
                   BUY
                 </button>
@@ -220,21 +218,19 @@ export default function ListingHeroSection({
             <div className="flex justify-center gap-4 mb-4">
               <button
                 onClick={() => onPriceTypeChange?.("rent")}
-                className={`px-20 py-1.5 rounded-md font-medium shadow transition ${
-                  priceType === "rent"
+                className={`px-20 py-1.5 rounded-md font-medium shadow transition ${priceType === "rent"
                     ? "bg-[#001730] text-white"
                     : "bg-[#0B1F3A]/40 text-white backdrop-blur-[20px] border border-white/40"
-                }`}
+                  }`}
               >
                 RENT
               </button>
               <button
                 onClick={() => onPriceTypeChange?.("sale")}
-                className={`px-20 py-1.5 rounded-md font-medium shadow transition ${
-                  priceType === "sale"
+                className={`px-20 py-1.5 rounded-md font-medium shadow transition ${priceType === "sale"
                     ? "bg-[#001730] text-white"
                     : "bg-[#0B1F3A]/40 text-white backdrop-blur-[20px] border border-white/40"
-                }`}
+                  }`}
               >
                 BUY
               </button>
@@ -257,12 +253,12 @@ export default function ListingHeroSection({
                   className="flex-1 text-gray-500 text-[8px] lg:text-base bg-transparent outline-none placeholder:text-[10px] lg:placeholder:text-base placeholder:text-gray-400"
                 />
                 <button
-                type="button"
-                onClick={() => setShowSpeechModal(true)}
-                className="text-gray-500 h-5 w-5 ml-3 hover:text-[#001730] transition-colors cursor-pointer"
-              >
-                <Mic className="h-5 w-5" />
-              </button>
+                  type="button"
+                  onClick={() => setShowSpeechModal(true)}
+                  className="text-gray-500 h-5 w-5 ml-3 hover:text-[#001730] transition-colors cursor-pointer"
+                >
+                  <Mic className="h-5 w-5" />
+                </button>
               </div>
             </form>
           </div>
@@ -288,9 +284,8 @@ export default function ListingHeroSection({
                     onClick={() =>
                       setOpenDropdown(isOpen ? null : label)
                     }
-                    className={`w-full flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-1.5 rounded-md shadow-lg hover:bg-[#001730] transition ${
-                      selectedValue ? "ring-2 ring-[#001730]" : ""
-                    }`}
+                    className={`w-full flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-1.5 rounded-md shadow-lg hover:bg-[#001730] transition ${selectedValue ? "ring-2 ring-[#001730]" : ""
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       {/* Icon + Divider */}
@@ -308,9 +303,8 @@ export default function ListingHeroSection({
                     {/* Down Arrow */}
                     <ArrowDown
                       size={16}
-                      className={`opacity-80 transition-transform ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
+                      className={`opacity-80 transition-transform ${isOpen ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
@@ -321,17 +315,14 @@ export default function ListingHeroSection({
                         <button
                           key={optIndex}
                           onClick={() => handleFilterSelect(label, option)}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${
-                            selectedValue === option
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${selectedValue === option
                               ? "bg-[#001730] text-white"
                               : "text-gray-700"
-                          } ${
-                            optIndex === 0 ? "rounded-t-md" : ""
-                          } ${
-                            optIndex === filterOptions[label].length - 1
+                            } ${optIndex === 0 ? "rounded-t-md" : ""
+                            } ${optIndex === filterOptions[label].length - 1
                               ? "rounded-b-md"
                               : ""
-                          }`}
+                            }`}
                         >
                           {option}
                         </button>

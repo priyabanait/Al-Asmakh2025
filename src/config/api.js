@@ -1,14 +1,26 @@
 // API Configuration Constants
-// Production API URLs - Hardcoded for production deployment (CORS configured properly)
-// DO NOT depend on environment variables - using hardcoded production URLs
+// Development: http://localhost:3002
+// Production: https://api.alasmakhrealestate.com
 
-// Production API base URL - Hardcoded
-const PRODUCTION_API_URL = 'https://api.alasmakhrealestate.com';
-const PRODUCTION_SEARCH_API_URL = 'https://api.alasmakhrealestate.com';
+// Determine API URL based on environment
+const getApiBaseUrl = () => {
+    // Check if NEXT_PUBLIC_API_URL is explicitly set
+    if (process.env.NEXT_PUBLIC_API_URL) {
+        return process.env.NEXT_PUBLIC_API_URL;
+    }
+    
+    // Default to localhost:3002 for development, production URL for production
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3002';
+    }
+    
+    // Production URL
+    return 'https://api.alasmakhrealestate.com';
+};
 
-// Use direct API calls (no proxy needed)
-export const API_BASE_URL = PRODUCTION_API_URL;
-export const SEARCH_API_BASE_URL = PRODUCTION_SEARCH_API_URL;
+// Use environment-aware API URL
+export const API_BASE_URL = getApiBaseUrl();
+export const SEARCH_API_BASE_URL = getApiBaseUrl();
 
 // Get full API URL
 export const getApiUrl = (endpoint) => {

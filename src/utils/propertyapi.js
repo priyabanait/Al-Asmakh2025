@@ -516,6 +516,7 @@ export const fetchProperties = async (params = {}) => {
         if (bathrooms) queryParams.append("bathrooms", bathrooms);
         if (minPrice) queryParams.append("minPrice", minPrice);
         if (maxPrice) queryParams.append("maxPrice", maxPrice);
+        if (params.projectId) queryParams.append("projectId", params.projectId);
 
         // Call API directly
         const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);

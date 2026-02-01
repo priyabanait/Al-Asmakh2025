@@ -27,6 +27,10 @@ export default function Services({
   category, // "luxury", "standard", "budget"
   luxury, // "true" or "false"
   development, // "true" or "false"
+  // Projects support
+  projects: externalProjects, // Projects passed from parent
+  useProjects = false, // Flag to use projects instead of properties
+  loading: externalLoading, // Loading state from parent
 }) {
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
   const [showFilters, setShowFilters] = useState(false); // Toggle for mobile filters
@@ -51,8 +55,30 @@ export default function Services({
     };
   }, [showFilters]);
 
-  // Fetch properties from API based on offeringType
+  // Fetch properties from API based on offeringType (only if not using projects)
   useEffect(() => {
+    // If using projects from parent, use them directly
+    if (useProjects) {
+      console.log("Services component - using projects:", {
+        useProjects,
+        externalProjectsLength: externalProjects?.length,
+        externalProjects: externalProjects,
+        externalLoading,
+      });
+
+      // Always update when externalProjects changes (even if empty array)
+      const projectsArray = Array.isArray(externalProjects) ? externalProjects : [];
+      console.log("Services component - setting properties:", projectsArray.length, projectsArray);
+      setProperties(projectsArray);
+
+      // Update loading state from parent
+      if (externalLoading !== undefined) {
+        setLoading(externalLoading);
+      }
+      return;
+    }
+
+    // Otherwise, fetch properties from API
     const loadProperties = async () => {
       try {
         setLoading(true);
@@ -84,7 +110,7 @@ export default function Services({
     };
 
     loadProperties();
-  }, [offeringType, propertyType, category, luxury, development]);
+  }, [offeringType, propertyType, category, luxury, development, useProjects, externalProjects, externalLoading]);
 
 
 

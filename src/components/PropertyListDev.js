@@ -223,7 +223,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
                             <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
                                 <Link
-                                    href={`/propertydetails?id=${property.id}`}
+                                    href={property.projectType ? `/projects/${property.id}` : `/propertydetails?id=${property.id}`}
                                     className="flex items-center gap-2 w-full"
                                 >
                                     <span>Details</span>

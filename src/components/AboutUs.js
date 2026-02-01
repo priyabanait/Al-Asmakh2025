@@ -5,10 +5,76 @@ import { CircleDot } from "lucide-react";
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
 import DreamPropertySection from "./DreamPropertySection";
+import { useAlert } from '../contexts/AlertContext';
+import { getApiUrl } from '../config/api';
 
 function AboutUs() {
   const [isVisible, setIsVisible] = useState({});
   const sectionRefs = useRef({});
+  const { showSuccess, showError } = useAlert();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    propertyType: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.name || !formData.email) {
+      showError('Please fill in your name and email');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(getApiUrl('api/leads'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          countryCode: '+974',
+          propertyType: formData.propertyType,
+          message: formData.message,
+          sourcePage: 'aboutUsComponent',
+          sourceUrl: typeof window !== 'undefined' ? window.location.href : ''
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        showSuccess(data.message || 'Thank you for your inquiry! We will get back to you within 24 hours.');
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          propertyType: '',
+          message: ''
+        });
+      } else {
+        showError(data.message || 'Failed to submit your inquiry. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      showError('Failed to submit your inquiry. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -467,7 +533,7 @@ function AboutUs() {
                 <div className="h-[1px] w-40 lg:w-60 bg-white 300 mb-3 lg:mb-4 mx-auto"></div>
               </div>
 
-              <form className="space-y-3 lg:space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4">
                 {/* First Row: Name and Email */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                   <div>
@@ -475,6 +541,9 @@ function AboutUs() {
                     <input
                       type="text"
                       placeholder="John Carter"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
                       className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#10284C]"
                     />
                   </div>
@@ -483,6 +552,9 @@ function AboutUs() {
                     <input
                       type="email"
                       placeholder="example@email.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
                       className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#10284C]"
                     />
                   </div>
@@ -495,18 +567,22 @@ function AboutUs() {
                     <input
                       type="text"
                       placeholder="(123) 456 - 789"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#10284C]"
                     />
                   </div>
                   <div>
                     <label className="block text-[#10284C] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
                     <select
+                      value={formData.propertyType}
+                      onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
                       className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#10284C]"
                     >
-                      <option>Choose a Type</option>
-                      <option>Apartment</option>
-                      <option>Villa</option>
-                      <option>Commercial</option>
+                      <option value="">Choose a Type</option>
+                      <option value="Apartment">Apartment</option>
+                      <option value="Villa">Villa</option>
+                      <option value="Commercial">Commercial</option>
                     </select>
                   </div>
                 </div>
@@ -517,6 +593,8 @@ function AboutUs() {
                   <textarea
                     placeholder="Tell us more about your requirement like budget ,area & others .."
                     rows={3}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#10284C] resize-none"
                   ></textarea>
                 </div>
@@ -524,10 +602,11 @@ function AboutUs() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="bg-[#10284C] text-white px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
+                  disabled={isSubmitting}
+                  className="bg-[#10284C] text-white px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <span className="text-sm">Submit</span>
-                  <FaArrowRight size={12} className="lg:w-[14px] lg:h-[14px] ml-2 lg:ml-10" />
+                  <span className="text-sm">{isSubmitting ? 'Submitting...' : 'Submit'}</span>
+                  {!isSubmitting && <FaArrowRight size={12} className="lg:w-[14px] lg:h-[14px] ml-2 lg:ml-10" />}
                 </button>
               </form>
             </div>

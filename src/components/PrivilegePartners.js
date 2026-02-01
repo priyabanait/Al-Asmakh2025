@@ -10,6 +10,8 @@ import { MdLocationOn } from "react-icons/md";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import FeaturedProperties from "./FeaturedProperties";
 import useEmblaCarousel from "embla-carousel-react";
+import { API_BASE_URL, getApiUrl } from "../config/api";
+import { useAlert } from "../contexts/AlertContext";
 export default function Profit() {
   const [currentSlides, setCurrentSlide] = useState(0);
   const testimonials = [
@@ -45,6 +47,70 @@ export default function Profit() {
   const [selectedCountryCode, setSelectedCountryCode] = useState("+974"); // Default to Qatar
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const countryDropdownRef = useRef(null);
+  const { showSuccess, showError } = useAlert();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    propertyType: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form submission handler
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.name || !formData.email) {
+      showError('Please fill in your name and email');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch(getApiUrl('api/leads'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          countryCode: selectedCountryCode,
+          propertyType: formData.propertyType,
+          message: formData.message,
+          sourcePage: 'privilegePartnersComponent',
+          sourceUrl: typeof window !== 'undefined' ? window.location.href : ''
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        showSuccess(data.message || 'Thank you for your inquiry! We will get back to you within 24 hours.');
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          propertyType: '',
+          message: ''
+        });
+      } else {
+        showError(data.message || 'Failed to submit your inquiry. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      showError('Failed to submit your inquiry. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -139,7 +205,7 @@ export default function Profit() {
         setBlogsError(null);
         
         // Fetch articles from API
-        const response = await fetch('https://api.alasmakhrealestate.com/articles?page=1&limit=20');
+        const response = await fetch(`${API_BASE_URL}/articles?page=1&limit=20`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch blogs');
@@ -970,7 +1036,7 @@ export default function Profit() {
                 <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
 
 
-                <form className="space-y-3 lg:space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4">
                   {/* First Row: Name and Email */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-2">
                     <div>
@@ -978,6 +1044,9 @@ export default function Profit() {
                       <input
                         type="text"
                         placeholder="Enter Your Name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
                         className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
                       />
                     </div>
@@ -986,6 +1055,9 @@ export default function Profit() {
                       <input
                         type="email"
                         placeholder="Enter Your Email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
                         className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
                       />
                     </div>
@@ -1078,6 +1150,8 @@ export default function Profit() {
                         <input
                           type="text"
                           placeholder="(123) 456 - 789"
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-full"
                         />
                       </div>
@@ -1085,12 +1159,14 @@ export default function Profit() {
                     <div className="flex flex-col">
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
                       <select
+                        value={formData.propertyType}
+                        onChange={(e) => setFormData({ ...formData, propertyType: e.target.value })}
                         className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm text-gray-500 focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
                       >
-                        <option>Choose a Type</option>
-                        <option>Apartment</option>
-                        <option>Villa</option>
-                        <option>Commercial</option>
+                        <option value="">Choose a Type</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="Villa">Villa</option>
+                        <option value="Commercial">Commercial</option>
                       </select>
                     </div>
                   </div>
@@ -1101,6 +1177,8 @@ export default function Profit() {
                     <textarea
                       placeholder="Tell us more about your requirement like budget ,area & others .."
                       rows={3}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] resize-none"
                     ></textarea>
                   </div>
@@ -1108,10 +1186,11 @@ export default function Profit() {
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto"
+                    disabled={isSubmitting}
+                    className="bg-[#001730] text-white text-[12px] px-6 lg:px-8 py-2 lg:py-2.5 rounded-md flex items-center justify-center lg:justify-end gap-2 hover:bg-[#0d2142] transition w-full lg:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span className="text-[12px]">Submit</span>
-                    <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />
+                    <span className="text-[12px]">{isSubmitting ? 'Submitting...' : 'Submit'}</span>
+                    {!isSubmitting && <FaArrowRight size={12} className="lg:w-[12px] lg:h-[12px] ml-2 lg:ml-20" />}
                   </button>
                 </form>
               </div>

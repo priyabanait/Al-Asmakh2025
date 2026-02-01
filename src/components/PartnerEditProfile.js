@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { API_BASE_URL } from '../config/api'
 
-const API_URL = 'https://api.alasmakhrealestate.com' // Hardcoded production URL (CORS configured)
+const API_URL = API_BASE_URL // Environment-aware API URL (development: localhost:3002, production: api.alasmakhrealestate.com)
 
 export default function PartnerEditProfile() {
   const { partner, fetchUserData } = useAuth()

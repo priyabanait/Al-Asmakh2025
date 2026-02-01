@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import LocationAutocomplete from "./LocationAutocomplete";
 import { searchProperties, convertModalFiltersToSearchParams } from "../utils/searchApi";
 
-export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false, priceType: propPriceType = "rent" }) {
+export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false, priceType: propPriceType = "rent", projectId }) {
   const [openSections, setOpenSections] = useState({
     location: false,
     propertyType: false,
@@ -157,11 +157,14 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
       // Convert to search params
       const searchParams = convertModalFiltersToSearchParams(filterState);
 
-      // Add priceType, pagination, and status
+      // Add priceType, pagination, status, and projectId if provided
       searchParams.priceType = priceType || propPriceType || "rent";
       searchParams.status = "published";
       searchParams.page = 1;
       searchParams.limit = 50;
+      if (projectId) {
+        searchParams.projectId = projectId;
+      }
 
       // Call search API
       const results = await searchProperties(searchParams);

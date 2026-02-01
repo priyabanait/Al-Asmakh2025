@@ -1,5 +1,6 @@
 // OAuth Configuration
 // This file should be updated with your OAuth credentials
+import { API_BASE_URL } from './api';
 
 export const OAUTH_CONFIG = {
   google: {
@@ -14,6 +15,6 @@ export const OAUTH_CONFIG = {
     clientId: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID || '', // Will be set from environment
     redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/auth/linkedin/callback` : '',
   },
-  backendUrl: 'https://api.alasmakhrealestate.com', // Hardcoded production URL (CORS configured)
+  backendUrl: API_BASE_URL, // Environment-aware API URL (development: localhost:3002, production: api.alasmakhrealestate.com)
 };
 

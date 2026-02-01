@@ -640,139 +640,138 @@ function PropertyDetailsContent() {
 
           {/* RIGHT SIDE - AGENT CARDS */}
           <div className="col-span-1 flex flex-col gap-4 sm:gap-6">
-            {/* Agent Card Component - Only show if agent exists */}
-            {property?.agent && (() => {
-              const agent = property.agent;
-              const agentName = `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.email || 'Agent';
+            {/* Helper function to render agent card */}
+            {(() => {
+              // Get all assigned agents, fallback to primary agent if no assigned agents
+              let agentsToDisplay = [];
 
-              // Format agent location
-              let agentLocation = 'Location not specified';
-              if (agent.location) {
-                const parts = [];
-                if (agent.location.city) parts.push(agent.location.city);
-                if (agent.location.district && agent.location.district !== agent.location.city) {
-                  parts.push(agent.location.district);
-                }
-                if (parts.length > 0) {
-                  agentLocation = parts.join(', ');
-                } else if (agent.location.address) {
-                  agentLocation = agent.location.address;
-                }
+              if (property?.allAssignedAgents && Array.isArray(property.allAssignedAgents) && property.allAssignedAgents.length > 0) {
+                agentsToDisplay = property.allAssignedAgents;
+              } else if (property?.agent) {
+                agentsToDisplay = [property.agent];
               }
 
-              return (
-                <div
-                  key={agent.id || agent.userId}
-                  className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
-                >
-                  {/* LEFT IMAGE */}
-                  <div className="w-full lg:w-1/2  rounded-[5px] relative flex-shrink-0 h-64 p-6 sm:h-56 lg:h-auto lg:pr-0 lg:mr-0">
-                    {agent.profilePicture ? (
-                      <Image
-                        src={agent.profilePicture}
-                        width={300}
-                        height={300}
-                        alt={agentName}
-                        className="h-full w-full  rounded-[5px] object-cover"
-                        unoptimized={agent.profilePicture?.startsWith('http')}
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                        <div className="w-24 h-24 rounded-full bg-[#001730] flex items-center justify-center">
-                          <span className="text-white text-3xl font-semibold">
-                            {agentName.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-                    )}
+              if (agentsToDisplay.length === 0) {
+                return null;
+              }
 
-                    {/* <Image
-                      src="/Frame 74.png"
-                      width={50}
-                      height={50}
-                      alt="logo"
-                      className="absolute top-2 left-2 sm:top-3 sm:left-3 w-8 h-8 sm:w-[50px] sm:h-[50px]"
-                    /> */}
-                  </div>
+              return agentsToDisplay.map((agent, index) => {
+                const agentName = `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.email || 'Agent';
 
-                  {/* RIGHT DETAILS */}
-                  <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col justify-between">
-                    <div>
-                      <div className="shadow-md bg-white text-center p-3 sm:p-4 rounded-[5px]">
-                        <h3 className="text-base sm:text-lg font-semibold text-center text-[#001730] mb-1">
-                          {agentName}
-                        </h3>
-                        <div className="w-[30%] h-[0.2px] px-10 mt-1 3xl:mt-2 bg-gray-400 my-1 mx-auto"></div>
-                        <p className="text-gray-500 text-xs sm:text-sm mb-2">
-                          Property Agent
-                        </p>
-                      </div>
+                // Format agent location
+                let agentLocation = 'Location not specified';
+                if (agent.location) {
+                  const parts = [];
+                  if (agent.location.city) parts.push(agent.location.city);
+                  if (agent.location.district && agent.location.district !== agent.location.city) {
+                    parts.push(agent.location.district);
+                  }
+                  if (parts.length > 0) {
+                    agentLocation = parts.join(', ');
+                  } else if (agent.location.address) {
+                    agentLocation = agent.location.address;
+                  }
+                }
 
-                      {agentLocation && (
-                        <div className="relative mt-4">
-                          <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                            Location:
-                          </p>
-                          <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
-                            {agentLocation}
-                          </p>
+                // Format languages
+                let languages = 'English, Arabic, Spanish';
+                if (agent.languages && Array.isArray(agent.languages) && agent.languages.length > 0) {
+                  languages = agent.languages.join(', ');
+                }
+
+                return (
+                  <div
+                    key={agent.id || agent.userId || agent._id || `agent-${index}`}
+                    className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
+                  >
+                    {/* LEFT IMAGE */}
+                    <div className="w-full lg:w-1/2 rounded-[5px] relative flex-shrink-0 h-64 p-6 sm:h-56 lg:h-auto lg:pr-0 lg:mr-0">
+                      {agent.profilePicture ? (
+                        <Image
+                          src={agent.profilePicture}
+                          width={300}
+                          height={300}
+                          alt={agentName}
+                          className="h-full w-full rounded-[5px] object-cover"
+                          unoptimized={agent.profilePicture?.startsWith('http')}
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+                          <div className="w-24 h-24 rounded-full bg-[#001730] flex items-center justify-center">
+                            <span className="text-white text-3xl font-semibold">
+                              {agentName.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
                         </div>
                       )}
+                    </div>
 
-
-
-                      <div className="relative mt-4">
-                        <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                          Languages:
-                        </p>
-                        <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
-                          English , arabic , Spanish
-                        </p>
-                      </div>
-
-                      {/* {agent.email && (
-                        <div className="relative mt-4">
-                          <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                            Email:
-                          </p>
-                          <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
-                            {agent.email}
+                    {/* RIGHT DETAILS */}
+                    <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col justify-between">
+                      <div>
+                        <div className="shadow-md bg-white text-center p-3 sm:p-4 rounded-[5px]">
+                          <h3 className="text-base sm:text-lg font-semibold text-center text-[#001730] mb-1">
+                            {agentName}
+                          </h3>
+                          <div className="w-[30%] h-[0.2px] px-10 mt-1 3xl:mt-2 bg-gray-400 my-1 mx-auto"></div>
+                          <p className="text-gray-500 text-xs sm:text-sm mb-2">
+                            Property Agent
                           </p>
                         </div>
-                      )} */}
-                    </div>
 
-                    {/* Buttons */}
-                    <div className="mt-4 flex flex-col gap-2">
-                      <div className="flex flex-row gap-2">
-                        {agent.phone && (
-                          <a
-                            href={`tel:${agent.phone}`}
-                            className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
-                          >
-                            Call Agent
-                            <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                          </a>
+                        {agentLocation && (
+                          <div className="relative mt-4">
+                            <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                              Location:
+                            </p>
+                            <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                              {agentLocation}
+                            </p>
+                          </div>
                         )}
-                        {agent.email && (
-                          <a
-                            href={`mailto:${agent.email}`}
-                            className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
-                          >
-                            Send email
-                            <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                          </a>
-                        )}
+
+                        <div className="relative mt-4">
+                          <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                            Languages:
+                          </p>
+                          <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                            {languages}
+                          </p>
+                        </div>
                       </div>
 
-                      <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
-                        Schedule Viewing
-                        <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
-                      </button>
+                      {/* Buttons */}
+                      <div className="mt-4 flex flex-col gap-2">
+                        <div className="flex flex-row gap-2">
+                          {agent.phone && (
+                            <a
+                              href={`tel:${agent.phone}`}
+                              className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
+                            >
+                              Call Agent
+                              <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                            </a>
+                          )}
+                          {agent.email && (
+                            <a
+                              href={`mailto:${agent.email}`}
+                              className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
+                            >
+                              Send email
+                              <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                            </a>
+                          )}
+                        </div>
+
+                        <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
+                          Schedule Viewing
+                          <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
+                );
+              });
             })()}
           </div>
 
