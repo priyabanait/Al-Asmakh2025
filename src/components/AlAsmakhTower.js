@@ -41,7 +41,7 @@ export default function AlAsmakhTower() {
     // If area is an object with id, use it; otherwise treat as name string
     const areaName = typeof area === 'object' ? area.name : area;
     const areaId = typeof area === 'object' ? area.id : null;
-    
+
     // Create slug from name
     const slug = getAreaSlug(areaName);
     router.push(`/towerdetails/${slug}`);
@@ -54,21 +54,22 @@ export default function AlAsmakhTower() {
         setLoadingAreas(true);
         const apiUrl = getApiUrl("api/v1/areas/list");
         const response = await fetch(apiUrl);
-        
+
         if (!response.ok) {
           throw new Error(`Failed to fetch areas: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Map API response to component data structure
-        // API returns: { areas: [{ area_id, area_name, area_title, area_image }], count }
+        // API returns: { areas: [{ area_id, area_name, area_title, area_image, descriptionEn }], count }
         if (data.areas && Array.isArray(data.areas)) {
           const mappedAreas = data.areas.map((area) => ({
             id: area.area_id,
             name: area.area_name || "",
             subheading: area.area_title || area.area_name || "",
             image: area.area_image || "/images_prop/1.png", // Fallback image
+            descriptionEn: area.descriptionEn || "", // English description for hover tooltip
           }));
           setAreas(mappedAreas);
           // Reset current area index when areas are loaded
@@ -484,231 +485,253 @@ export default function AlAsmakhTower() {
 
           {/* Mobile Carousel - Only visible on mobile */}
           {!loadingAreas && areas.length > 0 && (
-          <div
-            className="block lg:hidden relative"
-            style={{
-              overflow: "hidden",
-              width: "100%",
-            }}
-          >
             <div
-              ref={areaCarouselRef}
-              className="relative mx-auto"
-              onTouchStart={handleAreaTouchStart}
-              onTouchMove={handleAreaTouchMove}
-              onTouchEnd={handleAreaTouchEnd}
+              className="block lg:hidden relative"
               style={{
-                height: "auto",
-                minHeight: "300px",
                 overflow: "hidden",
                 width: "100%",
-                maxWidth: "100%",
-                position: "relative",
               }}
             >
               <div
-                className="flex transition-transform  ease-in-out"
+                ref={areaCarouselRef}
+                className="relative mx-auto"
+                onTouchStart={handleAreaTouchStart}
+                onTouchMove={handleAreaTouchMove}
+                onTouchEnd={handleAreaTouchEnd}
                 style={{
-                  transform: `translateX(calc(-${currentAreaIndex * 100}%))`,
-                  willChange: "transform",
+                  height: "auto",
+                  minHeight: "300px",
+                  overflow: "hidden",
+                  width: "100%",
+                  maxWidth: "100%",
+                  position: "relative",
                 }}
               >
-                {areas.map((area, index) => {
-                  const isCenter = index === currentAreaIndex;
-                  const offset = index - currentAreaIndex;
+                <div
+                  className="flex transition-transform  ease-in-out"
+                  style={{
+                    transform: `translateX(calc(-${currentAreaIndex * 100}%))`,
+                    willChange: "transform",
+                  }}
+                >
+                  {areas.map((area, index) => {
+                    const isCenter = index === currentAreaIndex;
+                    const offset = index - currentAreaIndex;
 
-                  return (
-                    <div
-                      key={index}
-                      className="flex-shrink-0"
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
+                    return (
                       <div
-                        onClick={() => handleAreaClick(area)}
+                        key={index}
+                        className="flex-shrink-0"
                         style={{
-                          borderRadius: "8px",
                           width: "100%",
-                          maxWidth: "100%",
-                          height: "300px",
-                          position: "relative",
-                          overflow: "hidden",
-                          margin: "0 auto",
-                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
-                        className="shadow-lg md:h-[400px] hover:shadow-xl transition-shadow group"
                       >
-                        <Image
-                          src={area.image}
-                          alt={area.name}
-                          fill
-                          className="object-cover rounded-lg"
-                        />
-                        {/* City Name Overlay - Top Left Corner */}
                         <div
-                          className="absolute top-3 md:top-4 shadow-md bg-white/20 left-3 md:left-4 px-3 md:px-4 py-1.5 md:py-2 rounded"
+                          onClick={() => handleAreaClick(area)}
                           style={{
-
-                            backdropFilter: "blur(10px)",
-                            WebkitBackdropFilter: "blur(10px)",
+                            borderRadius: "8px",
+                            width: "100%",
+                            maxWidth: "100%",
+                            height: "300px",
+                            position: "relative",
+                            overflow: "hidden",
+                            margin: "0 auto",
+                            cursor: "pointer",
                           }}
+                          className="shadow-lg md:h-[400px] hover:shadow-xl transition-shadow group"
                         >
-                          <span className="text-white font-semibold text-xs md:text-sm">
-                            {area.name}
-                          </span>
-                        </div>
-                        {/* Subheading on Hover - Center - Show English */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                          <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg max-w-[80%]">
-                            <span className="text-white font-semibold text-sm md:text-base text-center block">
-                              {area.subheading && area.subheading !== area.name ? area.subheading : `Explore ${area.name}`}
+                          <Image
+                            src={area.image}
+                            alt={area.name}
+                            fill
+                            className="object-cover rounded-lg"
+                          />
+                          {/* City Name Overlay - Top Left Corner */}
+                          <div
+                            className="absolute top-3 md:top-4 shadow-md bg-white/20 left-3 md:left-4 px-3 md:px-4 py-1.5 md:py-2 rounded"
+                            style={{
+
+                              backdropFilter: "blur(10px)",
+                              WebkitBackdropFilter: "blur(10px)",
+                            }}
+                          >
+                            <span className="text-white font-semibold text-xs md:text-sm">
+                              {area.name}
                             </span>
+                          </div>
+                          {/* Description on Hover - Center - Show descriptionEn */}
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[85%]">
+                              {area.descriptionEn ? (
+                                <p className="text-white font-medium text-xs md:text-sm text-center block leading-relaxed line-clamp-4">
+                                  {area.descriptionEn}
+                                </p>
+                              ) : (
+                                <span className="text-white font-semibold text-sm md:text-base text-center block">
+                                  {area.subheading && area.subheading !== area.name ? area.subheading : `Explore ${area.name}`}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Navigation - Below carousel */}
+              <div className="mt-4 md:mt-6">
+                {/* Horizontal Line with Counter */}
+                <div className="flex items-end justify-end mb-2">
+
+                  <span className="text-gray-400 text-xs md:text-sm mx-2 md:mx-4">
+                    {String(currentAreaIndex + 1).padStart(2, '0')} of {String(areas.length).padStart(2, '0')}
+                  </span>
+                </div>
+                <div className="flex-1 h-[0.5px] bg-gray-300 mb-3 md:mb-4"></div>
+                {/* Navigation Buttons */}
+                {/* Navigation Buttons */}
+                <div className="flex items-center justify-center gap-2 md:gap-3">
+
+                  {/* Previous Button */}
+                  <button
+                    onClick={goToPreviousArea}
+                    className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-white border border-black flex items-center justify-center hover:bg-gray-50 transition-all "
+                    aria-label="Previous area"
+                  >
+                    <FaArrowLeft size={14} className="md:w-4 md:h-4 text-black" />
+                  </button>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={goToNextArea}
+                    className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-[#001730] flex items-center justify-center hover:bg-[#022d5e] transition-all "
+                    aria-label="Next area"
+                  >
+                    <FaArrowRight size={14} className="md:w-4 md:h-4 text-white" />
+                  </button>
+
+                </div>
+
               </div>
             </div>
-
-            {/* Navigation - Below carousel */}
-            <div className="mt-4 md:mt-6">
-              {/* Horizontal Line with Counter */}
-              <div className="flex items-end justify-end mb-2">
-
-                <span className="text-gray-400 text-xs md:text-sm mx-2 md:mx-4">
-                  {String(currentAreaIndex + 1).padStart(2, '0')} of {String(areas.length).padStart(2, '0')}
-                </span>
-              </div>
-              <div className="flex-1 h-[0.5px] bg-gray-300 mb-3 md:mb-4"></div>
-              {/* Navigation Buttons */}
-              {/* Navigation Buttons */}
-              <div className="flex items-center justify-center gap-2 md:gap-3">
-
-                {/* Previous Button */}
-                <button
-                  onClick={goToPreviousArea}
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-white border border-black flex items-center justify-center hover:bg-gray-50 transition-all "
-                  aria-label="Previous area"
-                >
-                  <FaArrowLeft size={14} className="md:w-4 md:h-4 text-black" />
-                </button>
-
-                {/* Next Button */}
-                <button
-                  onClick={goToNextArea}
-                  className="w-9 h-9 md:w-10 md:h-10 rounded-sm bg-[#001730] flex items-center justify-center hover:bg-[#022d5e] transition-all "
-                  aria-label="Next area"
-                >
-                  <FaArrowRight size={14} className="md:w-4 md:h-4 text-white" />
-                </button>
-
-              </div>
-
-            </div>
-          </div>
           )}
 
           {/* Desktop Grid - Hidden on mobile */}
           {!loadingAreas && areas.length > 0 && (
-          <div className="hidden lg:block">
-            {/* --- TOP ROW --- */}
-            <div className="flex justify-center rounded-lg gap-[10px] mb-[10px]">
-              {[0, 1, 2, 3].filter(i => areas[i]).map((i) => (
-                <div
-                  key={i}
-                  onClick={() => handleAreaClick(areas[i])}
-                  className={`group relative rounded-lg cursor-pointer hover:opacity-100 transition-opacity  overflow-hidden ${i === 1 ? "w-[865px] h-[300px]" : "w-[430px] h-[300px]"
-                    }`}
-                >
-                  <Image
-                    src={areas[i].image}
-                    alt={areas[i].name}
-                    fill
-                    className="object-fill rounded-lg"
-                  />
-                  {/* Light Black Overlay on Hover */}
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
+            <div className="hidden lg:block">
+              {/* --- TOP ROW --- */}
+              <div className="flex justify-center rounded-lg gap-[10px] mb-[10px]">
+                {[0, 1, 2, 3].filter(i => areas[i]).map((i) => (
+                  <div
+                    key={i}
+                    onClick={() => handleAreaClick(areas[i])}
+                    className={`group relative rounded-lg cursor-pointer hover:opacity-100 transition-opacity  overflow-hidden ${i === 1 ? "w-[865px] h-[300px]" : "w-[430px] h-[300px]"
+                      }`}
+                  >
+                    <Image
+                      src={areas[i].image}
+                      alt={areas[i].name}
+                      fill
+                      className="object-fill rounded-lg"
+                    />
+                    {/* Light Black Overlay on Hover */}
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
 
-                  {/* View More - Center of card, appears on hover */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                    <div className="flex items-center gap-2">
-                      <span className="text-white text-base lg:text-lg font-semibold">View More</span>
-                      <FaArrowRight size={16} className="text-white" />
+                    {/* Description - Center of card, appears on hover */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 px-4">
+                      <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[90%]">
+                        {areas[i].descriptionEn ? (
+                          <p className="text-white font-medium text-sm lg:text-base text-center leading-relaxed line-clamp-4">
+                            {areas[i].descriptionEn}
+                          </p>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="text-white text-base lg:text-lg font-semibold">View More</span>
+                            <FaArrowRight size={16} className="text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Hover Overlay - Title and Arrow */}
+                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
+                      <div
+                        className="flex items-center justify-between rounded-b-lg px-4 py-3"
+                        style={{
+                          backdropFilter: 'blur(45px) saturate(180%)',
+                          WebkitBackdropFilter: 'blur(45px) saturate(180%)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                        }}
+                      >
+                        <span className="text-[#001730] font-semibold text-xs">
+                          {areas[i].subheading}
+                        </span>
+                        {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
+                      </div>
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  {/* Hover Overlay - Title and Arrow */}
-                  <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
-                    <div
-                      className="flex items-center justify-between rounded-b-lg px-4 py-3"
-                      style={{
-                        backdropFilter: 'blur(45px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.45)',
-                      }}
-                    >
-                      <span className="text-[#001730] font-semibold text-xs">
-                        {areas[i].subheading}
-                      </span>
-                      {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
+              {/* --- BOTTOM ROW --- */}
+              <div className="flex justify-center rounded-lg gap-[10px]">
+                {[4, 5, 6, 7].filter(i => areas[i]).map((i) => (
+                  <div
+                    key={i}
+                    onClick={() => handleAreaClick(areas[i])}
+                    className={`group relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity  overflow-hidden ${i === 7 ? "w-[826px] h-[300px]" : "w-[404px] h-[300px]"
+                      }`}
+                  >
+                    <Image
+                      src={areas[i].image}
+                      alt={areas[i].name}
+                      fill
+                      className="object-fill rounded-lg"
+                    />
+                    {/* Light Black Overlay on Hover */}
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
+
+                    {/* Description - Center of card, appears on hover */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 px-4">
+                      <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[90%]">
+                        {areas[i].descriptionEn ? (
+                          <p className="text-white font-medium text-sm lg:text-base text-center leading-relaxed line-clamp-4">
+                            {areas[i].descriptionEn}
+                          </p>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <span className="text-white text-base lg:text-lg font-semibold">View More</span>
+                            <FaArrowRight size={16} className="text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Hover Overlay - Title and Arrow */}
+                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
+                      <div
+                        className="flex items-center justify-between rounded-b-lg px-4 py-3"
+                        style={{
+                          backdropFilter: 'blur(45px) saturate(180%)',
+                          WebkitBackdropFilter: 'blur(45px) saturate(180%)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.45)',
+                        }}
+                      >
+                        <span className="text-[#001730] font-semibold text-xs">
+                          {areas[i].subheading}
+                        </span>
+                        {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-
-            {/* --- BOTTOM ROW --- */}
-            <div className="flex justify-center rounded-lg gap-[10px]">
-              {[4, 5, 6, 7].filter(i => areas[i]).map((i) => (
-                <div
-                  key={i}
-                  onClick={() => handleAreaClick(areas[i])}
-                  className={`group relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity  overflow-hidden ${i === 7 ? "w-[826px] h-[300px]" : "w-[404px] h-[300px]"
-                    }`}
-                >
-                  <Image
-                    src={areas[i].image}
-                    alt={areas[i].name}
-                    fill
-                    className="object-fill rounded-lg"
-                  />
-                  {/* Light Black Overlay on Hover */}
-                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
-
-                  {/* View More - Center of card, appears on hover */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
-                    <div className="flex items-center gap-2">
-                      <span className="text-white text-base lg:text-lg font-semibold">View More</span>
-                      <FaArrowRight size={16} className="text-white" />
-                    </div>
-                  </div>
-
-                  {/* Hover Overlay - Title and Arrow */}
-                  <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
-                    <div
-                      className="flex items-center justify-between rounded-b-lg px-4 py-3"
-                      style={{
-                        backdropFilter: 'blur(45px) saturate(180%)',
-                        WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.45)',
-                      }}
-                    >
-                      <span className="text-[#001730] font-semibold text-xs">
-                        {areas[i].subheading}
-                      </span>
-                      {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
           )}
 
         </div>

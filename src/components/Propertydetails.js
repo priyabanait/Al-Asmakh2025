@@ -247,17 +247,23 @@ function PropertyDetailsContent() {
 
         {/* Title + Price + Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
-            <h1 className="text-xl sm:text-2xl ">{formattedProperty.title.slice(0, 27)}...</h1>
-            <div className="w-[50%] h-[0.2px] px-10  mt-2 3xl:mt-3 bg-gray-400 my-2 "></div>
+          <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center lg:col-span-1">
+            <h1 className="text-xl sm:text-2xl ">
+              {formattedProperty.title.slice(0, 27)}...
+            </h1>
+            <div className="w-[50%] h-[0.2px] px-4 mt-2 3xl:mt-3 bg-gray-400 my-2"></div>
             <div className="flex items-center text-gray-200 text-xs sm:text-sm mt-2">
               <MapPin size={16} className="mr-1" /> {formattedProperty.location}
             </div>
           </div>
 
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center">
-            <p className="text-xs sm:text-sm opacity-80 mb-1">{formattedProperty.priceLabel || "Price"}</p>
-            <h2 className="text-xl sm:text-2xl ">{formattedProperty.price}</h2>
+            <p className="text-xs sm:text-sm opacity-80 mb-1">
+              {formattedProperty.priceLabel || "Price"}
+            </p>
+            <h2 className="text-xl sm:text-2xl ">
+              {formattedProperty.price}
+            </h2>
           </div>
 
           <div className="bg-[#001730] p-4 sm:p-6 rounded-[5px] shadow-md flex items-center justify-center">
@@ -271,8 +277,8 @@ function PropertyDetailsContent() {
               </button>
             </div>
           </div>
-
         </div>
+
         <div className="bg-white shadow-md p-4 sm:p-6">
 
           {/* Thumbnail Images */}
@@ -639,7 +645,7 @@ function PropertyDetailsContent() {
           </div>
 
           {/* RIGHT SIDE - AGENT CARDS */}
-          <div className="col-span-1 flex flex-col gap-4 sm:gap-6">
+          <div className="col-span-1 flex flex-col gap-3 sm:gap-4">
             {/* Helper function to render agent card */}
             {(() => {
               // Get all assigned agents, fallback to primary agent if no assigned agents
@@ -682,23 +688,23 @@ function PropertyDetailsContent() {
                 return (
                   <div
                     key={agent.id || agent.userId || agent._id || `agent-${index}`}
-                    className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row h-auto"
+                    className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row"
                   >
                     {/* LEFT IMAGE */}
-                    <div className="w-full lg:w-1/2 rounded-[5px] relative flex-shrink-0 h-64 p-6 sm:h-56 lg:h-auto lg:pr-0 lg:mr-0">
+                    <div className="w-full lg:w-1/2 rounded-[5px] relative flex-shrink-0 h-40 p-4 sm:h-36 lg:h-auto lg:pr-0 lg:mr-0">
                       {agent.profilePicture ? (
                         <Image
                           src={agent.profilePicture}
-                          width={300}
-                          height={300}
+                          width={200}
+                          height={200}
                           alt={agentName}
                           className="h-full w-full rounded-[5px] object-cover"
                           unoptimized={agent.profilePicture?.startsWith('http')}
                         />
                       ) : (
                         <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                          <div className="w-24 h-24 rounded-full bg-[#001730] flex items-center justify-center">
-                            <span className="text-white text-3xl font-semibold">
+                          <div className="w-16 h-16 rounded-full bg-[#001730] flex items-center justify-center">
+                            <span className="text-white text-xl font-semibold">
                               {agentName.charAt(0).toUpperCase()}
                             </span>
                           </div>
@@ -707,14 +713,14 @@ function PropertyDetailsContent() {
                     </div>
 
                     {/* RIGHT DETAILS */}
-                    <div className="w-full lg:w-1/2 p-4 sm:p-6 flex flex-col justify-between">
+                    <div className="w-full lg:w-1/2 p-3 sm:p-4 flex flex-col justify-between">
                       <div>
-                        <div className="shadow-md bg-white text-center p-3 sm:p-4 rounded-[5px]">
-                          <h3 className="text-base sm:text-lg font-semibold text-center text-[#001730] mb-1">
+                        <div className="shadow-md bg-white text-center p-2 sm:p-3 rounded-[5px]">
+                          <h3 className="text-sm sm:text-base font-semibold text-center text-[#001730] mb-1">
                             {agentName}
                           </h3>
-                          <div className="w-[30%] h-[0.2px] px-10 mt-1 3xl:mt-2 bg-gray-400 my-1 mx-auto"></div>
-                          <p className="text-gray-500 text-xs sm:text-sm mb-2">
+                          <div className="w-[30%] h-[0.2px] px-10 mt-1 bg-gray-400 my-1 mx-auto"></div>
+                          <p className="text-gray-500 text-xs mb-1">
                             Property Agent
                           </p>
                         </div>
@@ -724,29 +730,29 @@ function PropertyDetailsContent() {
                             <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
                               Location:
                             </p>
-                            <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                            <p className="bg-white mt-1 p-2 sm:p-3 shadow-md rounded-[5px] text-xs text-gray-700">
                               {agentLocation}
                             </p>
                           </div>
                         )}
 
-                        <div className="relative mt-4">
+                        <div className="relative mt-3">
                           <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
                             Languages:
                           </p>
-                          <p className="bg-white p-3 sm:p-4 shadow-md rounded-[5px] text-xs sm:text-sm text-gray-700">
+                          <p className="bg-white mt-1 p-2 sm:p-3 shadow-md rounded-[5px] text-xs text-gray-700">
                             {languages}
                           </p>
                         </div>
                       </div>
 
                       {/* Buttons */}
-                      <div className="mt-4 flex flex-col gap-2">
+                      <div className="mt-3 flex flex-col gap-2">
                         <div className="flex flex-row gap-2">
                           {agent.phone && (
                             <a
                               href={`tel:${agent.phone}`}
-                              className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
+                              className="flex-1 bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition"
                             >
                               Call Agent
                               <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
@@ -755,7 +761,7 @@ function PropertyDetailsContent() {
                           {agent.email && (
                             <a
                               href={`mailto:${agent.email}`}
-                              className="flex-1 bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition"
+                              className="flex-1 bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition"
                             >
                               Send email
                               <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
@@ -763,7 +769,7 @@ function PropertyDetailsContent() {
                           )}
                         </div>
 
-                        <button className="w-full bg-[#001730] text-white py-2 sm:py-2.5 rounded-[5px] flex justify-between items-center px-3 sm:px-4 text-[12px] hover:opacity-90 transition">
+                        <button className="w-full bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition">
                           Schedule Viewing
                           <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
                         </button>
