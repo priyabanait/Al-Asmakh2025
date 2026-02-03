@@ -10,7 +10,7 @@ import { MdLocationOn } from "react-icons/md";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import FeaturedProperties from "./FeaturedProperties";
 import useEmblaCarousel from "embla-carousel-react";
-import { API_BASE_URL, getApiUrl } from "../config/api";
+import { API_BASE_URL, getApiUrl, getMarketingApiUrl } from "../config/api";
 import { useAlert } from "../contexts/AlertContext";
 export default function Profit() {
   const [currentSlides, setCurrentSlide] = useState(0);
@@ -197,58 +197,66 @@ export default function Profit() {
   const [blogsLoading, setBlogsLoading] = useState(true);
   const [blogsError, setBlogsError] = useState(null);
 
-  // Fetch blogs from API
+  // Fetch blogs and articles from marketing API
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setBlogsLoading(true);
         setBlogsError(null);
         
-        // Fetch articles from API
-        const response = await fetch(`${API_BASE_URL}/articles?page=1&limit=20`);
+        // Fetch blogs and articles from marketing API
+        // Get both Blog and Article content types, only Published status
+        // Using getMarketingApiUrl to access auth-service on port 3001
+        const response = await fetch(
+          `${getMarketingApiUrl('marketing')}?page=1&limit=20&publishStatus=Published`
+        );
         
         if (!response.ok) {
-          throw new Error('Failed to fetch blogs');
+          throw new Error('Failed to fetch blogs and articles');
         }
         
         const data = await response.json();
         
-        // Filter by category "blog" and map to blog structure
+        // Map marketing content to blog structure
         let blogArticles = [];
         
-        if (data.articles && Array.isArray(data.articles)) {
-          // Filter by category "blog" (case-insensitive)
-          blogArticles = data.articles
-            .filter(article => 
-              article.category && 
-              article.category.toLowerCase() === 'blog' &&
-              article.status === 'published'
+        if (data.success && data.contents && Array.isArray(data.contents)) {
+          // Filter by contentType (Blog or Article) and map to blog structure
+          blogArticles = data.contents
+            .filter(content => 
+              (content.contentType === 'Blog' || content.contentType === 'Article') &&
+              content.publishStatus === 'Published'
             )
-            .slice(0, 3) // Limit to 3 blogs
-            .map(article => ({
-              id: article._id || article.id,
-              title: article.title || 'Untitled',
-              description: article.subheading || article.body?.substring(0, 150) || 'No description available',
-              image: article.image || article.featuredImage || '/Image.png',
-              body: article.body || '',
-              createdAt: article.createdAt || article.created_at,
+            .slice(0, 3) // Limit to 3 blogs for display
+            .map(content => ({
+              id: content._id || content.id,
+              slug: content.slug,
+              title: content.title || 'Untitled',
+              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
+              image: content.imageUrl || '/Image.png',
+              body: content.body || content.bodyAr || '',
+              createdAt: content.createdAt || content.created_at,
+              contentType: content.contentType || 'Blog',
+              category: content.category || '',
             }));
         } else if (Array.isArray(data)) {
           // Handle case where API returns array directly
           blogArticles = data
-            .filter(article => 
-              article.category && 
-              article.category.toLowerCase() === 'blog' &&
-              article.status === 'published'
+            .filter(content => 
+              (content.contentType === 'Blog' || content.contentType === 'Article') &&
+              content.publishStatus === 'Published'
             )
             .slice(0, 3)
-            .map(article => ({
-              id: article._id || article.id,
-              title: article.title || 'Untitled',
-              description: article.subheading || article.body?.substring(0, 150) || 'No description available',
-              image: article.image || article.featuredImage || '/Image.png',
-              body: article.body || '',
-              createdAt: article.createdAt || article.created_at,
+            .map(content => ({
+              id: content._id || content.id,
+              slug: content.slug,
+              title: content.title || 'Untitled',
+              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
+              image: content.imageUrl || '/Image.png',
+              body: content.body || content.bodyAr || '',
+              createdAt: content.createdAt || content.created_at,
+              contentType: content.contentType || 'Blog',
+              category: content.category || '',
             }));
         }
         
@@ -836,14 +844,17 @@ export default function Profit() {
                       {/* Image Section with Overlapping Button and Text Overlay */}
                       <div className="relative w-full h-[300px]">
                         <Image
-                          src={blog.image}
+                          src={blog.image || '/Image.png'}
                           alt={blog.title}
                           fill
-                          className="object-fill"
+                          className="object-cover"
                           unoptimized={blog.image && blog.image.startsWith('http')}
+                          onError={(e) => {
+                            e.target.src = '/Image.png';
+                          }}
                         />
                         {/* EXPLORE Button - overlapping top-left corner */}
-                        <Link href={`/blog/${blog.id}`}>
+                        <Link href={blog.slug ? `/blog/${blog.slug}` : `/blog/${blog.id}`}>
                           <motion.button
                             className="absolute top-6 left-3 bg-[#001730] text-white text-[10px] font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 hover:bg-[#1b3a70] transition z-10 shadow-md"
                             animate={{
@@ -933,14 +944,17 @@ export default function Profit() {
                     {/* Image Section with Overlapping Button and Text Overlay */}
                     <div className="relative w-full h-[250px] lg:h-[300px]">
                       <Image
-                        src={blog.image}
+                        src={blog.image || '/Image.png'}
                         alt={blog.title}
                         fill
-                        className="object-fill"
+                        className="object-cover"
                         unoptimized={blog.image && blog.image.startsWith('http')}
+                        onError={(e) => {
+                          e.target.src = '/Image.png';
+                        }}
                       />
                       {/* EXPLORE Button - overlapping top-left corner, partially on image and white space */}
-                      <Link href={`/blog/${blog.id}`}>
+                      <Link href={blog.slug ? `/blog/${blog.slug}` : `/blog/${blog.id}`}>
                         <button className="absolute top-8 left-4 -translate-y-1/2 bg-[#001730] text-white text-xs font-semibold px-4 py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
                           <span>EXPLORE</span>
                           <FaArrowRight size={12} className="ml-6" />

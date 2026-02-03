@@ -1,5 +1,5 @@
 // API Configuration Constants
-// Development: http://localhost:3002
+// Development: http://localhost:3002 (property-service-spring)
 // Production: https://api.alasmakhrealestate.com
 
 // Determine API URL based on environment
@@ -18,9 +18,26 @@ const getApiBaseUrl = () => {
     return 'https://api.alasmakhrealestate.com';
 };
 
+// Marketing API URL (auth-service on port 3001)
+const getMarketingApiBaseUrl = () => {
+    // Check if NEXT_PUBLIC_MARKETING_API_URL is explicitly set
+    if (process.env.NEXT_PUBLIC_MARKETING_API_URL) {
+        return process.env.NEXT_PUBLIC_MARKETING_API_URL;
+    }
+    
+    // Default to localhost:3001 for development (auth-service where marketing endpoint is hosted)
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3001';
+    }
+    
+    // Production URL (marketing endpoint is on auth-service)
+    return 'https://api.alasmakhrealestate.com';
+};
+
 // Use environment-aware API URL
 export const API_BASE_URL = getApiBaseUrl();
 export const SEARCH_API_BASE_URL = getApiBaseUrl();
+export const MARKETING_API_BASE_URL = getMarketingApiBaseUrl();
 
 // Get full API URL
 export const getApiUrl = (endpoint) => {
@@ -40,3 +57,11 @@ export const getSearchApiUrl = (endpoint) => {
     return `${baseUrl}/${cleanEndpoint}`;
 };
 
+// Get full Marketing API URL (for blogs/articles - uses port 3001)
+export const getMarketingApiUrl = (endpoint) => {
+    // Remove leading slash if present
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+    // Ensure base URL doesn't end with slash
+    const baseUrl = MARKETING_API_BASE_URL.endsWith('/') ? MARKETING_API_BASE_URL.slice(0, -1) : MARKETING_API_BASE_URL;
+    return `${baseUrl}/${cleanEndpoint}`;
+};

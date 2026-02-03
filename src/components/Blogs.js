@@ -7,10 +7,91 @@ import { FaArrowRight } from "react-icons/fa6";
 import { FaTag, FaBook, FaFolder, FaCalendar } from "react-icons/fa";
 import Link from "next/link";
 import DreamPropertySection from "./DreamPropertySection";
+import { getMarketingApiUrl } from "../config/api";
+
 export default function Buy() {
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
   const [showFilters, setShowFilters] = useState(false); // Toggle for mobile filters
   const filtersRef = useRef(null); // Ref for filter container
+  
+  // Blog data - fetched from marketing API
+  const [blogs, setBlogs] = useState([]);
+  const [blogsLoading, setBlogsLoading] = useState(true);
+  const [blogsError, setBlogsError] = useState(null);
+
+  // Fetch blogs and articles from marketing API
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setBlogsLoading(true);
+        setBlogsError(null);
+        
+        // Fetch blogs and articles from marketing API
+        // Get both Blog and Article content types, only Published status
+        // Using getMarketingApiUrl to access auth-service on port 3001
+        const response = await fetch(
+          `${getMarketingApiUrl('marketing')}?page=1&limit=50&publishStatus=Published`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch blogs and articles');
+        }
+        
+        const data = await response.json();
+        
+        // Map marketing content to blog structure
+        let blogArticles = [];
+        
+        if (data.success && data.contents && Array.isArray(data.contents)) {
+          blogArticles = data.contents
+            .filter(content => 
+              (content.contentType === 'Blog' || content.contentType === 'Article') &&
+              content.publishStatus === 'Published'
+            )
+            .map(content => ({
+              id: content._id || content.id,
+              slug: content.slug,
+              title: content.title || 'Untitled',
+              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
+              image: content.imageUrl || '/Image.png',
+              body: content.body || content.bodyAr || '',
+              createdAt: content.createdAt || content.created_at,
+              contentType: content.contentType || 'Blog',
+              category: content.category || '',
+            }));
+        } else if (Array.isArray(data)) {
+          // Handle case where API returns array directly
+          blogArticles = data
+            .filter(content => 
+              (content.contentType === 'Blog' || content.contentType === 'Article') &&
+              content.publishStatus === 'Published'
+            )
+            .map(content => ({
+              id: content._id || content.id,
+              slug: content.slug,
+              title: content.title || 'Untitled',
+              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
+              image: content.imageUrl || '/Image.png',
+              body: content.body || content.bodyAr || '',
+              createdAt: content.createdAt || content.created_at,
+              contentType: content.contentType || 'Blog',
+              category: content.category || '',
+            }));
+        }
+        
+        setBlogs(blogArticles);
+      } catch (error) {
+        console.error('Error fetching blogs:', error);
+        setBlogsError(error.message);
+        // Set empty array on error
+        setBlogs([]);
+      } finally {
+        setBlogsLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -28,35 +109,6 @@ export default function Buy() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showFilters]);
-
-
-  const blogs = [
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description: "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-  ];
 
   return (
     <div>
@@ -187,7 +239,7 @@ export default function Buy() {
 
           {/* Showing Count (Left) */}
           <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
-            Showing 10 of 50
+            {!blogsLoading && !blogsError ? `Showing ${blogs.length} ${blogs.length === 1 ? 'blog/article' : 'blogs/articles'}` : 'Loading...'}
           </div>
 
           {/* CENTER LINE */}
@@ -207,42 +259,72 @@ export default function Buy() {
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="mt-10 lg:mt-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 md:px-10 lg:px-10 p-4 sm:p-6">
-        {blogs.map((blog, i) => (
-          <div
-            key={i}
-            className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-          >
-            {/* Image Section with Overlapping Button and Text Overlay */}
-            <div className="relative w-full h-80 lg:h-80">
-              <Link href={`/BlogsDetails`}>
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  fill
-                  className="object-fill cursor-pointer"
-                />
-              </Link>
+      {/* Loading State */}
+      {blogsLoading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-[#001730] text-lg">Loading blogs and articles...</div>
+        </div>
+      )}
 
-              {/* EXPLORE Button */}
-              <button className="absolute top-4 sm:top-8 left-3 sm:left-4 bg-[#001730] text-white text-[10px] sm:text-xs font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
-                <span>EXPLORE</span>
-                <FaArrowRight size={10} className="sm:w-[12px] sm:h-[12px] sm:ml-6" />
-              </button>
+      {/* Error State */}
+      {blogsError && !blogsLoading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-red-600 text-lg">Error loading blogs: {blogsError}</div>
+        </div>
+      )}
 
-              {/* Text Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 sm:p-6 z-10">
-                <h3 className="text-white font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3">
-                  {blog.title}
-                </h3>
-                <p className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90">
-                  {blog.description}
-                </p>
+      {/* No Blogs State */}
+      {!blogsLoading && !blogsError && blogs.length === 0 && (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-gray-500 text-lg">No blogs or articles available at the moment.</div>
+        </div>
+      )}
+
+      {/* Blogs Grid */}
+      {!blogsLoading && !blogsError && blogs.length > 0 && (
+        <div className="mt-10 lg:mt-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 md:px-10 lg:px-10 p-4 sm:p-6">
+          {blogs.map((blog, i) => (
+            <div
+              key={blog.id || i}
+              className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+            >
+              {/* Image Section with Overlapping Button and Text Overlay */}
+              <div className="relative w-full h-80 lg:h-80">
+                <Link href={blog.slug ? `/blog/${blog.slug}` : `/blog/${blog.id}`}>
+                  <Image
+                    src={blog.image || '/Image.png'}
+                    alt={blog.title}
+                    fill
+                    className="object-cover cursor-pointer"
+                    unoptimized={blog.image && blog.image.startsWith('http')}
+                    onError={(e) => {
+                      e.target.src = '/Image.png';
+                    }}
+                  />
+                </Link>
+
+                {/* EXPLORE Button */}
+                <Link href={blog.slug ? `/blog/${blog.slug}` : `/blog/${blog.id}`}>
+                  <button className="absolute top-4 sm:top-8 left-3 sm:left-4 bg-[#001730] text-white text-[10px] sm:text-xs font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
+                    <span>EXPLORE</span>
+                    <FaArrowRight size={10} className="sm:w-[12px] sm:h-[12px] sm:ml-6" />
+                  </button>
+                </Link>
+
+                {/* Text Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 sm:p-6 z-10">
+                  <h3 className="text-white font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3">
+                    {blog.title}
+                  </h3>
+                  <p className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90">
+                    {blog.description}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <DreamPropertySection />
     </div>

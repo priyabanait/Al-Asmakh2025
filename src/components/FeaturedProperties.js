@@ -122,14 +122,14 @@ export default function FeaturedProperties({
 
     let location = property.location || "Location not specified";
     if (!location || location === "Location not specified") {
-      if (property.locationLevel1) {
-        location = property.locationLevel1;
-        if (property.locationLevel2) location += `, ${property.locationLevel2}`;
+      if (property.locationLevel2) {
+        location = property.locationLevel2;
         if (property.locationLevel3) location += `, ${property.locationLevel3}`;
       } else if (property.address) {
         location = property.address;
       }
     }
+    
 
     let price = property.price || "Price on request";
     if (price === "Price on request" && property.priceAmount) {
