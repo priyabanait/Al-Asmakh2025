@@ -43,7 +43,7 @@ export default function Rent() {
             {/* Stats Section */}
             <div className="grid grid-cols-2 md:grid-cols-4 
                 gap-y-12 gap-x-14 
-                sm:gap-y-14 sm:gap-x-16
+                sm:gap-y-16 sm:gap-x-16
                 md:gap-y-16 md:gap-x-20
                 lg:gap-y-20 lg:gap-x-24
                 lg:mr-[30%] 
@@ -181,32 +181,15 @@ export default function Rent() {
       </section>
 
 
-      {/* CTA Section */}
-      <section className="w-full bg-gray-50 py-16 px-6 md:px-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 md:gap-8">
-            {/* Text Content - Left Aligned */}
-            <div className="flex-1 text-left">
-              <h2 className="text-2xl md:text-3xl text-[#001730] mb-4 font-semibold">
-                Ready to take the next step?
-              </h2>
-              <p className="subheading text-gray-600 max-w-2xl">
-                If you're buying your next home or selling your current property, we're here to guide you with clear advice and responsive support. Share your goals and timeline, and we'll recommend the most suitable path forward.
-              </p>
-            </div>
-            
-            {/* Button - Right Aligned */}
-            <div className="flex-shrink-0">
-              <button className="btn-details text-[12px] whitespace-nowrap">
-                <span>Contact Us Today</span>
-                <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <DreamPropertySection />
+
+      <DreamPropertySection  title=" Ready to take the next step ?"
+      description=" If you're buying your next home or selling your current property, we're here to guide you with clear advice and responsive support. Share your goals and timeline, and we'll recommend the most suitable path forward.
+"
+  btnText="Contact Us Today"
+  btnLink="/contact"
+/>
+
 
     </div>
   );

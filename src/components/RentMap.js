@@ -11,36 +11,70 @@ import DreamPropertySection from "./DreamPropertySection";
 import PropertyListView from "./PropertyListView";
 import { fetchProperties } from "../utils/propertyapi";
 import { searchProperties } from "../utils/searchApi";
+import { searchPropertiesWithElasticsearch, checkElasticsearchHealth } from "../utils/elasticsearchApi";
 import ListingHeroSection from "./ListingHeroSection";
 
-export default function Sale({ priceType: initialPriceType = "rent" }) {
+export default function Sale({ 
+  priceType: initialPriceType = "rent",
+  initialSearchQuery = "",
+  initialFilters = {}
+}) {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [priceType, setPriceType] = useState(initialPriceType); // "rent" or "sale"
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalProperties, setTotalProperties] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState({});
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+  const [activeFilters, setActiveFilters] = useState(initialFilters);
+  const [useElasticsearch, setUseElasticsearch] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Update priceType when prop changes
   useEffect(() => {
     setPriceType(initialPriceType);
   }, [initialPriceType]);
 
-  // Load properties using search API or fallback to fetchProperties
-  const loadProperties = useCallback(async (searchText = "", filters = {}) => {
+  // Update search query and filters when initial props change
+  useEffect(() => {
+    if (initialSearchQuery) {
+      setSearchQuery(initialSearchQuery);
+    }
+    if (Object.keys(initialFilters).length > 0) {
+      setActiveFilters(initialFilters);
+    }
+  }, [initialSearchQuery, initialFilters]);
+
+  // Check Elasticsearch availability on mount
+  useEffect(() => {
+    const checkElasticsearch = async () => {
+      const isAvailable = await checkElasticsearchHealth();
+      setUseElasticsearch(isAvailable);
+      if (isAvailable) {
+        console.log('✅ Using Elasticsearch for search and filters');
+      } else {
+        console.log('⚠️ Elasticsearch not available, using fallback search');
+      }
+    };
+    checkElasticsearch();
+  }, []);
+
+  // Load properties using Elasticsearch (if available) or fallback to regular search API
+  const loadProperties = useCallback(async (searchText = "", filters = {}, forceSearch = false) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Use search API if there's a search query or filters, otherwise use regular fetch
-      const hasSearchOrFilters = searchText || Object.keys(filters).length > 0;
+      console.log('[RentMap] loadProperties called with:', { searchText, filters, forceSearch });
+
+      // Use search API if there's a search query, filters, or forceSearch is true
+      // When forceSearch is true, always use search API even if query is empty
+      const hasSearchOrFilters = (searchText && searchText.trim()) || Object.keys(filters).length > 0 || forceSearch;
 
       if (hasSearchOrFilters) {
-        // Use search API with all filters
+        // Prepare search filters - ALWAYS use search API when there's a query
         const searchFilters = {
-          q: searchText,
+          q: searchText || "", // Use empty string if no query but forceSearch is true
           priceType: priceType,
           status: "published",
           page: 1,
@@ -48,11 +82,37 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           ...filters,
         };
 
-        const result = await searchProperties(searchFilters);
+        console.log('[RentMap] Calling search API with filters:', searchFilters);
+
+        let result;
+        
+        // Try Elasticsearch first if available, fallback to regular search API
+        if (useElasticsearch) {
+          try {
+            result = await searchPropertiesWithElasticsearch(searchFilters);
+            // If Elasticsearch returns error, fallback to regular search
+            if (result.error) {
+              console.warn('Elasticsearch error, falling back to regular search:', result.error);
+              result = await searchProperties(searchFilters);
+            }
+          } catch (esError) {
+            console.warn('Elasticsearch unavailable, falling back to regular search:', esError.message);
+            result = await searchProperties(searchFilters);
+          }
+        } else {
+          // Use regular search API
+          result = await searchProperties(searchFilters);
+        }
+
+        console.log('[RentMap] Search API returned:', { 
+          propertiesCount: result.properties?.length || 0, 
+          total: result.pagination?.total || result.total || 0 
+        });
+
         setProperties(result.properties || []);
         setTotalProperties(result.pagination?.total || result.total || 0);
       } else {
-        // Use regular fetch for initial load
+        // Use regular fetch for initial load (only when no search query and no filters)
         const result = await fetchProperties({
           priceType: priceType,
           page: 1,
@@ -71,24 +131,51 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     } finally {
       setLoading(false);
     }
-  }, [priceType]);
+  }, [priceType, useElasticsearch]);
 
-  // Initial load
+  // Initial load - use initial query and filters if provided from URL
   useEffect(() => {
-    loadProperties();
-  }, [priceType]); // Only reload when priceType changes
-
-  // Note: loadProperties is intentionally not in dependencies to avoid infinite loops
-  // It uses useCallback with proper dependencies (priceType) which will update when needed
+    // If we have initial query from URL, ALWAYS use search API (don't load all properties)
+    // This ensures that when user searches, only search results are shown
+    if (initialSearchQuery) {
+      console.log('[RentMap] Initializing with search query from URL:', { 
+        query: initialSearchQuery, 
+        filters: initialFilters 
+      });
+      setSearchQuery(initialSearchQuery);
+      setActiveFilters(initialFilters);
+      // Always use search API when there's a query parameter
+      loadProperties(initialSearchQuery, initialFilters, true);
+      setHasInitialized(true);
+    } else if (Object.keys(initialFilters).length > 0) {
+      // If only filters exist (no query), still use search API
+      console.log('[RentMap] Initializing with filters from URL:', { filters: initialFilters });
+      setActiveFilters(initialFilters);
+      loadProperties("", initialFilters, true);
+      setHasInitialized(true);
+    } else if (!hasInitialized) {
+      // Only load default properties if there's NO query and NO filters
+      console.log('[RentMap] No query or filters, loading default properties');
+      loadProperties();
+      setHasInitialized(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [priceType, initialSearchQuery, initialFilters]); // Reload when priceType, query, or filters change
 
   // Handle search from ListingHeroSection
-  const handleSearch = useCallback(async (query) => {
+  const handleSearch = useCallback(async (query, filters) => {
     setSearchQuery(query || "");
-    await loadProperties(query || "", activeFilters);
+    // If filters are provided, merge with activeFilters
+    const mergedFilters = filters ? { ...activeFilters, ...filters } : activeFilters;
+    setActiveFilters(mergedFilters);
+    await loadProperties(query || "", mergedFilters);
   }, [loadProperties, activeFilters]);
 
   // Handle filter changes from ListingHeroSection
+  // This is called immediately when a filter is selected in the dropdown
   const handleFilterChange = useCallback(async (filters) => {
+    console.log('[RentMap] Filter changed, applying filters:', filters);
+    
     // Map filter labels to API parameter names
     const mappedFilters = {};
 
@@ -115,8 +202,10 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         const num = filters["Beds"].replace("+", "");
         mappedFilters.bedrooms = `${num}+`;
       } else {
+        // Handle regular numbers like "1", "2", "3", "4", "5"
         mappedFilters.bedrooms = filters["Beds"];
       }
+      console.log(`[RentMap] Mapped Beds filter: "${filters["Beds"]}" → bedrooms: "${mappedFilters.bedrooms}"`);
     }
 
     if (filters["Baths"]) {
@@ -139,7 +228,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       }
     }
 
+    console.log('[RentMap] Mapped filters for API:', mappedFilters);
+    
     setActiveFilters(mappedFilters);
+    
+    // Immediately call search API with the selected filters
+    console.log('[RentMap] Calling loadProperties with filters:', mappedFilters);
     await loadProperties(searchQuery, mappedFilters);
   }, [loadProperties, searchQuery]);
 
@@ -172,6 +266,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         onFilterChange={handleFilterChange}
         showMoreFilters={showMoreFilters}
         onShowMoreFilters={setShowMoreFilters}
+        initialSearchQuery={initialSearchQuery || searchQuery}
       />
 
       {/* Mobile Map View */}

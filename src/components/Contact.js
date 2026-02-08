@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Search, Mic, MapPin, ArrowDown, SlidersHorizontal, Tag, Star, Globe } from "lucide-react";
+import { Search, Mic, MapPin, ArrowDown, SlidersHorizontal, Tag, Star, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 import { Phone, Mail } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa6";
 import DreamPropertySection from "./DreamPropertySection";
@@ -14,31 +14,36 @@ export default function MeetOurAgents() {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalAgents, setTotalAgents] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const agentsPerPage = 20;
 
-  // Fetch agents on component mount
+  // Fetch agents when page changes
   useEffect(() => {
     const loadAgents = async () => {
       try {
         setLoading(true);
         const response = await fetchAgents({
-          page: 1,
-          limit: 50,
+          page: currentPage,
+          limit: agentsPerPage,
           status: "active",
         });
         setAgents(response.agents || []);
         setTotalAgents(response.totalAgents || 0);
+        setTotalPages(response.pagination?.pages || 1);
       } catch (error) {
         console.error("Error loading agents:", error);
         // Keep empty array on error - component will show no agents
         setAgents([]);
         setTotalAgents(0);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
 
     loadAgents();
-  }, []);
+  }, [currentPage]);
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -221,7 +226,7 @@ export default function MeetOurAgents() {
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
-              {loading ? "Loading..." : `Showing ${agents.length} of ${totalAgents || agents.length}`}
+              {loading ? "Loading..." : `Showing ${((currentPage - 1) * agentsPerPage) + 1}-${Math.min(currentPage * agentsPerPage, totalAgents)} of ${totalAgents} agents`}
             </div>
 
             {/* CENTER LINE */}
@@ -366,6 +371,92 @@ export default function MeetOurAgents() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {!loading && agents.length > 0 && totalPages > 1 && (
+          <div className="container mx-auto px-4 sm:px-6 md:px-6 mt-8 sm:mt-12">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Showing count */}
+              <div className="text-gray-600 text-sm">
+                Showing {((currentPage - 1) * agentsPerPage) + 1} to {Math.min(currentPage * agentsPerPage, totalAgents)} of {totalAgents} agents
+              </div>
+
+              {/* Pagination buttons */}
+              <div className="flex items-center gap-2">
+                {/* Previous button */}
+                <button
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      setCurrentPage(currentPage - 1);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  disabled={currentPage === 1}
+                  className={`px-3 py-2 rounded-md border ${currentPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                      : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                    }`}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                {/* Page numbers */}
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => {
+                          setCurrentPage(pageNum);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                        className={`px-3 py-2 min-w-[40px] rounded-md border text-sm font-medium ${currentPage === pageNum
+                            ? 'bg-[#001730] text-white border-[#001730]'
+                            : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Next button */}
+                <button
+                  onClick={() => {
+                    if (currentPage < totalPages) {
+                      setCurrentPage(currentPage + 1);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-2 rounded-md border ${currentPage === totalPages
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                      : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                    }`}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+
+              {/* Current page info */}
+              <div className="text-gray-600 text-sm">
+                Page {currentPage} of {totalPages}
+              </div>
+            </div>
           </div>
         )}
       </section>

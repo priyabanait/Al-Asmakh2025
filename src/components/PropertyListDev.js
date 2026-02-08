@@ -68,8 +68,8 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                         {/* Image */}
                         <div className="relative">
                             <img
-                                src={property.image || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"}
-                                alt={property.title || "Property"}
+                                src={property.image || (property.images && property.images[0]) || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80"}
+                                alt={property.title || property.titleEn || "Property"}
                                 className="w-full h-80 lg:h-80 object-cover"
                             />
 
@@ -90,10 +90,12 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                                         {property.title || "Untitled Property"}
                                     </h3>
 
-                                    <div className="flex items-center text-[#001730] text-xs lg:text-sm flex-shrink-0">
-                                        <MapPin size={12} className="mr-1" />
-                                        <span className="truncate">{property.location || "Location not specified"}</span>
-                                    </div>
+
+                                </div>
+
+                                <div className="flex items-center text-[#001730] text-xs lg:text-sm flex-shrink-0">
+                                    <MapPin size={12} className="mr-1" />
+                                    <span className="truncate">{property.location || "Location not specified"}</span>
                                 </div>
 
                                 <div className="w-[60%] h-[1px] bg-gray-500 my-2"></div>

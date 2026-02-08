@@ -329,14 +329,15 @@ export const formatProperty = (property) => {
         imageUrl = property.images[0].url || property.images[0].thumbnailUrl || imageUrl;
     }
 
-    // Format location
+    // Format location - only use locationLevel2 and locationLevel3, exclude locationLevel1
     let location = "Location not specified";
-    if (property.locationLevel1) {
-        location = property.locationLevel1;
-        if (property.locationLevel2) location += `, ${property.locationLevel2}`;
-        if (property.locationLevel3) location += `, ${property.locationLevel3}`;
-    } else if (property.address) {
-        location = property.address;
+    if (property.locationLevel2 && property.locationLevel2.trim() !== "") {
+        location = property.locationLevel2.trim();
+        if (property.locationLevel3 && property.locationLevel3.trim() !== "") {
+            location += `, ${property.locationLevel3.trim()}`;
+        }
+    } else if (property.address && property.address.trim() !== "") {
+        location = property.address.trim();
     }
 
     // Format price
@@ -349,6 +350,8 @@ export const formatProperty = (property) => {
         id: property.id,
         title: property.titleEn || property.title || "Property",
         location: location,
+        locationLevel2: property.locationLevel2,
+        locationLevel3: property.locationLevel3,
         bedrooms: property.bedrooms || property.beds || 0,
         bathrooms: property.bathrooms || property.baths || 0,
         area: property.size || property.area || 0,
@@ -633,13 +636,15 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
 
         // Map to component format
         const mappedProperties = filteredProperties.map((prop) => {
+            // Format location - only use locationLevel2 and locationLevel3, exclude locationLevel1
             let location = "Location not specified";
-            if (prop.locationLevel1) {
-                location = prop.locationLevel1;
-                if (prop.locationLevel2) location += `, ${prop.locationLevel2}`;
-                if (prop.locationLevel3) location += `, ${prop.locationLevel3}`;
-            } else if (prop.address) {
-                location = prop.address;
+            if (prop.locationLevel2 && String(prop.locationLevel2).trim() !== "") {
+                location = String(prop.locationLevel2).trim();
+                if (prop.locationLevel3 && String(prop.locationLevel3).trim() !== "") {
+                    location += `, ${String(prop.locationLevel3).trim()}`;
+                }
+            } else if (prop.address && String(prop.address).trim() !== "") {
+                location = String(prop.address).trim();
             }
 
             let price = "Price on request";
@@ -672,6 +677,8 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
                 id: prop.id || prop._id,
                 title: prop.titleEn || prop.title || "Untitled Property",
                 location: location,
+                locationLevel2: prop.locationLevel2,
+                locationLevel3: prop.locationLevel3,
                 year: year,
                 units: prop.bedrooms || prop.units || "N/A",
                 status: status,
@@ -752,14 +759,15 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
 
             // Map raw API response to component format
             const mappedProperties = propertiesData.map((prop) => {
-                // Format location from raw API data
+                // Format location from raw API data - only use locationLevel2 and locationLevel3, exclude locationLevel1
                 let location = "Location not specified";
-                if (prop.locationLevel1) {
-                    location = prop.locationLevel1;
-                    if (prop.locationLevel2) location += `, ${prop.locationLevel2}`;
-                    if (prop.locationLevel3) location += `, ${prop.locationLevel3}`;
-                } else if (prop.address) {
-                    location = prop.address;
+                if (prop.locationLevel2 && prop.locationLevel2.trim() !== "") {
+                    location = prop.locationLevel2.trim();
+                    if (prop.locationLevel3 && prop.locationLevel3.trim() !== "") {
+                        location += `, ${prop.locationLevel3.trim()}`;
+                    }
+                } else if (prop.address && prop.address.trim() !== "") {
+                    location = prop.address.trim();
                 }
 
                 // Format price from raw API data
@@ -850,9 +858,16 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
 
                     // Map to component format
                     const mappedProperties = filteredProperties.map((prop) => {
-                        let location = prop.locationLevel1 || "Location not specified";
-                        if (prop.locationLevel2) location += `, ${prop.locationLevel2}`;
-                        if (prop.locationLevel3) location += `, ${prop.locationLevel3}`;
+                        // Format location - only use locationLevel2 and locationLevel3, exclude locationLevel1
+                        let location = "Location not specified";
+                        if (prop.locationLevel2 && String(prop.locationLevel2).trim() !== "") {
+                            location = String(prop.locationLevel2).trim();
+                            if (prop.locationLevel3 && String(prop.locationLevel3).trim() !== "") {
+                                location += `, ${String(prop.locationLevel3).trim()}`;
+                            }
+                        } else if (prop.address && String(prop.address).trim() !== "") {
+                            location = String(prop.address).trim();
+                        }
 
                         let price = "Price on request";
                         if (prop.priceAmount) {

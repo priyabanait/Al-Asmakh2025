@@ -522,7 +522,10 @@ function AboutUs() {
           </div>
 
           {/* Right Side - Form Panel and Map */}
-          <div className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-8 2xl:mt-10 3xl:mt-12 4xl:mt-14 5xl:mt-16">
+          <div           ref={(el) => (sectionRefs.current['legacyHeader'] = el)}
+
+          
+ className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-8 2xl:mt-10 3xl:mt-12 4xl:mt-14 5xl:mt-16">
             {/* Form Panel - Translucent */}
             <div className="glass-effect p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
               {/* Form Header */}

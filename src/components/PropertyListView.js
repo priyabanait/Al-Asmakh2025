@@ -71,8 +71,8 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                             {/* Image Section */}
                             <div className="relative w-full h-[220px]">
                                 <Image
-                                    src={property.image}
-                                    alt={property.title}
+                                    src={property.image || (property.images && property.images[0]) || "/placeholder-property.jpg"}
+                                    alt={property.title || property.titleEn || "Property"}
                                     fill
                                     className="object-fill rounded-md"
                                 />
@@ -175,8 +175,8 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                         {/* Image Section - Left */}
                                         <div className="relative w-[320px] h-[192px] lg:w-[220px] lg:h-[192px] xl:w-[320px] xl:h-[192px] flex-shrink-0">
                                             <Image
-                                                src={property.image}
-                                                alt={property.title}
+                                                src={property.image || (property.images && property.images[0]) || "/placeholder-property.jpg"}
+                                                alt={property.title || property.titleEn || "Property"}
                                                 fill
                                                 className="object-cover rounded-md"
                                             />

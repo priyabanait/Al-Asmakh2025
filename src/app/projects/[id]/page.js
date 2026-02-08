@@ -4,14 +4,17 @@ import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
 import DreamPropertySection from "@/components/DreamPropertySection";
-import { SlidersHorizontal, ArrowDown, Home, MapPin, Bed, Bath } from "lucide-react";
+import { SlidersHorizontal, ArrowDown, Home, MapPin, Bed, Bath, Check } from "lucide-react";
 import { FaDollarSign } from "react-icons/fa";
 import PropertyListView from "@/components/PropertyListView";
 import { fetchProperties } from "../../../utils/propertyapi";
 import { searchProperties } from "../../../utils/searchApi";
-import { fetchProjectById } from "../../../utils/projectapi";
+import { fetchProjectById, fetchProjects } from "../../../utils/projectapi";
 import MoreFiltersModal from "../../../components/MoreFiltersModal";
-
+import { FaArrowRight, FaChevronUp, FaChevronDown } from "react-icons/fa6";
+import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding } from "react-icons/fa";
+import ShareButton from "@/components/ShareButton";
+import Link from "next/link";
 export default function Sale({ priceType: initialPriceType = "rent" }) {
     const params = useParams();
     const projectId = params?.id;
@@ -28,6 +31,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     const [projectLoading, setProjectLoading] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRefs = useRef({});
+    const [activeTab, setActiveTab] = useState("overview"); // overview, gallery, document, nearby, 360view
+    const [viewMode, setViewMode] = useState("properties"); // properties or agents
+    const [agents, setAgents] = useState([]);
+    const [propertiesLoadedFromProject, setPropertiesLoadedFromProject] = useState(false);
+    const [relatedProjects, setRelatedProjects] = useState([]);
+    const [relatedProjectsLoading, setRelatedProjectsLoading] = useState(false);
 
     // Filter options
     const filterOptions = {
@@ -78,7 +87,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 };
 
                 const result = await searchProperties(searchFilters);
-                setProperties(result.properties || []);
+                // Handle nested structure: properties array with {property: {...}} objects
+                let propertiesList = result.properties || [];
+                if (propertiesList.length > 0 && propertiesList[0].property) {
+                    propertiesList = propertiesList.map(item => item.property || item);
+                }
+                setProperties(propertiesList);
                 setTotalProperties(result.pagination?.total || result.total || 0);
             } else {
                 // Use regular fetch for initial load with projectId
@@ -90,7 +104,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     projectId: projectId,
                 });
 
-                setProperties(result.properties || []);
+                // Handle nested structure: properties array with {property: {...}} objects
+                let propertiesList = result.properties || [];
+                if (propertiesList.length > 0 && propertiesList[0].property) {
+                    propertiesList = propertiesList.map(item => item.property || item);
+                }
+                setProperties(propertiesList);
                 setTotalProperties(result.totalProperties || 0);
             }
         } catch (err) {
@@ -110,7 +129,32 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 try {
                     setProjectLoading(true);
                     const projectData = await fetchProjectById(projectId);
-                    setProject(projectData);
+                    
+                    // Response structure: { project, properties, projectAssignedAgentsList, listingsCount, area, ... }
+                    // Set project info
+                    const projectInfo = projectData.project || projectData;
+                    setProject(projectInfo);
+                    
+                    // Extract properties from response
+                    if (projectData.properties && Array.isArray(projectData.properties)) {
+                        // Handle nested structure: properties array with {property: {...}} objects
+                        let propertiesList = projectData.properties;
+                        if (propertiesList.length > 0 && propertiesList[0].property) {
+                            propertiesList = propertiesList.map(item => item.property || item);
+                        }
+                        setProperties(propertiesList);
+                        setTotalProperties(projectData.listingsCount || propertiesList.length || 0);
+                        setLoading(false);
+                        setPropertiesLoadedFromProject(true);
+                    }
+                    
+                    // Extract agents from response
+                    if (projectData.projectAssignedAgentsList && Array.isArray(projectData.projectAssignedAgentsList) && projectData.projectAssignedAgentsList.length > 0) {
+                        setAgents(projectData.projectAssignedAgentsList);
+                    } else if (projectData.projectAssignedAgents && typeof projectData.projectAssignedAgents === 'object' && Object.keys(projectData.projectAssignedAgents).length > 0) {
+                        // Convert object to array
+                        setAgents(Object.values(projectData.projectAssignedAgents));
+                    }
                 } catch (err) {
                     console.error("Error loading project:", err);
                 } finally {
@@ -121,12 +165,74 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         loadProject();
     }, [projectId]);
 
-    // Initial load
+    // Fetch related projects
     useEffect(() => {
-        if (projectId) {
+        const loadRelatedProjects = async () => {
+            if (project && projectId) {
+                try {
+                    setRelatedProjectsLoading(true);
+                    // Try to fetch related projects by areaId first, then by projectType
+                    let related = [];
+                    
+                    // Fetch by areaId (same area)
+                    if (project.areaId) {
+                        const areaProjects = await fetchProjects({
+                            page: 1,
+                            limit: 10,
+                            status: "active",
+                            areaId: project.areaId,
+                        });
+                        related = (areaProjects.projects || []).filter(p => (p.id || p._id) !== projectId);
+                    }
+                    
+                    // If not enough, fetch by projectType
+                    if (related.length < 3 && project.projectType) {
+                        const typeProjects = await fetchProjects({
+                            page: 1,
+                            limit: 10,
+                            status: "active",
+                            projectType: project.projectType,
+                        });
+                        const typeRelated = (typeProjects.projects || []).filter(p => {
+                            const pId = p.id || p._id;
+                            return pId !== projectId && !related.some(r => (r.id || r._id) === pId);
+                        });
+                        related = [...related, ...typeRelated];
+                    }
+                    
+                    // If still not enough, fetch any active projects
+                    if (related.length < 3) {
+                        const allProjects = await fetchProjects({
+                            page: 1,
+                            limit: 10,
+                            status: "active",
+                        });
+                        const otherProjects = (allProjects.projects || []).filter(p => {
+                            const pId = p.id || p._id;
+                            return pId !== projectId && !related.some(r => (r.id || r._id) === pId);
+                        });
+                        related = [...related, ...otherProjects];
+                    }
+                    
+                    // Limit to 3 projects
+                    setRelatedProjects(related.slice(0, 3));
+                } catch (err) {
+                    console.error("Error loading related projects:", err);
+                    setRelatedProjects([]);
+                } finally {
+                    setRelatedProjectsLoading(false);
+                }
+            }
+        };
+        loadRelatedProjects();
+    }, [project, projectId]);
+
+    // Initial load - only if properties weren't loaded from project response
+    useEffect(() => {
+        if (projectId && !propertiesLoadedFromProject) {
             loadProperties();
         }
-    }, [priceType, projectId]); // Reload when priceType or projectId changes
+    }, [priceType, projectId, propertiesLoadedFromProject]); // Reload when priceType or projectId changes
 
     // Note: loadProperties is intentionally not in dependencies to avoid infinite loops
     // It uses useCallback with proper dependencies (priceType) which will update when needed
@@ -243,7 +349,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     const handleMoreFiltersSearch = useCallback((results) => {
         // MoreFiltersModal already calls searchProperties, so we just update state with results
         if (results && results.properties) {
-            setProperties(results.properties || []);
+            // Handle nested structure: properties array with {property: {...}} objects
+            let propertiesList = results.properties || [];
+            if (propertiesList.length > 0 && propertiesList[0].property) {
+                propertiesList = propertiesList.map(item => item.property || item);
+            }
+            setProperties(propertiesList);
             setTotalProperties(results.pagination?.total || results.total || 0);
             setShowMoreFilters(false);
             setError(null);
@@ -258,7 +369,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         <div>
             {/* ---------- HERO SECTION WITH FILTERS ---------- */}
 
-            <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
+            <section className="relative w-full min-h-[95vh] lg:min-h-[95vh] flex flex-col items-center justify-center overflow-visible">
                 {/* Background Image */}
                 <Image
                     src="/images_pages/listings.png"
@@ -270,7 +381,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 <div className="absolute inset-0 bg-black/40 z-10"></div>
 
                 {/* Project Title with Glass Effect */}
-                <div className="relative z-20 text-center px-4 mb-8">
+                {/* <div className="relative z-20 text-center px-4 mb-8">
                     <div className="backdrop-blur-md bg-white/20 border border-white/30 rounded-lg px-8 py-6 shadow-2xl">
                         {projectLoading ? (
                             <div className="text-white text-4xl lg:text-6xl font-bold">Loading...</div>
@@ -282,158 +393,789 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                             <h1 className="text-white text-4xl lg:text-6xl font-bold drop-shadow-lg">Project</h1>
                         )}
                     </div>
-                </div>
+                </div> */}
 
-                {/* Filters Below Title */}
-                <div className="relative z-20 w-full max-w-7xl px-4 lg:px-10">
-                    <div className="flex flex-wrap w-full border border-white/20 backdrop-blur-md bg-white/20 p-4 rounded-lg shadow-lg gap-3 justify-center">
-                        {["Property Type", "Location", "Beds", "Baths", "Price"].map(
-                            (label, index) => {
-                                const isOpen = openDropdown === label;
-                                const selectedValue = selectedFilters[label];
+                <div className="absolute left-4 md:left-8 lg:left-12 top-[55%] md:top-[56%] lg:top-[57%] transform -translate-y-1/2 z-20 w-[90%] md:w-[60%] lg:w-[60%]">
+          <div className="glass-effect text-center rounded-lg shadow-lg p-4 sm:p-6 md:p-10 lg:text-left w-full max-w-5xl mx-auto mt-4 md:mt-6 lg:mt-8">
 
-                                return (
-                                    <div
-                                        key={index}
-                                        ref={(el) => (dropdownRefs.current[label] = el)}
-                                        className="relative flex-shrink-0"
-                                        style={{ minWidth: "140px", flex: "1 1 auto" }}
-                                    >
-                                        <button
-                                            onClick={() =>
-                                                setOpenDropdown(isOpen ? null : label)
-                                            }
-                                            className={`w-full flex items-center justify-between bg-[#0B1F3A]/80 backdrop-blur-sm text-white px-3 py-2.5 rounded-md shadow-lg hover:bg-[#001730]/90 transition ${selectedValue ? "ring-2 ring-white/50" : ""
-                                                }`}
-                                        >
-                                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                                                {/* Icon + Divider */}
-                                                <div className="flex items-center gap-2 flex-shrink-0">
-                                                    {getIcon(label)}
-                                                    <div className="h-5 w-[1px] bg-white/40"></div>
-                                                </div>
+            {/* Project Name */}
+            {projectLoading ? (
+              <div className="text-white text-2xl lg:text-3xl font-bold mb-4">Loading...</div>
+            ) : project ? (
+              <>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#001730] mb-3 sm:mb-4 px-10 lg:px-0">
+                  {project.nameEn || project.name || "Project"}
+                </h1>
+                
+                {/* Location */}
+                {project.locationLevel1 || project.locationLevel2 || project.locationLevel3 || project.locationLevel4 ? (
+                  <div className="flex items-center gap-2 mb-4 sm:mb-6 px-10 lg:px-0">
+                    <MapPin size={18} className="text-[#001730] flex-shrink-0" />
+                    <p className="text-sm sm:text-base md:text-lg text-[#001730] font-medium">
+                      {[
+                        project.locationLevel1,
+                        project.locationLevel2,
+                        project.locationLevel3,
+                        project.locationLevel4
+                      ].filter(Boolean).join(', ')}
+                    </p>
+                  </div>
+                ) : null}
 
-                                                {/* Label */}
-                                                <span className="text-sm font-medium truncate">
-                                                    {selectedValue || label}
-                                                </span>
-                                            </div>
+                {/* Divider */}
+                <div className="w-[80%] h-[0.5px] bg-gray-300 my-4 sm:my-6 mx-auto lg:mx-0 lg:mr-40"></div>
 
-                                            {/* Down Arrow */}
-                                            <ArrowDown
-                                                size={16}
-                                                className={`opacity-80 transition-transform flex-shrink-0 ml-2 ${isOpen ? "rotate-180" : ""
-                                                    }`}
-                                            />
-                                        </button>
+                {/* Amenities Section */}
+                {project.amenities && project.amenities.length > 0 && (
+                  <div className="px-10 lg:px-0 lg:mr-40">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#001730] mb-3 sm:mb-4">
+                      Amenities
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                      {project.amenities.map((amenity, idx) => {
+                        // Map amenity names to icons
+                        const getAmenityIcon = (amenityName) => {
+                          const name = amenityName?.toLowerCase() || '';
+                          if (name.includes('wifi') || name.includes('internet')) return <FaWifi className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('pool') || name.includes('swimming')) return <FaSwimmingPool className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('gym') || name.includes('fitness')) return <FaDumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('parking')) return <FaParking className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('ac') || name.includes('air conditioning')) return <FaSnowflake className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('pet') || name.includes('dog')) return <FaDog className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('security') || name.includes('guard')) return <FaShieldAlt className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('elevator') || name.includes('lift')) return <FaArrowUp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('tv') || name.includes('television')) return <FaTv className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('kitchen') || name.includes('restaurant')) return <FaUtensils className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          return <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                        };
 
-                                        {/* Dropdown Menu */}
-                                        {isOpen && (
-                                            <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-60 overflow-y-auto min-w-full">
-                                                {filterOptions[label].map((option, optIndex) => (
-                                                    <button
-                                                        key={optIndex}
-                                                        onClick={() => handleFilterSelect(label, option)}
-                                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${selectedValue === option
-                                                            ? "bg-[#001730] text-white"
-                                                            : "text-gray-700"
-                                                            } ${optIndex === 0 ? "rounded-t-md" : ""
-                                                            } ${optIndex === filterOptions[label].length - 1
-                                                                ? "rounded-b-md"
-                                                                : ""
-                                                            }`}
-                                                    >
-                                                        {option}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            }
-                        )}
+                        // Format amenity name (convert "shared-pool" to "Shared Pool")
+                        const amenityName = amenity
+                          .split('-')
+                          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                          .join(' ');
 
-                        {/* More Filters Button */}
-                        <button
-                            onClick={() => setShowMoreFilters(true)}
-                            className="flex text-sm items-center justify-center bg-[#0B1F3A]/80 backdrop-blur-sm text-white px-4 py-2.5 rounded-md font-medium shadow-lg hover:bg-[#001730]/90 transition flex-shrink-0"
-                            style={{ minWidth: "120px" }}
-                        >
-                            <SlidersHorizontal size={16} className="mr-2" />
-                            <span>More Filters</span>
-                        </button>
+                        return (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-2 sm:gap-3 bg-gray-100 px-2 sm:px-3 h-10 sm:h-12 rounded-[5px] shadow-sm"
+                          >
+                            {/* Icon */}
+                            {getAmenityIcon(amenity)}
+                            {/* Text */}
+                            <p className="font-semibold text-[#001730] text-xs sm:text-sm whitespace-nowrap truncate w-full" title={amenityName}>
+                              {amenityName}
+                            </p>
+                          </div>
+                        );
+                      })}
                     </div>
-                </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#001730]">Project</h1>
+            )}
+          </div>
+        </div>
             </section>
 
+<section className="w-full bg-white">
+  {/* 🔹 CONTENT GRID */}
+  <div className="max-w-[2800px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    {/* ================= LEFT SECTION ================= */}
+    <div className="lg:col-span-7">
+      {/* Top Metadata Section */}
+      <div className="mb-6 flex flex-wrap items-center gap-4">
+        {/* Year Of Completion */}
+        <div className="bg-gray-200 px-4 py-2 rounded-md">
+          <span className="text-sm text-gray-700">
+            Year Of Completion {project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
+          </span>
+        </div>
+        {/* Project Type */}
+        <div className="bg-gray-200 px-4 py-2 rounded-md">
+          <span className="text-sm text-gray-700">
+            Project Type {project?.projectType || 'N/A'}
+          </span>
+        </div>
+      </div>
 
-            {/* Mobile Map View */}
-            <div className="block lg:hidden w-full mt-[130px] relative" style={{ height: "calc(100vh - 350px)", minHeight: "60vh" }}>
-                {/* Los Angeles Map */}
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="absolute inset-0"
-                ></iframe>
-
-                {/* Zoom Controls - Bottom Right */}
-                <div className="absolute bottom-4 right-4 bg-gray-200 rounded-md shadow-lg flex flex-col z-10">
-                    <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
-                        <span className="text-lg font-semibold">+</span>
-                    </button>
-                    <button className="px-3 py-2 hover:bg-gray-50">
-                        <span className="text-lg font-semibold">-</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* ---------- READY TO FIND SECTION ---------- */}
-            {/* <div className="hidden lg:block w-[100%] h-[1px] bg-gray-300 my-4  px-10"></div> */}
-
-
-            {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-            {loading ? (
-                <div className="w-full py-20 flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#001730] mb-4"></div>
-                        <p className="text-gray-600 text-lg">Loading properties...</p>
-                    </div>
-                </div>
-            ) : error ? (
-                <div className="w-full py-20 flex items-center justify-center">
-                    <div className="text-center">
-                        <p className="text-red-500 text-lg mb-2">Error loading properties</p>
-                        <p className="text-gray-600">{error}</p>
-                    </div>
-                </div>
-            ) : properties.length === 0 ? (
-                <div className="w-full py-20 flex items-center justify-center">
-                    <div className="text-center">
-                        <p className="text-gray-600 text-lg mb-2">No properties found</p>
-                        <p className="text-gray-500">
-                            {priceType === "rent"
-                                ? "No rental properties available at the moment."
-                                : "No properties for sale available at the moment."}
-                        </p>
-                    </div>
-                </div>
+      {/* Navigation Tabs */}
+      <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-6">
+        <div className="flex gap-2 sm:gap-4 mb-4 flex-wrap">
+          <button
+            onClick={() => setActiveTab("overview")}
+            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+              activeTab === "overview"
+                ? "bg-white text-[#001730]"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            Overview
+            {activeTab === "overview" ? (
+              <FaChevronDown size={14} />
             ) : (
-                <PropertyListView properties={properties} totalProperties={totalProperties} />
+              <FaChevronUp size={14} />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("gallery")}
+            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+              activeTab === "gallery"
+                ? "bg-white text-[#001730]"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            Gallery
+            {activeTab === "gallery" ? (
+              <FaChevronDown size={14} />
+            ) : (
+              <FaChevronUp size={14} />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("document")}
+            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+              activeTab === "document"
+                ? "bg-white text-[#001730]"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            Document
+            {activeTab === "document" ? (
+              <FaChevronDown size={14} />
+            ) : (
+              <FaChevronUp size={14} />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("nearby")}
+            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+              activeTab === "nearby"
+                ? "bg-white text-[#001730]"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            Nearby
+            {activeTab === "nearby" ? (
+              <FaChevronDown size={14} />
+            ) : (
+              <FaChevronUp size={14} />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("360view")}
+            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+              activeTab === "360view"
+                ? "bg-white text-[#001730]"
+                : "bg-gray-200 text-gray-500"
+            }`}
+          >
+            360 view
+            {activeTab === "360view" ? (
+              <FaChevronDown size={14} />
+            ) : (
+              <FaChevronUp size={14} />
+            )}
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        {projectLoading ? (
+          <div className="text-gray-500">Loading project details...</div>
+        ) : project ? (
+          <>
+            {activeTab === "overview" && (
+              <>
+                <h2 className="text-lg sm:text-xl font-semibold text-[#001730] mb-3">
+                  {project.nameEn || project.name || "Project Description"}
+                </h2>
+                <p className="text-gray-600 leading-relaxed text-sm md:text-base mb-4">
+                  {project.descriptionEn || project.description || ""}
+                </p>
+                {project.descriptionAr && (
+                  <p className="text-gray-600 leading-relaxed mt-4 text-sm md:text-base">
+                    {project.descriptionAr}
+                  </p>
+                )}
+              </>
             )}
 
-            {/* More Filters Modal */}
-            <MoreFiltersModal
-                isOpen={showMoreFilters}
-                onClose={() => setShowMoreFilters(false)}
-                onShowResults={handleMoreFiltersSearch}
-                priceType={priceType}
-                projectId={projectId}
-            />
+            {activeTab === "gallery" && (
+              <div className="mt-4">
+                {project.gallery && project.gallery.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {project.gallery.map((image, index) => (
+                      <div key={index} className="relative w-full h-48 rounded-md overflow-hidden">
+                        <Image
+                          src={image}
+                          alt={`Gallery image ${index + 1}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No gallery images available</p>
+                )}
+              </div>
+            )}
+
+            {activeTab === "document" && (
+              <div className="mt-4">
+                {project.documents && project.documents.length > 0 ? (
+                  <div className="space-y-3">
+                    {project.documents.map((doc, index) => (
+                      <a
+                        key={index}
+                        href={doc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                      >
+                        <span className="text-[#001730] font-medium">Document {index + 1}</span>
+                        <FaArrowRight size={14} />
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No documents available</p>
+                )}
+              </div>
+            )}
+
+            {activeTab === "nearby" && (
+              <div className="mt-4">
+                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                  Nearby amenities and locations information will be displayed here.
+                </p>
+              </div>
+            )}
+
+            {activeTab === "360view" && (
+              <div className="mt-4">
+                <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
+                  {project.virtualTourUrl ? (
+                    <iframe
+                      src={project.virtualTourUrl}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="fullscreen; vr"
+                      allowFullScreen
+                      title="360 Virtual Tour"
+                    ></iframe>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                      <div className="text-center p-8">
+                        <h3 className="text-xl sm:text-2xl font-semibold text-[#001730] mb-2">
+                          360° Virtual Tour
+                        </h3>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          360° virtual tour will be available here
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-gray-500">Project details not available</div>
+        )}
+      </div>
+
+      {/* Pricing and Terms Section */}
+      {project && (
+        <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-6">
+          <p className="text-gray-700 text-sm md:text-base">
+            {project.startingPrice ? (
+              <>
+                Starting from: QAR {project.startingPrice.toLocaleString()} (Terms and conditions apply)
+                {project.freeMonth && " | 1 Month Free (at the End of the Contract)"}
+                {project.utilitiesIncluded && " | Utilities & AC Included"}
+                {project.commission && " | Commission"}
+              </>
+            ) : (
+              "Pricing information available upon request"
+            )}
+          </p>
+        </div>
+      )}
+
+      {/* Map Section */}
+      {project && (
+        <div className="bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden mb-6">
+          <iframe
+            src={(() => {
+              // Build location string from project location levels
+              const locationParts = [
+                project.locationLevel1,
+                project.locationLevel2,
+                project.locationLevel3
+              ].filter(Boolean);
+              
+              // If we have location, use it; otherwise default to Qatar
+              const locationQuery = locationParts.length > 0 
+                ? encodeURIComponent(locationParts.join(', ') + ', Qatar')
+                : encodeURIComponent('Doha, Qatar');
+              
+              // Use Google Maps embed with search query (standard format, no API key needed)
+              return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en`;
+            })()}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen=""
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      )}
+
+      {/* Project Reference ID and Ownership */}
+      {project && (
+        <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Project Reference ID:
+              </label>
+              <input
+                type="text"
+                value={project.projectReference || ""}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Owned by:
+              </label>
+              <input
+                type="text"
+                value={project.projectOwnership || "Al-Asmakh"}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* ================= RIGHT SECTION ================= */}
+    <div className="lg:col-span-5">
+      <div className="lg:sticky lg:top-24 relative">
+        {/* Navigation Buttons - Properties/Agents */}
+        <div className="flex gap-2 mb-5 justify-end">
+          <button
+            onClick={() => setViewMode("properties")}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-md shadow transition-all text-sm ${
+              viewMode === "properties"
+                ? "bg-[#001730] text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaHome size={14} />
+            <span>Properties</span>
+          </button>
+          <button
+            onClick={() => setViewMode("agents")}
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-md shadow transition-all text-sm ${
+              viewMode === "agents"
+                ? "bg-[#001730] text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            <FaUser size={14} />
+            <span>Agents</span>
+          </button>
+        </div>
+
+        {viewMode === "properties" ? (
+          <>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-5 relative z-10">
+              Exclusive properties in {project?.nameEn || project?.name || "this project"}
+            </h2>
+
+        {/* 🔹 PROPERTY LIST */}
+        {loading ? (
+          <div className="text-gray-500 relative z-10 text-sm">Loading properties...</div>
+        ) : error ? (
+          <div className="text-red-500 relative z-10 text-sm">{error}</div>
+        ) : properties.length > 0 ? (
+          <div className="space-y-3 relative z-10">
+            {properties.slice(0, 4).map((property) => {
+              // Build location string
+              const locationParts = [
+                property.locationLevel2,
+                property.locationLevel3,
+                property.locationLevel4
+              ].filter(Boolean);
+              const location = locationParts.length > 0 
+                ? locationParts.join(' – ') 
+                : property.locationLevel1 || 'Doha';
+
+              // Handle area - could be number, string, or object
+              let areaDisplay = 'N/A';
+              if (property.area) {
+                if (typeof property.area === 'number') {
+                  areaDisplay = `${property.area} sqft`;
+                } else if (typeof property.area === 'string') {
+                  areaDisplay = `${property.area} sqft`;
+                } else if (typeof property.area === 'object' && property.area.value) {
+                  areaDisplay = `${property.area.value} sqft`;
+                } else if (typeof property.area === 'object' && property.area.area) {
+                  areaDisplay = `${property.area.area} sqft`;
+                }
+              } else if (property.areaSqft) {
+                areaDisplay = typeof property.areaSqft === 'number' 
+                  ? `${property.areaSqft} sqft` 
+                  : `${property.areaSqft} sqft`;
+              }
+
+              return (
+                <div
+                  key={property.id || property.propertyId}
+                  className="bg-[#E9E9E9] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="flex flex-col sm:flex-row">
+                    {/* Image Section */}
+                    <div className="relative w-full sm:w-[200px] h-[200px] sm:h-auto flex-shrink-0">
+                      <Image
+                        src={property.coverPicture || property.gallery?.[0] || property.imageUrl || "/div.property-thumbnail-wrapper.png"}
+                        alt={property.titleEn || property.title || "Property"}
+                        fill
+                        className="object-cover"
+                      />
+                      {/* Share Button Overlay */}
+                      <div className="absolute bottom-2 right-2 z-10">
+                        <ShareButton
+                          propertyTitle={property.titleEn || property.title || "Property"}
+                          propertyLocation={location}
+                          propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Details Section */}
+                    <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-base sm:text-lg font-bold text-[#001730] mb-2 line-clamp-2">
+                          {property.titleEn || property.title || "Property"}
+                        </h3>
+
+                        <div className="flex items-center text-[#001730] text-xs sm:text-sm mb-3">
+                          <MapPin size={12} className="mr-1.5 flex-shrink-0" />
+                          <span className="truncate">{location}</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-2 text-[#001730] text-xs sm:text-sm mb-4">
+                          {/* Beds */}
+                          <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                            <Image
+                              src="/Icon (1).png"
+                              alt="Beds"
+                              width={14}
+                              height={14}
+                              className="w-4 h-4 flex-shrink-0"
+                            />
+                            <span className="font-medium">{property.bedrooms || '0'}</span>
+                          </div>
+
+                          {/* Baths */}
+                          <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                            <Image
+                              src="/Icon.png"
+                              alt="Baths"
+                              width={14}
+                              height={14}
+                              className="w-4 h-4 flex-shrink-0"
+                            />
+                            <span className="font-medium">{property.bathrooms || '0'}</span>
+                          </div>
+
+                          {/* Area */}
+                          <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                            <Image
+                              src="/Icon (2).png"
+                              alt="Area"
+                              width={14}
+                              height={14}
+                              className="w-4 h-4 flex-shrink-0"
+                            />
+                            <span className="font-medium truncate text-xs">{areaDisplay}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="w-full h-[0.5px] bg-gray-300 my-3"></div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between gap-3 mt-2">
+                        <p className="text-base sm:text-lg font-bold text-[#001730]">
+                          {property.priceAmount ? property.priceAmount.toLocaleString() : '0'} QAR
+                        </p>
+                        <Link href={`/propertydetails?id=${property.id || property.propertyId}`}>
+                          <button className="bg-[#001730] text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52] whitespace-nowrap">
+                            <span>Details</span>
+                            <FaArrowRight size={12} />
+                          </button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-gray-500 relative z-10">No properties available</div>
+        )}
+
+            {/* View All Button */}
+            {properties.length > 4 && (
+              <div className="mt-6 relative z-10">
+                <Link href={`/listings?projectId=${projectId}`}>
+                  <button className="bg-[#001730] text-white text-sm font-medium px-6 py-3 rounded-md flex items-center justify-center gap-2 w-full shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                    <span>View All</span>
+                    <FaArrowRight size={14} />
+                  </button>
+                </Link>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="bg-white p-6 rounded-md shadow">
+            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+              Agents for {project?.nameEn || project?.name || "this project"}
+            </h2>
+            {agents && agents.length > 0 ? (
+              <div className="space-y-4">
+                {agents.map((agent, index) => {
+                  const agentData = agent.agent || agent;
+                  const agentName = agentData.name || agentData.fullName || agentData.firstName || `Agent ${index + 1}`;
+                  const agentEmail = agentData.email || '';
+                  const agentPhone = agentData.phone || agentData.mobile || '';
+                  const agentImage = agentData.profilePicture || agentData.image || '/div.property-thumbnail-wrapper.png';
+                  
+                  return (
+                    <div
+                      key={agentData.id || agentData._id || agentData.userId || index}
+                      className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4"
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Agent Image */}
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          <Image
+                            src={agentImage}
+                            alt={agentName}
+                            fill
+                            className="object-cover rounded-full"
+                          />
+                        </div>
+                        
+                        {/* Agent Details */}
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-[#001730] mb-1">
+                            {agentName}
+                          </h3>
+                          {agentEmail && (
+                            <p className="text-sm text-gray-600 mb-1">
+                              {agentEmail}
+                            </p>
+                          )}
+                          {agentPhone && (
+                            <p className="text-sm text-gray-600">
+                              {agentPhone}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-gray-500">No agents assigned to this project.</p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Related Projects Section */}
+<section className="w-full bg-white py-12">
+  <div className="max-w-[2800px] mx-auto px-4">
+    <div className="mb-8 text-center">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[#001730] mb-2">
+        RELATED PROJECTS
+      </h2>
+      <p className="text-gray-600 text-sm sm:text-base">
+        Discover similar properties that might interest you in the same area or with comparable features.
+      </p>
+    </div>
+
+    {relatedProjectsLoading ? (
+      <div className="text-center py-10">
+        <p className="text-gray-500">Loading related projects...</p>
+      </div>
+    ) : relatedProjects.length > 0 ? (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {relatedProjects.map((relatedProject) => {
+          const formattedProject = {
+            id: relatedProject.id || relatedProject._id,
+            title: relatedProject.nameEn || relatedProject.name || "Untitled Project",
+            location: [
+              relatedProject.locationLevel1,
+              relatedProject.locationLevel2,
+              relatedProject.locationLevel3,
+              relatedProject.locationLevel4
+            ].filter(Boolean).join(', '),
+            year: relatedProject.projectCompletionDate 
+              ? new Date(relatedProject.projectCompletionDate).getFullYear().toString()
+              : (relatedProject.projectDate ? new Date(relatedProject.projectDate).getFullYear().toString() : new Date().getFullYear().toString()),
+            units: relatedProject.listingsCount || relatedProject.propertiesCount || "N/A",
+            status: relatedProject.projectCompletionDate 
+              ? (new Date(relatedProject.projectCompletionDate) > new Date() ? "30% Ongoing" : "100% Completed")
+              : "100% Completed",
+            statusType: relatedProject.projectCompletionDate && new Date(relatedProject.projectCompletionDate) > new Date() ? "ongoing" : "completed",
+            price: "Price on request",
+            image: relatedProject.coverPicture || (relatedProject.gallery && relatedProject.gallery[0]) || "/div.property-thumbnail-wrapper.png",
+          };
+
+          return (
+            <div
+              key={formattedProject.id}
+              className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              {/* Image */}
+              <div className="relative">
+                <Image
+                  src={formattedProject.image}
+                  alt={formattedProject.title}
+                  width={800}
+                  height={320}
+                  className="w-full h-80 object-cover"
+                />
+                
+                {/* Status Badge */}
+                <div className="absolute top-3 right-3">
+                  <span className="bg-[#8C8C8C66] text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+                    {formattedProject.statusType === "completed" ? "Completed" : "Ongoing"}
+                  </span>
+                </div>
+
+                {/* Title + Location Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 p-4">
+                  <h3 className="text-lg font-semibold text-[#001730] mb-2 truncate">
+                    {formattedProject.title}
+                  </h3>
+                  <div className="flex items-center text-[#001730] text-sm mb-2">
+                    <MapPin size={12} className="mr-1" />
+                    <span className="truncate">{formattedProject.location || "Location not specified"}</span>
+                  </div>
+                  <div className="w-[60%] h-[1px] bg-gray-500 my-2"></div>
+                  <p className="text-xs text-[#001730] leading-snug line-clamp-2">
+                    {relatedProject.descriptionEn || "Luxury residential towers offering stunning sea views and premium residential, commercial, and leisure facilities."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-3">
+                {/* Info Row */}
+                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-3">
+                  {/* Year */}
+                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 shadow-sm rounded-md px-2 py-2">
+                    <Image src="/Time.png" width={16} height={16} alt="Year" className="object-contain" />
+                    <span className="text-xs font-semibold text-[#001730]">{formattedProject.year}</span>
+                  </div>
+
+                  {/* Units */}
+                  <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-md px-2 py-2">
+                    <Image src="/3_Icons Used_Project Dvt 1 (1).png" width={16} height={16} alt="Units" className="object-contain" />
+                    <span className="text-xs font-semibold text-[#001730]">
+                      {formattedProject.units} <span className="text-xs text-gray-500">Units</span>
+                    </span>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex flex-col justify-center bg-white border border-gray-200 shadow-sm rounded-md px-3 py-2 w-fit">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full ${formattedProject.statusType === "completed" ? "bg-green-500" : "bg-yellow-500"} flex items-center justify-center`}>
+                        <Check size={12} className="text-white" />
+                      </div>
+                      <span className="text-xs font-semibold">{formattedProject.status}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tags */}
+                {relatedProject.amenities && relatedProject.amenities.length > 0 && (
+                  <div className="p-2 shadow-md bg-gray-50 rounded-md mb-3">
+                    <div className="grid grid-cols-3 gap-1">
+                      {relatedProject.amenities.slice(0, 3).map((amenity, idx) => {
+                        const amenityName = amenity.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                        return (
+                          <div
+                            key={idx}
+                            className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md h-10 text-[0.6rem] font-semibold whitespace-nowrap px-1"
+                          >
+                            {amenityName}
+                          </div>
+                        );
+                      })}
+                      {relatedProject.amenities.length > 3 && (
+                        <div className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md h-10 text-[0.6rem] font-semibold whitespace-nowrap">
+                          +{relatedProject.amenities.length - 3}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Map */}
+                <Image
+                  src="/div.property-thumbnail-wrapper (2).png"
+                  width={800}
+                  height={80}
+                  className="w-full h-20 object-cover rounded-md"
+                  alt="Project map"
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-100 border-t border-gray-200 px-4 py-3 flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-gray-500">Starting at</p>
+                  <p className="text-lg font-semibold text-[#001730]">{formattedProject.price}</p>
+                </div>
+                <Link href={`/projects/${formattedProject.id}`}>
+                  <button className="bg-[#001730] text-white text-xs font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                    <span>Details</span>
+                    <FaArrowRight size={12} />
+                  </button>
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <div className="text-center py-10">
+        <p className="text-gray-500">No related projects found.</p>
+      </div>
+    )}
+  </div>
+</section>
+        
+
+       
 
             <DreamPropertySection />
         </div>

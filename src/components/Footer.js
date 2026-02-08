@@ -14,6 +14,8 @@ import { RiArrowRightLine } from "react-icons/ri";
 import { useTranslation } from "../contexts/TranslationContext";
 // import AlertModal from "./AlertModal";
 
+const API_BASE_URL = 'https://api.alasmakhrealestate.com/api/privilege';
+
 export default function Footer() {
   const { language } = useTranslation();
   const [email, setEmail] = useState("");
@@ -44,7 +46,7 @@ export default function Footer() {
     setLoading(true);
     setMessage({ type: "", text: "" });
     try {
-      const response = await fetch("https://albackend.x-360.ai/api/newsletter/subscribe", {
+      const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim() }),

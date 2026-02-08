@@ -260,15 +260,15 @@ export const fetchProjectsByType = async (projectType, options = {}) => {
 /**
  * Fetch a single project by ID
  * @param {string} projectId - Project ID
- * @returns {Promise<Object>} Project object
+ * @returns {Promise<Object>} Full response object including project, properties, agents, etc.
  */
 export const fetchProjectById = async (projectId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/${projectId}`);
 
         if (response.data) {
-            const projectData = response.data.project || response.data;
-            return projectData;
+            // Return the full response data to include properties, agents, area, etc.
+            return response.data;
         } else {
             throw new Error("Project not found");
         }

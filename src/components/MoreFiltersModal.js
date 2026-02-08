@@ -4,6 +4,9 @@ import { ArrowDown, X, Sofa, Ruler, Gem, MapPin, Building, ListChecks, Search, M
 import { motion, AnimatePresence } from "framer-motion";
 import LocationAutocomplete from "./LocationAutocomplete";
 import { searchProperties, convertModalFiltersToSearchParams } from "../utils/searchApi";
+import { searchPropertiesWithElasticsearch, checkElasticsearchHealth } from "../utils/elasticsearchApi";
+import { fetchAgents } from "../utils/propertyapi";
+import { fetchProjects } from "../utils/projectapi";
 
 export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false, priceType: propPriceType = "rent", projectId }) {
   const [openSections, setOpenSections] = useState({
@@ -60,11 +63,98 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [priceType, setPriceType] = useState(propPriceType); // Use prop value
   const [isSearching, setIsSearching] = useState(false);
+  const [useElasticsearch, setUseElasticsearch] = useState(false);
+  
+  // Dynamic agents and projects from backend
+  const [agentOptions, setAgentOptions] = useState([]);
+  const [projectOptions, setProjectOptions] = useState([]);
+  const [allAgents, setAllAgents] = useState([]);
+  const [allProjects, setAllProjects] = useState([]);
+  const [agentsLoading, setAgentsLoading] = useState(false);
+  const [projectsLoading, setProjectsLoading] = useState(false);
 
   // Update priceType when prop changes
   useEffect(() => {
     setPriceType(propPriceType);
   }, [propPriceType]);
+
+  // Check Elasticsearch availability on mount
+  useEffect(() => {
+    const checkElasticsearch = async () => {
+      const isAvailable = await checkElasticsearchHealth();
+      setUseElasticsearch(isAvailable);
+    };
+    checkElasticsearch();
+  }, []);
+
+  // Fetch agents and projects from backend on mount
+  useEffect(() => {
+    const loadAgentsAndProjects = async () => {
+      // Fetch agents
+      setAgentsLoading(true);
+      try {
+        const agentsResult = await fetchAgents({ page: 1, limit: 8, status: "active" });
+        const agentsList = agentsResult.agents || [];
+        setAllAgents(agentsList);
+        // Show first 8 agents initially
+        setAgentOptions(agentsList.slice(0, 8).map(agent => agent.name));
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+        setAgentOptions([]);
+      } finally {
+        setAgentsLoading(false);
+      }
+
+      // Fetch projects
+      setProjectsLoading(true);
+      try {
+        const projectsResult = await fetchProjects({ page: 1, limit: 8, status: "active" });
+        const projectsList = projectsResult.projects || [];
+        setAllProjects(projectsList);
+        // Show first 8 projects initially
+        setProjectOptions(projectsList.slice(0, 8).map(project => project.nameEn || project.name || project.title));
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setProjectOptions([]);
+      } finally {
+        setProjectsLoading(false);
+      }
+    };
+
+    if (isOpen) {
+      loadAgentsAndProjects();
+    }
+  }, [isOpen]);
+
+  // Filter agents and projects based on search
+  useEffect(() => {
+    if (agentSearch.trim()) {
+      const filtered = allAgents
+        .filter(agent => agent.name.toLowerCase().includes(agentSearch.toLowerCase()))
+        .slice(0, 50) // Limit to 50 results
+        .map(agent => agent.name);
+      setAgentOptions(filtered);
+    } else {
+      // Show first 8 when no search
+      setAgentOptions(allAgents.slice(0, 8).map(agent => agent.name));
+    }
+  }, [agentSearch, allAgents]);
+
+  useEffect(() => {
+    if (projectSearch.trim()) {
+      const filtered = allProjects
+        .filter(project => {
+          const name = project.nameEn || project.name || project.title || "";
+          return name.toLowerCase().includes(projectSearch.toLowerCase());
+        })
+        .slice(0, 50) // Limit to 50 results
+        .map(project => project.nameEn || project.name || project.title);
+      setProjectOptions(filtered);
+    } else {
+      // Show first 8 when no search
+      setProjectOptions(allProjects.slice(0, 8).map(project => project.nameEn || project.name || project.title));
+    }
+  }, [projectSearch, allProjects]);
 
   // const locations = [
   //   "West Bay",
@@ -97,24 +187,6 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
     "2,000 - 3,000 sqft",
     "3,000 - 5,000 sqft",
     "5,000+ sqft",
-  ];
-
-  const agentOptions = [
-    "John Smith",
-    "Sarah Johnson",
-    "Michael Brown",
-    "Emily Davis",
-    "David Wilson",
-    "Lisa Anderson",
-  ];
-
-  const projectOptions = [
-    "Al Asmakh Tower",
-    "Beverly Hills Tower",
-    "Floresta Tower",
-    "Les Maisons Blanches",
-    "Pearl Residences",
-    "West Bay Plaza",
   ];
 
 
@@ -166,8 +238,25 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
         searchParams.projectId = projectId;
       }
 
-      // Call search API
-      const results = await searchProperties(searchParams);
+      // Call search API - Try Elasticsearch first if available
+      let results;
+      
+      if (useElasticsearch) {
+        try {
+          results = await searchPropertiesWithElasticsearch(searchParams);
+          // If Elasticsearch returns error, fallback to regular search
+          if (results.error) {
+            console.warn('Elasticsearch error, falling back to regular search:', results.error);
+            results = await searchProperties(searchParams);
+          }
+        } catch (esError) {
+          console.warn('Elasticsearch unavailable, falling back to regular search:', esError.message);
+          results = await searchProperties(searchParams);
+        }
+      } else {
+        // Use regular search API
+        results = await searchProperties(searchParams);
+      }
 
       // Pass results to parent component
       if (onShowResults) {
@@ -395,9 +484,12 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                             />
                           </div>
                           <div className="flex flex-col gap-2">
-                            {agentOptions
-                              .filter(agent => agent.toLowerCase().includes(agentSearch.toLowerCase()))
-                              .map((agent, index) => (
+                            {agentsLoading ? (
+                              <div className="px-4 py-2 text-sm text-gray-500">Loading agents...</div>
+                            ) : agentOptions.length === 0 ? (
+                              <div className="px-4 py-2 text-sm text-gray-500">No agents found</div>
+                            ) : (
+                              agentOptions.map((agent, index) => (
                                 <button
                                   key={index}
                                   onClick={() => setSelectedAgent(selectedAgent === agent ? "" : agent)}
@@ -408,7 +500,8 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                                 >
                                   {agent}
                                 </button>
-                              ))}
+                              ))
+                            )}
                           </div>
                         </div>
                       </motion.div>
@@ -457,9 +550,12 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                             />
                           </div>
                           <div className="flex flex-col gap-2">
-                            {projectOptions
-                              .filter(project => project.toLowerCase().includes(projectSearch.toLowerCase()))
-                              .map((project, index) => (
+                            {projectsLoading ? (
+                              <div className="px-4 py-2 text-sm text-gray-500">Loading projects...</div>
+                            ) : projectOptions.length === 0 ? (
+                              <div className="px-4 py-2 text-sm text-gray-500">No projects found</div>
+                            ) : (
+                              projectOptions.map((project, index) => (
                                 <button
                                   key={index}
                                   onClick={() => setSelectedProject(selectedProject === project ? "" : project)}
@@ -470,7 +566,8 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
                                 >
                                   {project}
                                 </button>
-                              ))}
+                              ))
+                            )}
                           </div>
                         </div>
                       </motion.div>

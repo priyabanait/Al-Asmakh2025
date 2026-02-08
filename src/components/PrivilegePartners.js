@@ -12,6 +12,7 @@ import FeaturedProperties from "./FeaturedProperties";
 import useEmblaCarousel from "embla-carousel-react";
 import { API_BASE_URL, getApiUrl, getMarketingApiUrl } from "../config/api";
 import { useAlert } from "../contexts/AlertContext";
+import { useBlogs } from "../hooks/useBlogs";
 export default function Profit() {
   const [currentSlides, setCurrentSlide] = useState(0);
   const testimonials = [
@@ -193,86 +194,17 @@ export default function Profit() {
   }, [emblaTestimonialApi, onSelectTestimonial]);
 
   // Blog data - fetched from API
-  const [blogs, setBlogs] = useState([]);
-  const [blogsLoading, setBlogsLoading] = useState(true);
-  const [blogsError, setBlogsError] = useState(null);
+  // Use React Query hook for blogs - automatically cached and fast!
+  // React Query checks cache → IF data exists & fresh → return instantly (0ms)
+  // IF stale → call API → API checks Redis → Redis hit → return in <10ms
+  const { data: blogsData, isLoading: blogsLoading, error: blogsError } = useBlogs({
+    page: 1,
+    limit: 20,
+    publishStatus: 'Published',
+  });
 
-  // Fetch blogs and articles from marketing API
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        setBlogsLoading(true);
-        setBlogsError(null);
-        
-        // Fetch blogs and articles from marketing API
-        // Get both Blog and Article content types, only Published status
-        // Using getMarketingApiUrl to access auth-service on port 3001
-        const response = await fetch(
-          `${getMarketingApiUrl('marketing')}?page=1&limit=20&publishStatus=Published`
-        );
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch blogs and articles');
-        }
-        
-        const data = await response.json();
-        
-        // Map marketing content to blog structure
-        let blogArticles = [];
-        
-        if (data.success && data.contents && Array.isArray(data.contents)) {
-          // Filter by contentType (Blog or Article) and map to blog structure
-          blogArticles = data.contents
-            .filter(content => 
-              (content.contentType === 'Blog' || content.contentType === 'Article') &&
-              content.publishStatus === 'Published'
-            )
-            .slice(0, 3) // Limit to 3 blogs for display
-            .map(content => ({
-              id: content._id || content.id,
-              slug: content.slug,
-              title: content.title || 'Untitled',
-              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
-              image: content.imageUrl || '/Image.png',
-              body: content.body || content.bodyAr || '',
-              createdAt: content.createdAt || content.created_at,
-              contentType: content.contentType || 'Blog',
-              category: content.category || '',
-            }));
-        } else if (Array.isArray(data)) {
-          // Handle case where API returns array directly
-          blogArticles = data
-            .filter(content => 
-              (content.contentType === 'Blog' || content.contentType === 'Article') &&
-              content.publishStatus === 'Published'
-            )
-            .slice(0, 3)
-            .map(content => ({
-              id: content._id || content.id,
-              slug: content.slug,
-              title: content.title || 'Untitled',
-              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
-              image: content.imageUrl || '/Image.png',
-              body: content.body || content.bodyAr || '',
-              createdAt: content.createdAt || content.created_at,
-              contentType: content.contentType || 'Blog',
-              category: content.category || '',
-            }));
-        }
-        
-        setBlogs(blogArticles);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-        setBlogsError(error.message);
-        // Set empty array on error
-        setBlogs([]);
-      } finally {
-        setBlogsLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
+  // Extract blogs and limit to 3 for display
+  const blogs = (blogsData?.blogs || []).slice(0, 3);
 
   const [blogStartIndex, setBlogStartIndex] = useState(0);
   const [showAllBlogs, setShowAllBlogs] = useState(false);
@@ -804,7 +736,7 @@ export default function Profit() {
         {/* Error State */}
         {blogsError && !blogsLoading && (
           <div className="flex justify-center items-center py-12">
-            <div className="text-red-600 text-lg">Error loading blogs: {blogsError}</div>
+            <div className="text-red-600 text-lg">Error loading blogs: {blogsError?.message || 'Failed to load blogs'}</div>
           </div>
         )}
 

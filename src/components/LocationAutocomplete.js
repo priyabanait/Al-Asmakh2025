@@ -2,8 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, MapPin, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
-import { getSearchApiUrl } from "@/config/api";
+import { searchPropertiesWithElasticsearch } from "@/utils/elasticsearchApi";
 
 /**
  * LocationAutocomplete Component
@@ -58,20 +57,18 @@ export default function LocationAutocomplete({
     setIsLoading(true);
     try {
       // Search for locations using Elasticsearch
-      const response = await axios.get(getSearchApiUrl("api/v1/properties/search"), {
-        params: {
-          q: query,
-          limit: 10,
-          // Only get unique locations
-        },
+      const result = await searchPropertiesWithElasticsearch({
+        q: query,
+        limit: 10,
+        status: 'published',
       });
 
       // Extract unique locations from results
       const locationSet = new Set();
       const locationSuggestions = [];
 
-      if (response.data?.properties) {
-        response.data.properties.forEach((property) => {
+      if (result?.properties && result.properties.length > 0) {
+        result.properties.forEach((property) => {
           // Add locationLevel1
           if (property.locationLevel1 && !locationSet.has(property.locationLevel1)) {
             locationSet.add(property.locationLevel1);

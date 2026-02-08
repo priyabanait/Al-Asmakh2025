@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { getSearchApiUrl } from '@/config/api';
+import { getSearchApiUrl, ELASTICSEARCH_API_BASE_URL } from '@/config/api';
+import { searchPropertiesWithElasticsearch, checkElasticsearchHealth } from './elasticsearchApi';
 
 /**
  * Search properties using Elasticsearch with comprehensive filters
@@ -33,132 +34,34 @@ import { getSearchApiUrl } from '@/config/api';
  */
 export const searchProperties = async (filters = {}) => {
     try {
-        const {
-            q,
-            locationSearch,
-            locationLevel1,
-            locationLevel2,
-            locationLevel3,
-            type,
-            category,
-            sizeRange,
-            minSize,
-            maxSize,
-            agentId,
-            agentName,
-            projectId,
-            projectName,
-            bedrooms,
-            bathrooms,
-            minPrice,
-            maxPrice,
-            priceType,
-            amenities,
-            status = 'published',
-            page = 1,
-            limit = 20,
-        } = filters;
-
-        // Build query parameters
-        const queryParams = new URLSearchParams();
-
-        // Text search
-        if (q) queryParams.append('q', q);
-        if (locationSearch) queryParams.append('locationSearch', locationSearch);
-
-        // Location filters
-        if (locationLevel1) queryParams.append('locationLevel1', locationLevel1);
-        if (locationLevel2) queryParams.append('locationLevel2', locationLevel2);
-        if (locationLevel3) queryParams.append('locationLevel3', locationLevel3);
-
-        // Property filters
-        if (type) {
-            if (Array.isArray(type)) {
-                type.forEach(t => queryParams.append('type', t));
-            } else {
-                queryParams.append('type', type);
-            }
-        }
-        if (category) queryParams.append('category', category);
-
-        // Size filters
-        if (sizeRange) queryParams.append('sizeRange', sizeRange);
-        if (minSize) queryParams.append('minSize', minSize.toString());
-        if (maxSize) queryParams.append('maxSize', maxSize.toString());
-
-        // Agent filter
-        if (agentId) queryParams.append('agentId', agentId);
-        if (agentName) queryParams.append('agentName', agentName);
-
-        // Project filter
-        if (projectId) queryParams.append('projectId', projectId);
-        if (projectName) queryParams.append('projectName', projectName);
-
-        // Bedrooms filter
-        if (bedrooms) {
-            if (Array.isArray(bedrooms)) {
-                bedrooms.forEach(b => queryParams.append('bedrooms', b));
-            } else {
-                queryParams.append('bedrooms', bedrooms);
+        // Try Elasticsearch first if available
+        const isElasticsearchAvailable = await checkElasticsearchHealth();
+        
+        if (isElasticsearchAvailable) {
+            try {
+                const result = await searchPropertiesWithElasticsearch(filters);
+                if (!result.error) {
+                    return result;
+                }
+            } catch (esError) {
+                console.warn('Elasticsearch search failed, trying fallback:', esError.message);
             }
         }
 
-        // Bathrooms filter
-        if (bathrooms) {
-            if (Array.isArray(bathrooms)) {
-                bathrooms.forEach(b => queryParams.append('bathrooms', b));
-            } else {
-                queryParams.append('bathrooms', bathrooms);
-            }
-        }
-
-        // Price filters
-        if (minPrice) queryParams.append('minPrice', minPrice.toString());
-        if (maxPrice) queryParams.append('maxPrice', maxPrice.toString());
-        if (priceType) queryParams.append('priceType', priceType);
-
-        // Amenities filter
-        if (amenities) {
-            if (Array.isArray(amenities)) {
-                queryParams.append('amenities', JSON.stringify(amenities));
-            } else {
-                queryParams.append('amenities', amenities);
-            }
-        }
-
-        // Status
-        if (status) queryParams.append('status', status);
-
-        // Pagination
-        queryParams.append('page', page.toString());
-        queryParams.append('limit', limit.toString());
-
-        // Call API directly
-        const response = await axios.get(`${getSearchApiUrl('api/v1/properties/search')}?${queryParams.toString()}`);
-
-        if (response.data) {
-            return {
-                properties: response.data.properties || response.data.hits || [],
-                pagination: response.data.pagination || {
-                    total: response.data.total || 0,
-                    page: page,
-                    limit: limit,
-                    pages: Math.ceil((response.data.total || 0) / limit),
-                },
-                total: response.data.total || 0,
-            };
-        } else {
-            return {
-                properties: [],
-                pagination: {
-                    total: 0,
-                    page: page,
-                    limit: limit,
-                    pages: 0,
-                },
+        // Fallback to property service API (if endpoint exists)
+        // For now, if Elasticsearch is not available, return empty results
+        // or you can implement a direct database query fallback here
+        console.warn('Elasticsearch not available, returning empty results. Please ensure Elasticsearch is running.');
+        return {
+            properties: [],
+            pagination: {
                 total: 0,
-            };
-        }
+                page: filters.page || 1,
+                limit: filters.limit || 20,
+                pages: 0,
+            },
+            total: 0,
+        };
     } catch (error) {
         console.error('Search properties error:', error);
         throw {

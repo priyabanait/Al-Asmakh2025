@@ -72,11 +72,11 @@ export default function Hero() {
   const handleSearch = () => {
     const query = searchQuery.trim() || locationSearch.trim();
     if (query) {
-      // Navigate to listings page with search query
-      router.push(`/listings/rent?search=${encodeURIComponent(query)}`);
+      // Navigate to search page with search query
+      router.push(`/listings/search?query=${encodeURIComponent(query)}`);
     } else {
-      // If no query, just navigate to listings
-      router.push("/listings/rent");
+      // If no query, just navigate to search page
+      router.push("/listings/search");
     }
   };
 
@@ -182,27 +182,7 @@ export default function Hero() {
 
           </div>
           <div className="w-[90%] h-[0.5px] bg-gray-300  bg my-2 "></div>
-          {/* <div className="p-4 bg-gray-400 rounded-[3px] shadow-md gap-4 flex flex-wrap lg:hidden">
-
-<button
-  style={{ backgroundColor: "#001730", borderRadius: "3px", height: "35px" }}
-  className="w-[120px] sm:w-[130px] md:w-[140px] lg:w-[160px]
-             px-2 py-2 text-white text-[11px] md:text-[12px] lg:text-[13px]
-             shadow-lg hover:bg-[#022d5e] transition-all duration-300"
->
-  RENT
-</button>
-
-<button
-  style={{ backgroundColor: "#001730", borderRadius: "3px", height: "35px" }}
-  className="w-[120px] sm:w-[130px] md:w-[140px] lg:w-[160px]
-             px-2 py-2 text-white text-[11px] md:text-[12px] lg:text-[13px]
-             shadow-lg hover:bg-[#022d5e] transition-all duration-300"
->
-  BUY
-</button>
-
-</div> */}
+          
 
 
           {/* SEARCH BAR */}

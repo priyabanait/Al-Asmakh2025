@@ -7,91 +7,24 @@ import { FaArrowRight } from "react-icons/fa6";
 import { FaTag, FaBook, FaFolder, FaCalendar } from "react-icons/fa";
 import Link from "next/link";
 import DreamPropertySection from "./DreamPropertySection";
-import { getMarketingApiUrl } from "../config/api";
+import { useBlogs } from "../hooks/useBlogs";
 
 export default function Buy() {
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
   const [showFilters, setShowFilters] = useState(false); // Toggle for mobile filters
   const filtersRef = useRef(null); // Ref for filter container
   
-  // Blog data - fetched from marketing API
-  const [blogs, setBlogs] = useState([]);
-  const [blogsLoading, setBlogsLoading] = useState(true);
-  const [blogsError, setBlogsError] = useState(null);
+  // Use React Query hook for blogs - automatically cached and fast!
+  // React Query checks cache → IF data exists & fresh → return instantly (0ms)
+  // IF stale → call API → API checks Redis → Redis hit → return in <10ms
+  const { data: blogsData, isLoading: blogsLoading, error: blogsError } = useBlogs({
+    page: 1,
+    limit: 50,
+    publishStatus: 'Published',
+  });
 
-  // Fetch blogs and articles from marketing API
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        setBlogsLoading(true);
-        setBlogsError(null);
-        
-        // Fetch blogs and articles from marketing API
-        // Get both Blog and Article content types, only Published status
-        // Using getMarketingApiUrl to access auth-service on port 3001
-        const response = await fetch(
-          `${getMarketingApiUrl('marketing')}?page=1&limit=50&publishStatus=Published`
-        );
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch blogs and articles');
-        }
-        
-        const data = await response.json();
-        
-        // Map marketing content to blog structure
-        let blogArticles = [];
-        
-        if (data.success && data.contents && Array.isArray(data.contents)) {
-          blogArticles = data.contents
-            .filter(content => 
-              (content.contentType === 'Blog' || content.contentType === 'Article') &&
-              content.publishStatus === 'Published'
-            )
-            .map(content => ({
-              id: content._id || content.id,
-              slug: content.slug,
-              title: content.title || 'Untitled',
-              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
-              image: content.imageUrl || '/Image.png',
-              body: content.body || content.bodyAr || '',
-              createdAt: content.createdAt || content.created_at,
-              contentType: content.contentType || 'Blog',
-              category: content.category || '',
-            }));
-        } else if (Array.isArray(data)) {
-          // Handle case where API returns array directly
-          blogArticles = data
-            .filter(content => 
-              (content.contentType === 'Blog' || content.contentType === 'Article') &&
-              content.publishStatus === 'Published'
-            )
-            .map(content => ({
-              id: content._id || content.id,
-              slug: content.slug,
-              title: content.title || 'Untitled',
-              description: content.body?.substring(0, 150) || content.bodyAr?.substring(0, 150) || 'No description available',
-              image: content.imageUrl || '/Image.png',
-              body: content.body || content.bodyAr || '',
-              createdAt: content.createdAt || content.created_at,
-              contentType: content.contentType || 'Blog',
-              category: content.category || '',
-            }));
-        }
-        
-        setBlogs(blogArticles);
-      } catch (error) {
-        console.error('Error fetching blogs:', error);
-        setBlogsError(error.message);
-        // Set empty array on error
-        setBlogs([]);
-      } finally {
-        setBlogsLoading(false);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
+  // Extract blogs from the data
+  const blogs = blogsData?.blogs || [];
 
   // Close filters when clicking outside
   useEffect(() => {

@@ -96,12 +96,30 @@ export default function FeaturedProperties({
 
   // Helper function to format property data (handles both raw and pre-formatted properties)
   const formatProperty = (property) => {
+    // Helper to get location from level2 and level3 only (exclude level1)
+    const getLocation = (prop) => {
+      // Always prioritize locationLevel2 and locationLevel3, never use locationLevel1
+      if (prop.locationLevel2 && String(prop.locationLevel2).trim() !== "") {
+        let loc = String(prop.locationLevel2).trim();
+        if (prop.locationLevel3 && String(prop.locationLevel3).trim() !== "") {
+          loc += `, ${String(prop.locationLevel3).trim()}`;
+        }
+        return loc;
+      }
+      // Only use address as fallback if level2/level3 are not available
+      if (prop.address && String(prop.address).trim() !== "") {
+        return String(prop.address).trim();
+      }
+      // Last resort fallback
+      return "Location not specified";
+    };
+
     // If property is already formatted by fetchProperties, use it as-is with minor adjustments
     if (property.image && property.bedrooms !== undefined) {
       return {
         id: property.id,
         title: property.title || "Property",
-        location: property.location || "Location not specified",
+        location: getLocation(property),
         price: property.price || "Price on request",
         beds: property.bedrooms || property.beds || 0,
         baths: property.bathrooms || property.baths || 0,
@@ -120,15 +138,8 @@ export default function FeaturedProperties({
       imageUrl = property.images[0].url || property.images[0].thumbnailUrl || imageUrl;
     }
 
-    let location = property.location || "Location not specified";
-    if (!location || location === "Location not specified") {
-      if (property.locationLevel2) {
-        location = property.locationLevel2;
-        if (property.locationLevel3) location += `, ${property.locationLevel3}`;
-      } else if (property.address) {
-        location = property.address;
-      }
-    }
+    // Only use locationLevel2 and locationLevel3, exclude locationLevel1
+    const location = getLocation(property);
     
 
     let price = property.price || "Price on request";

@@ -34,10 +34,27 @@ const getMarketingApiBaseUrl = () => {
     return 'https://api.alasmakhrealestate.com';
 };
 
+// Elasticsearch API URL (media-search-service on port 3003)
+const getElasticsearchApiBaseUrl = () => {
+    // Check if NEXT_PUBLIC_ELASTICSEARCH_API_URL is explicitly set
+    if (process.env.NEXT_PUBLIC_ELASTICSEARCH_API_URL) {
+        return process.env.NEXT_PUBLIC_ELASTICSEARCH_API_URL;
+    }
+    
+    // Default to localhost:3003 for development
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3003';
+    }
+    
+    // Production URL (update with your production Elasticsearch service URL)
+    return process.env.NEXT_PUBLIC_ELASTICSEARCH_API_URL || 'http://localhost:3003';
+};
+
 // Use environment-aware API URL
 export const API_BASE_URL = getApiBaseUrl();
 export const SEARCH_API_BASE_URL = getApiBaseUrl();
 export const MARKETING_API_BASE_URL = getMarketingApiBaseUrl();
+export const ELASTICSEARCH_API_BASE_URL = getElasticsearchApiBaseUrl();
 
 // Get full API URL
 export const getApiUrl = (endpoint) => {
@@ -63,5 +80,14 @@ export const getMarketingApiUrl = (endpoint) => {
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
     // Ensure base URL doesn't end with slash
     const baseUrl = MARKETING_API_BASE_URL.endsWith('/') ? MARKETING_API_BASE_URL.slice(0, -1) : MARKETING_API_BASE_URL;
+    return `${baseUrl}/${cleanEndpoint}`;
+};
+
+// Get full Elasticsearch API URL (for search - uses port 3003)
+export const getElasticsearchApiUrl = (endpoint) => {
+    // Remove leading slash if present
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint.substring(1) : endpoint;
+    // Ensure base URL doesn't end with slash
+    const baseUrl = ELASTICSEARCH_API_BASE_URL.endsWith('/') ? ELASTICSEARCH_API_BASE_URL.slice(0, -1) : ELASTICSEARCH_API_BASE_URL;
     return `${baseUrl}/${cleanEndpoint}`;
 };

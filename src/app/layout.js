@@ -5,6 +5,7 @@ import { TranslationProvider } from '../contexts/TranslationContext'
 import { AuthProvider } from '../contexts/AuthContext'
 import { CompareProvider } from '../contexts/CompareContext'
 import { AlertProvider } from '../contexts/AlertContext'
+import QueryProvider from '../providers/QueryProvider'
 import { useEffect } from 'react'
 
 export default function RootLayout({ children }) {
@@ -25,18 +26,20 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className="min-h-screen bg-white">
-        <TranslationProvider>
-          <AuthProvider>
-            <CompareProvider>
-              <AlertProvider>
-                {/* ✅ UNIVERSAL CONTAINER */}
-                <main className="mx-auto w-full max-w-auto px-0 md:px-0">
-                  {children}
-                </main>
-              </AlertProvider>
-            </CompareProvider>
-          </AuthProvider>
-        </TranslationProvider>
+        <QueryProvider>
+          <TranslationProvider>
+            <AuthProvider>
+              <CompareProvider>
+                <AlertProvider>
+                  {/* ✅ UNIVERSAL CONTAINER */}
+                  <main className="mx-auto w-full max-w-auto px-0 md:px-0">
+                    {children}
+                  </main>
+                </AlertProvider>
+              </CompareProvider>
+            </AuthProvider>
+          </TranslationProvider>
+        </QueryProvider>
       </body>
     </html>
   )

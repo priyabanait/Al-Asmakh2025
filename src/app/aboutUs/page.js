@@ -52,8 +52,8 @@ const timelineData = [
 // Total slides = Hero (1) + Timeline items (6) + Footer (1)
 const HERO_SLIDE = 0;
 const TIMELINE_START = 1;
-const TIMELINE_END = timelineData.length; // 6
-const FOOTER_SLIDE = timelineData.length + 1; // 7
+const TIMELINE_END = timelineData.length + 1; // 6
+const FOOTER_SLIDE = timelineData.length + 2; // 7
 const TOTAL_SLIDES = timelineData.length + 2; // 8 (hero + 6 timeline + footer)
 
 // Hero Section Component
@@ -836,10 +836,7 @@ export default function AboutUsPage() {
         </div>
       </section>
 
-      {/* Footer Section */}
-      <div className="w-full">
-        <Footer />
-      </div>
+    
 </div>
         {/* Footer Section - Slide 7 */}
        

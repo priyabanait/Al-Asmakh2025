@@ -42,12 +42,16 @@ function PropertyDetailsContent() {
         const propertyData = await fetchPropertyById(propertyId);
         setProperty(propertyData);
 
-        // Fetch related properties (same category or location)
+        // Fetch related properties based on priceType (rent or sale)
         try {
-          const relatedResult = await fetchProperties({
+          const currentPriceType = propertyData.priceType || "rent";
+
+          // First, try to fetch properties with the same priceType
+          let relatedResult = await fetchProperties({
             page: 1,
             limit: 10,
             status: "published",
+            priceType: currentPriceType,
           });
 
           let relatedData = [];
@@ -56,9 +60,41 @@ function PropertyDetailsContent() {
               .filter(p => p.id !== propertyId)
               .slice(0, 4); // Get 4 related properties
           }
+
+          // If no related properties found with same priceType, fetch all properties as fallback
+          if (relatedData.length === 0) {
+            const fallbackResult = await fetchProperties({
+              page: 1,
+              limit: 10,
+              status: "published",
+            });
+
+            if (fallbackResult.properties && Array.isArray(fallbackResult.properties)) {
+              relatedData = fallbackResult.properties
+                .filter(p => p.id !== propertyId)
+                .slice(0, 4);
+            }
+          }
+
           setRelatedProperties(relatedData);
         } catch (err) {
           console.error("Error fetching related properties:", err);
+          // On error, try to fetch all properties as fallback
+          try {
+            const fallbackResult = await fetchProperties({
+              page: 1,
+              limit: 10,
+              status: "published",
+            });
+            if (fallbackResult.properties && Array.isArray(fallbackResult.properties)) {
+              const fallbackData = fallbackResult.properties
+                .filter(p => p.id !== propertyId)
+                .slice(0, 4);
+              setRelatedProperties(fallbackData);
+            }
+          } catch (fallbackErr) {
+            console.error("Error fetching fallback properties:", fallbackErr);
+          }
         }
 
         setError(null);
@@ -179,7 +215,15 @@ function PropertyDetailsContent() {
   const formatRelatedProperty = (property) => {
     let imageUrl = "/div.property-thumbnail-wrapper.png";
     if (property.images && Array.isArray(property.images) && property.images.length > 0) {
-      imageUrl = property.images[0].url || property.images[0].thumbnailUrl || imageUrl;
+      // Try to get the first image URL from various possible formats
+      const firstImage = property.images[0];
+      imageUrl = firstImage.url || firstImage.thumbnailUrl || firstImage.imageUrl ||
+        (typeof firstImage === 'string' ? firstImage : imageUrl);
+    } else if (property.image) {
+      // Fallback to direct image property
+      imageUrl = property.image.url || property.image.thumbnailUrl || property.image || imageUrl;
+    } else if (property.thumbnailUrl) {
+      imageUrl = property.thumbnailUrl;
     }
 
     let location = "Location not specified";
@@ -246,12 +290,11 @@ function PropertyDetailsContent() {
         </div>
 
         {/* Title + Price + Buttons */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-          <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center lg:col-span-1">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center lg:col-span-2">
             <h1 className="text-xl sm:text-2xl ">
-              {formattedProperty.title.slice(0, 27)}...
+              {formattedProperty.title}...
             </h1>
-            <div className="w-[50%] h-[0.2px] px-4 mt-2 3xl:mt-3 bg-gray-400 my-2"></div>
             <div className="flex items-center text-gray-200 text-xs sm:text-sm mt-2">
               <MapPin size={16} className="mr-1" /> {formattedProperty.location}
             </div>
@@ -266,13 +309,13 @@ function PropertyDetailsContent() {
             </h2>
           </div>
 
-          <div className="bg-[#001730] p-4 sm:p-6 rounded-[5px] shadow-md flex items-center justify-center">
-            <div className="flex gap-2 sm:gap-4 w-full">
-              <button className="w-1/2 bg-gray-400 text-[#001730] rounded-[5px] font-semibold py-2 text-xs sm:text-base shadow">
+          <div className="bg-[#001730] p-4 sm:p-6 flex items-center justify-center">
+            <div className="flex flex-col gap-2 w-full">
+              <button className="w-full bg-gray-400 text-[#001730] rounded-[5px] font-semibold py-1.5 text-xs sm:text-sm shadow">
                 {formattedProperty.priceType === "rent" ? "For Rent" : "For Sale"}
               </button>
 
-              <button className="w-1/2 bg-gray-400 text-[#001730] rounded-[5px] font-semibold py-2 text-xs sm:text-base shadow">
+              <button className="w-full bg-gray-400 text-[#001730] rounded-[5px] font-semibold py-1.5 text-xs sm:text-sm shadow">
                 {formattedProperty.category === "commercial" ? "Commercial" : "Residential"}
               </button>
             </div>
@@ -601,7 +644,23 @@ function PropertyDetailsContent() {
             {/* Map Box */}
             <div className="mt-4 sm:mt-6 bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.1161406535!2d72.74109735859375!3d19.082197839287853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63f497d4a63%3A0xdeb6b3fbbf7c9f1!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000"
+                src={(() => {
+                  // Build location string from property location levels
+                  const locationParts = [
+                    property?.locationLevel1,
+                    property?.locationLevel2,
+                    property?.locationLevel3,
+                    property?.locationLevel4
+                  ].filter(Boolean);
+                  
+                  // If we have location, use it; otherwise default to Qatar
+                  const locationQuery = locationParts.length > 0 
+                    ? encodeURIComponent(locationParts.join(', ') + ', Qatar')
+                    : encodeURIComponent('Doha, Qatar');
+                  
+                  // Use Google Maps embed with search query (standard format, no API key needed)
+                  return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en`;
+                })()}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -646,63 +705,78 @@ function PropertyDetailsContent() {
 
           {/* RIGHT SIDE - AGENT CARDS */}
           <div className="col-span-1 flex flex-col gap-3 sm:gap-4">
-            {/* Helper function to render agent card */}
             {(() => {
-              // Get all assigned agents, fallback to primary agent if no assigned agents
               let agentsToDisplay = [];
 
-              if (property?.allAssignedAgents && Array.isArray(property.allAssignedAgents) && property.allAssignedAgents.length > 0) {
+              if (
+                property?.allAssignedAgents &&
+                Array.isArray(property.allAssignedAgents) &&
+                property.allAssignedAgents.length > 0
+              ) {
                 agentsToDisplay = property.allAssignedAgents;
               } else if (property?.agent) {
                 agentsToDisplay = [property.agent];
               }
 
-              if (agentsToDisplay.length === 0) {
-                return null;
-              }
+              if (agentsToDisplay.length === 0) return null;
 
               return agentsToDisplay.map((agent, index) => {
-                const agentName = `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.email || 'Agent';
+                const agentName =
+                  `${agent.firstName || ''} ${agent.lastName || ''}`.trim() ||
+                  agent.email ||
+                  'Agent';
 
-                // Format agent location
+                // Location
                 let agentLocation = 'Location not specified';
                 if (agent.location) {
                   const parts = [];
                   if (agent.location.city) parts.push(agent.location.city);
-                  if (agent.location.district && agent.location.district !== agent.location.city) {
+                  if (
+                    agent.location.district &&
+                    agent.location.district !== agent.location.city
+                  ) {
                     parts.push(agent.location.district);
                   }
-                  if (parts.length > 0) {
-                    agentLocation = parts.join(', ');
-                  } else if (agent.location.address) {
-                    agentLocation = agent.location.address;
-                  }
+                  if (parts.length > 0) agentLocation = parts.join(', ');
+                  else if (agent.location.address) agentLocation = agent.location.address;
                 }
 
-                // Format languages
+                // Languages
                 let languages = 'English, Arabic, Spanish';
-                if (agent.languages && Array.isArray(agent.languages) && agent.languages.length > 0) {
+                if (Array.isArray(agent.languages) && agent.languages.length > 0) {
                   languages = agent.languages.join(', ');
                 }
 
                 return (
                   <div
                     key={agent.id || agent.userId || agent._id || `agent-${index}`}
-                    className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row"
+                    className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row items-start"
                   >
                     {/* LEFT IMAGE */}
-                    <div className="w-full lg:w-1/2 rounded-[5px] relative flex-shrink-0 h-40 p-4 sm:h-36 lg:h-auto lg:pr-0 lg:mr-0">
+                    <div
+                      className="
+              w-full lg:w-1/2
+              rounded-[5px]
+              relative
+              flex-shrink-0
+              h-40 sm:h-36
+              lg:min-h-[360px]
+              lg:max-h-[380px]
+              p-4
+              lg:pr-0 lg:mr-0
+            "
+                    >
                       {agent.profilePicture ? (
                         <Image
                           src={agent.profilePicture}
-                          width={200}
-                          height={200}
+                          width={300}
+                          height={400}
                           alt={agentName}
-                          className="h-full w-full rounded-[5px] object-cover"
+                          className="h-full w-full rounded-[5px] object-fill"
                           unoptimized={agent.profilePicture?.startsWith('http')}
                         />
                       ) : (
-                        <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+                        <div className="h-full w-full bg-gray-200 flex items-center justify-center rounded-[5px]">
                           <div className="w-16 h-16 rounded-full bg-[#001730] flex items-center justify-center">
                             <span className="text-white text-xl font-semibold">
                               {agentName.charAt(0).toUpperCase()}
@@ -713,29 +787,27 @@ function PropertyDetailsContent() {
                     </div>
 
                     {/* RIGHT DETAILS */}
-                    <div className="w-full lg:w-1/2 p-3 sm:p-4 flex flex-col justify-between">
+                    <div className="w-full lg:w-1/2 p-3 sm:p-4 flex flex-col">
                       <div>
                         <div className="shadow-md bg-white text-center p-2 sm:p-3 rounded-[5px]">
-                          <h3 className="text-sm sm:text-base font-semibold text-center text-[#001730] mb-1">
+                          <h3 className="text-sm sm:text-base font-semibold text-[#001730] mb-1">
                             {agentName}
                           </h3>
-                          <div className="w-[30%] h-[0.2px] px-10 mt-1 bg-gray-400 my-1 mx-auto"></div>
-                          <p className="text-gray-500 text-xs mb-1">
-                            Property Agent
+                          <div className="w-[30%] h-[0.2px] bg-gray-400 my-1 mx-auto"></div>
+                          <p className="text-gray-500 text-xs">Property Agent</p>
+                        </div>
+
+                        {/* Location */}
+                        <div className="relative mt-4">
+                          <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                            Location:
+                          </p>
+                          <p className="bg-white mt-1 p-2 sm:p-3 shadow-md rounded-[5px] text-xs text-gray-700">
+                            {agentLocation}
                           </p>
                         </div>
 
-                        {agentLocation && (
-                          <div className="relative mt-4">
-                            <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                              Location:
-                            </p>
-                            <p className="bg-white mt-1 p-2 sm:p-3 shadow-md rounded-[5px] text-xs text-gray-700">
-                              {agentLocation}
-                            </p>
-                          </div>
-                        )}
-
+                        {/* Languages */}
                         <div className="relative mt-3">
                           <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
                             Languages:
@@ -746,32 +818,33 @@ function PropertyDetailsContent() {
                         </div>
                       </div>
 
-                      {/* Buttons */}
+                      {/* BUTTONS */}
                       <div className="mt-3 flex flex-col gap-2">
-                        <div className="flex flex-row gap-2">
+                        <div className="flex gap-2">
                           {agent.phone && (
                             <a
                               href={`tel:${agent.phone}`}
                               className="flex-1 bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition"
                             >
                               Call Agent
-                              <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                              <FaArrowRight size={12} />
                             </a>
                           )}
+
                           {agent.email && (
                             <a
                               href={`mailto:${agent.email}`}
                               className="flex-1 bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition"
                             >
                               Send email
-                              <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                              <FaArrowRight size={12} />
                             </a>
                           )}
                         </div>
 
                         <button className="w-full bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition">
                           Schedule Viewing
-                          <FaArrowRight size={12} className="sm:w-[14px] sm:h-[14px]" />
+                          <FaArrowRight size={12} />
                         </button>
                       </div>
                     </div>
@@ -780,6 +853,8 @@ function PropertyDetailsContent() {
               });
             })()}
           </div>
+
+
 
         </div>
       </div>

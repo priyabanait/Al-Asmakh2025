@@ -637,7 +637,7 @@ export default function AlAsmakhTower() {
                       src={areas[i].image}
                       alt={areas[i].name}
                       fill
-                      className="object-fill rounded-lg"
+                      className="object-cover rounded-lg"
                     />
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
@@ -655,6 +655,14 @@ export default function AlAsmakhTower() {
                             <FaArrowRight size={16} className="text-white" />
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    {/* View More Button - Always visible */}
+                    <div className="absolute bottom-4 right-4 opacity-100 group-hover:opacity-100 transition-opacity z-30">
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg hover:bg-white/30 transition-colors cursor-pointer">
+                        <span className="text-white text-sm font-semibold">View More</span>
+                        <FaArrowRight size={14} className="text-white" />
                       </div>
                     </div>
 
@@ -691,7 +699,7 @@ export default function AlAsmakhTower() {
                       src={areas[i].image}
                       alt={areas[i].name}
                       fill
-                      className="object-fill rounded-lg"
+                      className="object-cover rounded-lg"
                     />
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
@@ -709,6 +717,14 @@ export default function AlAsmakhTower() {
                             <FaArrowRight size={16} className="text-white" />
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    {/* View More Button - Always visible */}
+                    <div className="absolute bottom-4 right-4 opacity-100 group-hover:opacity-100 transition-opacity z-30">
+                      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg hover:bg-white/30 transition-colors cursor-pointer">
+                        <span className="text-white text-sm font-semibold">View More</span>
+                        <FaArrowRight size={14} className="text-white" />
                       </div>
                     </div>
 

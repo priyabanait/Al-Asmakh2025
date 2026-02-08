@@ -26,18 +26,26 @@ export default function ListingHeroSection({
   onFilterChange,
   showMoreFilters = false,
   onShowMoreFilters,
+  initialSearchQuery = "",
 }) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [showSpeechModal, setShowSpeechModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRefs = useRef({});
+
+  // Update search query when initialSearchQuery prop changes
+  useEffect(() => {
+    if (initialSearchQuery) {
+      setSearchQuery(initialSearchQuery);
+    }
+  }, [initialSearchQuery]);
 
   // Filter options
   const filterOptions = {
     "Property Type": ["Apartment", "Villa", "Townhouse", "Penthouse", "Studio"],
     Location: ["Doha", "Lusail", "West Bay", "Pearl Qatar", "Al Waab"],
-    Beds: ["1", "2", "3", "4", "5+"],
-    Baths: ["1", "2", "3", "4", "5+"],
+    Beds: ["1", "2", "3", "4", "5", "5+"],
+    Baths: ["1", "2", "3", "4", "5", "5+"],
     Price: ["0-5000", "5000-10000", "10000-20000", "20000-50000", "50000+"],
   };
 
@@ -69,21 +77,30 @@ export default function ListingHeroSection({
   }, []);
 
   const handleFilterSelect = (filterName, value) => {
+    // Select the clicked value (always set, don't toggle)
     const newFilters = {
       ...selectedFilters,
-      [filterName]: selectedFilters[filterName] === value ? null : value,
+      [filterName]: value,
     };
     setSelectedFilters(newFilters);
     setOpenDropdown(null);
+    
+    console.log(`[ListingHeroSection] Filter selected: ${filterName} = ${value}`, newFilters);
+    
+    // Immediately call API with the selected filters when clicked
+    // This ensures API is called only when a filter option is clicked
     if (onFilterChange) {
+      console.log(`[ListingHeroSection] Calling onFilterChange (API call) with filters:`, newFilters);
       onFilterChange(newFilters);
+    } else {
+      console.warn('[ListingHeroSection] onFilterChange is not provided!');
     }
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (onSearch) {
-      onSearch(searchQuery);
+      onSearch(searchQuery, selectedFilters);
     }
   };
 
