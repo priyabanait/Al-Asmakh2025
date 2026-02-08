@@ -288,8 +288,8 @@ export default function Services({
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
       <div className="hidden lg:block lg:py-28 py-4">
         {/* Header Bar */}
-        <div className="bg-white border-gray-200 px-2 lg:px-6">
-          <div className="hidden lg:flex max-w-full mb-6 bg-gray-50 mx-auto items-center gap-4">
+        <div className=" border-gray-200 px-2 lg:px-6">
+          <div className="hidden lg:flex max-w-full mb-6  mx-auto items-center gap-4">
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
               Showing {properties.length} of {properties.length}

@@ -12,7 +12,7 @@ function AboutUs() {
   const [isVisible, setIsVisible] = useState({});
   const sectionRefs = useRef({});
   const { showSuccess, showError } = useAlert();
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -22,11 +22,11 @@ function AboutUs() {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.name || !formData.email) {
       showError('Please fill in your name and email');
@@ -36,27 +36,59 @@ function AboutUs() {
     setIsSubmitting(true);
 
     try {
+      // Split name into firstName and lastName
+      const nameParts = formData.name.trim().split(/\s+/);
+      const firstName = nameParts[0] || formData.name.trim();
+      const lastName = nameParts.slice(1).join(' ') || '';
+
+      // Combine country code and phone number (default to +974)
+      const countryCode = '+974';
+      const fullPhone = countryCode + (formData.phone || '').replace(/\D/g, '');
+
+      // Prepare notes with source tracking
+      let notes = formData.message || '';
+      if (typeof window !== 'undefined' && window.location.href) {
+        if (notes) notes += '\n\n';
+        notes += `Source: About Us Component\nURL: ${window.location.href}`;
+      }
+
+      // Transform form data to match property-service Lead entity structure
+      const leadData = {
+        // Personal Information (required fields)
+        firstName: firstName,
+        lastName: lastName || null,
+        email: formData.email.trim().toLowerCase(),
+        phone: fullPhone,
+        gender: 'MALE', // Default value since it's required but not in form
+
+        // Lead Source
+        leadSource: 'Website', // Form submissions come from website
+
+        // Interest/Property Type
+        interest: formData.propertyType || null,
+        propertyPreferences: formData.propertyType || null,
+
+        // Notes/Message
+        notes: notes || null,
+        remark: notes || null,
+
+        // Status (default to New)
+        status: 'New'
+      };
+
       const response = await fetch(getApiUrl('api/leads'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          countryCode: '+974',
-          propertyType: formData.propertyType,
-          message: formData.message,
-          sourcePage: 'aboutUsComponent',
-          sourceUrl: typeof window !== 'undefined' ? window.location.href : ''
-        }),
+        body: JSON.stringify(leadData),
       });
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
-        showSuccess(data.message || 'Thank you for your inquiry! We will get back to you within 24 hours.');
+      // Handle different response formats from property-service
+      if (response.ok && (data.success || data.id || data.data)) {
+        showSuccess('Thank you for your inquiry! We will get back to you within 24 hours.');
         // Reset form
         setFormData({
           name: '',
@@ -66,7 +98,8 @@ function AboutUs() {
           message: ''
         });
       } else {
-        showError(data.message || 'Failed to submit your inquiry. Please try again.');
+        const errorMessage = data.message || data.error || 'Failed to submit your inquiry. Please try again.';
+        showError(errorMessage);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -172,7 +205,7 @@ function AboutUs() {
 
       </section>
 
-  
+
 
       {/* A LEGACY OF EXCELLENCE Section */}
       <section className="w-full flex flex-col items-center py-12 md:py-20 bg-white text-[#001730] px-4 md:px-0">
@@ -522,10 +555,10 @@ function AboutUs() {
           </div>
 
           {/* Right Side - Form Panel and Map */}
-          <div           ref={(el) => (sectionRefs.current['legacyHeader'] = el)}
+          <div ref={(el) => (sectionRefs.current['legacyHeader'] = el)}
 
-          
- className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-8 2xl:mt-10 3xl:mt-12 4xl:mt-14 5xl:mt-16">
+
+            className="lg:w-1/2 max-w-2xl w-full flex flex-col lg:mt-8 2xl:mt-10 3xl:mt-12 4xl:mt-14 5xl:mt-16">
             {/* Form Panel - Translucent */}
             <div className="glass-effect p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
               {/* Form Header */}

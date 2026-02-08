@@ -10,9 +10,11 @@ import Link from "next/link";
 import { FaList } from "react-icons/fa";
 import CompareButton from "./CompareButton";
 import CompareModal from "./CompareModal";
+import InteractivePropertyMap from "./InteractivePropertyMap";
 
 export default function PropertyListView({ properties = [], totalProperties = 0 }) {
     const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
+    const [selectedPropertyId, setSelectedPropertyId] = useState(null);
 
     return (
         <div className="hidden lg:block lg:py-4 py-4">
@@ -169,7 +171,10 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                             {properties.map((property) => (
                                 <div
                                     key={property.id}
-                                    className="bg-[#E9E9E9] rounded-md mt-2 shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                                    data-property-id={property.id}
+                                    onClick={() => setSelectedPropertyId(property.id)}
+                                    className={`bg-[#E9E9E9] rounded-md mt-2 shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer ${selectedPropertyId === property.id ? 'ring-2 ring-[#001730] ring-offset-2' : ''
+                                        }`}
                                 >
                                     <div className="flex p-4 rounded-md">
                                         {/* Image Section - Left */}
@@ -275,29 +280,20 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
 
                     {/* Right Section: Map (50%) */}
                     <div className="hidden lg:block w-1/2 relative mt-6 bg-gray-200">
-                        {/* Map Container */}
+                        {/* Interactive Map Container */}
                         <div className="w-full h-full relative">
-                            {/* Los Angeles Map */}
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                allowFullScreen
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                className="absolute inset-0"
-                            ></iframe>
-
-                            {/* Zoom Controls */}
-                            <div className="absolute top-4 right-4 bg-[#E9E9E9] rounded-md shadow-lg flex flex-col z-10">
-                                <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
-                                    <span className="text-lg font-semibold">+</span>
-                                </button>
-                                <button className="px-3 py-2 hover:bg-gray-50">
-                                    <span className="text-lg font-semibold">-</span>
-                                </button>
-                            </div>
+                            <InteractivePropertyMap
+                                properties={properties}
+                                selectedPropertyId={selectedPropertyId}
+                                onPropertyClick={(propertyId) => {
+                                    setSelectedPropertyId(propertyId);
+                                    // Scroll to property in list
+                                    const element = document.querySelector(`[data-property-id="${propertyId}"]`);
+                                    if (element) {
+                                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

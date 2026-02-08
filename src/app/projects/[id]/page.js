@@ -11,8 +11,8 @@ import { fetchProperties } from "../../../utils/propertyapi";
 import { searchProperties } from "../../../utils/searchApi";
 import { fetchProjectById, fetchProjects } from "../../../utils/projectapi";
 import MoreFiltersModal from "../../../components/MoreFiltersModal";
-import { FaArrowRight, FaChevronUp, FaChevronDown } from "react-icons/fa6";
-import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding } from "react-icons/fa";
+import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
+import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 export default function Sale({ priceType: initialPriceType = "rent" }) {
@@ -485,25 +485,68 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
   <div className="max-w-[2800px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
     {/* ================= LEFT SECTION ================= */}
     <div className="lg:col-span-7">
-      {/* Top Metadata Section */}
-      <div className="mb-6 flex flex-wrap items-center gap-4">
-        {/* Year Of Completion */}
-        <div className="bg-gray-200 px-4 py-2 rounded-md">
-          <span className="text-sm text-gray-700">
-            Year Of Completion {project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
-          </span>
-        </div>
-        {/* Project Type */}
-        <div className="bg-gray-200 px-4 py-2 rounded-md">
-          <span className="text-sm text-gray-700">
-            Project Type {project?.projectType || 'N/A'}
-          </span>
-        </div>
-      </div>
+      {/* TOP SPECS */}
+      {project && (
+        <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4">
+            {/* Year Of Completion */}
+            <div
+              className="
+                flex items-center gap-2 sm:gap-3
+                bg-white
+                px-2 sm:px-3
+                h-12 sm:h-14
+                rounded-[5px]
+                shadow-sm
+              "
+            >
+              <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
+              <p
+                className="
+                  font-semibold text-[#001730]
+                  text-xs sm:text-sm
+                  whitespace-nowrap
+                  truncate
+                  w-full
+                "
+                title={project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
+              >
+                {project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
+              </p>
+            </div>
 
-      {/* Navigation Tabs */}
-      <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-6">
-        <div className="flex gap-2 sm:gap-4 mb-4 flex-wrap">
+            {/* Project Type */}
+            <div
+              className="
+                flex items-center gap-2 sm:gap-3
+                bg-white
+                px-2 sm:px-3
+                h-12 sm:h-14
+                rounded-[5px]
+                shadow-sm
+              "
+            >
+              <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
+              <p
+                className="
+                  font-semibold text-[#001730]
+                  text-xs sm:text-sm
+                  whitespace-nowrap
+                  truncate
+                  w-full
+                "
+                title={project?.projectType || 'N/A'}
+              >
+                {project?.projectType || 'N/A'}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Description box */}
+      <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-4">
+        <div className="flex gap-2 sm:gap-4 mb-4">
           <button
             onClick={() => setActiveTab("overview")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
@@ -588,22 +631,95 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           <>
             {activeTab === "overview" && (
               <>
-                <h2 className="text-lg sm:text-xl font-semibold text-[#001730] mb-3">
-                  {project.nameEn || project.name || "Project Description"}
-                </h2>
-                <p className="text-gray-600 leading-relaxed text-sm md:text-base mb-4">
-                  {project.descriptionEn || project.description || ""}
-                </p>
-                {project.descriptionAr && (
-                  <p className="text-gray-600 leading-relaxed mt-4 text-sm md:text-base">
-                    {project.descriptionAr}
+                {project.descriptionEn || project.description ? (
+                  <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                    {(() => {
+                      // Function to strip HTML tags and format list items
+                      const formatDescription = (text) => {
+                        if (!text) return '';
+                        
+                        // Remove <ul> and </ul> tags
+                        let formatted = text.replace(/<\/?ul>/gi, '');
+                        
+                        // Replace <li> with bullet point and </li> with line break
+                        formatted = formatted.replace(/<li>/gi, '• ');
+                        formatted = formatted.replace(/<\/li>/gi, '\n');
+                        
+                        // Remove any remaining HTML tags
+                        formatted = formatted.replace(/<[^>]*>/g, '');
+                        
+                        // Decode HTML entities
+                        formatted = formatted
+                          .replace(/&nbsp;/g, ' ')
+                          .replace(/&amp;/g, '&')
+                          .replace(/&lt;/g, '<')
+                          .replace(/&gt;/g, '>')
+                          .replace(/&quot;/g, '"')
+                          .replace(/&#39;/g, "'");
+                        
+                        // Split by line breaks and filter empty lines
+                        const lines = formatted.split('\n').filter(line => line.trim());
+                        
+                        return lines.map((line, index) => (
+                          <p key={index} className="mb-2">
+                            {line.trim()}
+                          </p>
+                        ));
+                      };
+                      
+                      return formatDescription(project.descriptionEn || project.description || "");
+                    })()}
+                  </div>
+                ) : (
+                  <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                    No description available for this project.
                   </p>
+                )}
+                {project.descriptionAr && (
+                  <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                    {(() => {
+                      // Function to strip HTML tags and format list items
+                      const formatDescription = (text) => {
+                        if (!text) return '';
+                        
+                        // Remove <ul> and </ul> tags
+                        let formatted = text.replace(/<\/?ul>/gi, '');
+                        
+                        // Replace <li> with bullet point and </li> with line break
+                        formatted = formatted.replace(/<li>/gi, '• ');
+                        formatted = formatted.replace(/<\/li>/gi, '\n');
+                        
+                        // Remove any remaining HTML tags
+                        formatted = formatted.replace(/<[^>]*>/g, '');
+                        
+                        // Decode HTML entities
+                        formatted = formatted
+                          .replace(/&nbsp;/g, ' ')
+                          .replace(/&amp;/g, '&')
+                          .replace(/&lt;/g, '<')
+                          .replace(/&gt;/g, '>')
+                          .replace(/&quot;/g, '"')
+                          .replace(/&#39;/g, "'");
+                        
+                        // Split by line breaks and filter empty lines
+                        const lines = formatted.split('\n').filter(line => line.trim());
+                        
+                        return lines.map((line, index) => (
+                          <p key={index} className="mb-2">
+                            {line.trim()}
+                          </p>
+                        ));
+                      };
+                      
+                      return formatDescription(project.descriptionAr);
+                    })()}
+                  </div>
                 )}
               </>
             )}
 
             {activeTab === "gallery" && (
-              <div className="mt-4">
+              <div className="mx-4 sm:mx-10 mb-4">
                 {project.gallery && project.gallery.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {project.gallery.map((image, index) => (
@@ -624,7 +740,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             )}
 
             {activeTab === "document" && (
-              <div className="mt-4">
+              <div className="mx-4 sm:mx-10 mb-4">
                 {project.documents && project.documents.length > 0 ? (
                   <div className="space-y-3">
                     {project.documents.map((doc, index) => (
@@ -647,15 +763,15 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             )}
 
             {activeTab === "nearby" && (
-              <div className="mt-4">
-                <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+              <div className="mx-4 sm:mx-10 mb-4">
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                   Nearby amenities and locations information will be displayed here.
                 </p>
               </div>
             )}
 
             {activeTab === "360view" && (
-              <div className="mt-4">
+              <div className="mx-4 sm:mx-10 mb-4">
                 <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
                   {project.virtualTourUrl ? (
                     <iframe
@@ -683,13 +799,49 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             )}
           </>
         ) : (
-          <div className="text-gray-500">Project details not available</div>
+          <div className="text-gray-500 mx-4 sm:mx-10">Project details not available</div>
+        )}
+        <div className="w-[90%] h-[0.2px] px-10 mx-4 sm:mx-10 mt-2 3xl:mt-3 bg-gray-400 mb-3 md:mb-4 3xl:mb-5"></div>
+        {/* Bottom stats */}
+        {project && (
+          <div className="grid grid-cols-3 mx-4 sm:mx-10 pt-4 mt-4">
+            {[
+              { title: "Starting Price", value: project.startingPrice ? `QAR ${project.startingPrice.toLocaleString()}` : "N/A", icon: "price" },
+              { title: "Project Type", value: project.projectType || "N/A", icon: "type" },
+              { title: "Status", value: project.status || "N/A", icon: "status" },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className={`flex flex-col pl-2 sm:pl-4 ${i !== 2 ? "border-r border-gray-400" : ""
+                  }`}
+              >
+                {/* TITLE + ICON SIDE BY SIDE */}
+                <div className="flex items-center gap-1 sm:gap-2">
+                  {item.icon === "price" && (
+                    <FaDollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  )}
+                  {item.icon === "type" && (
+                    <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  )}
+                  {item.icon === "status" && (
+                    <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  )}
+                  <p className="text-gray-500 text-xs sm:text-sm">{item.title}</p>
+                </div>
+
+                {/* VALUE BELOW */}
+                <h3 className="text-[#001730] text-base sm:text-xl font-semibold mt-1">
+                  {item.value}
+                </h3>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
       {/* Pricing and Terms Section */}
       {project && (
-        <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-6">
+        <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-4 mt-4 sm:mt-6">
           <p className="text-gray-700 text-sm md:text-base">
             {project.startingPrice ? (
               <>
@@ -707,7 +859,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
       {/* Map Section */}
       {project && (
-        <div className="bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden mb-6">
+        <div className="mt-4 sm:mt-6 bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden mb-4">
           <iframe
             src={(() => {
               // Build location string from project location levels
@@ -735,31 +887,32 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         </div>
       )}
 
-      {/* Project Reference ID and Ownership */}
+      {/* Bottom info strip */}
       {project && (
-        <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Project Reference ID:
-              </label>
-              <input
-                type="text"
-                value={project.projectReference || ""}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700"
-              />
+        <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
+          <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
+            {/* Box 1 */}
+            <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+              <p className="flex flex-col sm:flex-row sm:items-center">
+                <span className="font-semibold text-[#001730]">Project ID:</span>
+                <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectReference || project.id || "N/A"}</span>
+              </p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Owned by:
-              </label>
-              <input
-                type="text"
-                value={project.projectOwnership || "Al-Asmakh"}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700"
-              />
+
+            {/* Box 2 */}
+            <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+              <p className="flex flex-col sm:flex-row sm:items-center">
+                <span className="font-semibold text-[#001730]">Project Type:</span>
+                <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectType ? project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1) : "N/A"}</span>
+              </p>
+            </div>
+
+            {/* Box 3 */}
+            <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+              <p className="flex flex-col sm:flex-row sm:items-center">
+                <span className="font-semibold text-[#001730]">Owned by:</span>
+                <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectOwnership || "Al-Asmakh"}</span>
+              </p>
             </div>
           </div>
         </div>
@@ -797,7 +950,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
         {viewMode === "properties" ? (
           <>
-            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-5 relative z-10">
+            <h2
+              className="text-[#001730] uppercase mb-2 mt-4 lg:mb-2 text-center whitespace-nowrap relative z-10"
+              style={{
+                fontSize: "clamp(16px, 4vw, 24px)"
+              }}
+            >
               Exclusive properties in {project?.nameEn || project?.name || "this project"}
             </h2>
 
@@ -949,9 +1107,15 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           </>
         ) : (
           <div className="bg-white p-6 rounded-md shadow">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            <h2
+              className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
+              style={{
+                fontSize: "clamp(16px, 4vw, 24px)"
+              }}
+            >
               Agents for {project?.nameEn || project?.name || "this project"}
             </h2>
+            <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%] mb-6"></div>
             {agents && agents.length > 0 ? (
               <div className="space-y-4">
                 {agents.map((agent, index) => {
@@ -1012,10 +1176,16 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 <section className="w-full bg-white py-12">
   <div className="max-w-[2800px] mx-auto px-4">
     <div className="mb-8 text-center">
-      <h2 className="text-2xl sm:text-3xl font-bold text-[#001730] mb-2">
+      <h2
+        className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
+        style={{
+          fontSize: "clamp(16px, 4vw, 24px)"
+        }}
+      >
         RELATED PROJECTS
       </h2>
-      <p className="text-gray-600 text-sm sm:text-base">
+      <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%]"></div>
+      <p className="text-gray-600 text-sm sm:text-base mt-4">
         Discover similar properties that might interest you in the same area or with comparable features.
       </p>
     </div>

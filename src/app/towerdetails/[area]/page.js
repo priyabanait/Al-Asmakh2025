@@ -3,7 +3,8 @@
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { MapPin } from 'lucide-react'
-import { FaArrowRight } from 'react-icons/fa6'
+import { FaArrowRight, FaChevronUp, FaChevronDown } from 'react-icons/fa6'
+import { FaHome, FaBuilding, FaRegSquare, FaDollarSign } from 'react-icons/fa'
 import Link from 'next/link'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
@@ -20,7 +21,9 @@ const slugToNameMap = {
   'the-pearl': 'Pearl Island',
   'doha': 'Doha',
   'al-sadd': 'Al Sadd',
-  'al-dafna': 'Al Dafna'
+  'al-dafna': 'Al Dafna',
+  'ain-khaled': 'Ain Khaled',
+  'ain-khalid': 'Ain Khaled'
 }
 
 // Hardcoded area data (fallback)
@@ -275,22 +278,24 @@ export default function TowerDetailsPage() {
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [activeTab, setActiveTab] = useState("overview") // overview, nearby, 360view
+  const [nearbyAreas, setNearbyAreas] = useState([])
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
-  // Fetch area data from API
+  // OPTIMIZED: Single API call to fetch area + all properties
   useEffect(() => {
     const fetchAreaData = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        // First, get the area name from slug
+        // Get area name from slug
         const areaName = slugToNameMap[areaSlug] || areaSlug.split('-').map(word => 
           word.charAt(0).toUpperCase() + word.slice(1)
         ).join(' ')
 
-        // Fetch areas list to find the area ID
+        // Step 1: Get area ID from areas list (single call)
         const areasListUrl = getApiUrl('api/v1/areas/list')
         const areasResponse = await fetch(areasListUrl)
         
@@ -306,7 +311,6 @@ export default function TowerDetailsPage() {
         )
 
         if (!foundArea) {
-          // Fallback to hardcoded data
           const fallbackArea = areaData[areaSlug] || areaData['west-bay']
           setArea(fallbackArea)
           setProperties(fallbackArea.properties || [])
@@ -314,8 +318,8 @@ export default function TowerDetailsPage() {
           return
         }
 
-        // Fetch full area details with properties
-        const areaDetailsUrl = getApiUrl(`api/v1/areas/${foundArea.area_id}/full-details?page=1&limit=4`)
+        // Step 2: OPTIMIZED - Single call to get area details + all properties
+        const areaDetailsUrl = getApiUrl(`api/v1/areas/${foundArea.area_id}/full-details?page=1&limit=50`)
         const detailsResponse = await fetch(areaDetailsUrl)
         
         if (!detailsResponse.ok) {
@@ -323,21 +327,31 @@ export default function TowerDetailsPage() {
         }
 
         const detailsData = await detailsResponse.json()
+        const areaInfo = detailsData.area || {}
         
-        // Map API response to component structure
+        // Map area data
         const mappedArea = {
-          id: detailsData.area?.id || foundArea.area_id,
-          name: detailsData.area?.nameEn || foundArea.area_name,
-          title: `Welcome to ${detailsData.area?.nameEn || foundArea.area_name}`,
-          image: detailsData.area?.imageUrl || detailsData.area?.imageUrlEn || foundArea.area_image || '/images_pages/listings.png',
-          description: detailsData.area?.descriptionEn || '',
-          description2: detailsData.area?.descriptionAr || ''
+          id: areaInfo.id || foundArea.area_id,
+          name: areaInfo.nameEn || foundArea.area_name,
+          title: `Welcome to ${areaInfo.nameEn || foundArea.area_name}`,
+          image: areaInfo.imageUrl || areaInfo.imageUrlEn || foundArea.area_image || '/images_pages/listings.png',
+          description: areaInfo.descriptionEn || '',
+          description2: areaInfo.descriptionAr || '',
+          areaId: foundArea.area_id,
+          totalProperties: detailsData.listingsCount || detailsData.properties?.length || 0,
+          status: areaInfo.status || 'active',
+          locationLevel1: areaInfo.locationLevel1 || foundArea.area_name,
+          locationLevel2: areaInfo.locationLevel2,
+          locationLevel3: areaInfo.locationLevel3,
+          latitude: areaInfo.latitude || areaInfo.lat,
+          longitude: areaInfo.longitude || areaInfo.lng || areaInfo.lon,
+          virtualTourUrl: areaInfo.virtualTourUrl || null,
+          amenities: areaInfo.amenities || []
         }
 
-        // Map properties from API response
-        const mappedProperties = (detailsData.properties || []).slice(0, 4).map((item, index) => {
+        // Map properties
+        const mappedProperties = (detailsData.properties || []).map((item, index) => {
           const prop = item.property || item
-          // Build location string
           const locationParts = [
             prop.locationLevel2,
             prop.locationLevel3,
@@ -361,6 +375,19 @@ export default function TowerDetailsPage() {
 
         setArea(mappedArea)
         setProperties(mappedProperties.length > 0 ? mappedProperties : (areaData[areaSlug]?.properties || []))
+
+        // Step 3: Fetch nearby areas (other areas in the same location)
+        const allAreas = areasData.areas || []
+        const nearby = allAreas
+          .filter(a => a.area_id !== foundArea.area_id && a.area_name)
+          .slice(0, 6)
+          .map(a => ({
+            id: a.area_id,
+            name: a.area_name,
+            image: a.area_image || '/images_pages/listings.png',
+            description: a.descriptionEn || ''
+          }))
+        setNearbyAreas(nearby)
       } catch (err) {
         console.error('Error fetching area data:', err)
         setError(err.message)
@@ -436,33 +463,370 @@ export default function TowerDetailsPage() {
       </section>
 
       <section className="w-full bg-white">
-
         {/* 🔹 CONTENT GRID */}
-        <div className="max-w-[3200px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="max-w-[2800px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* ================= LEFT SECTION ================= */}
           <div className="lg:col-span-7">
-            <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-              {area.description}
-            </p>
-            <p className="text-gray-600 leading-relaxed mt-4 text-sm md:text-base">
-              {area.description2}
-            </p>
+            {/* TOP SPECS */}
+            {area && (
+              <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
+                  {[
+                    { icon: "name", label: area.name || 'N/A' },
+                    { icon: "status", label: area.status || 'Active' },
+                    { icon: "properties", label: area.totalProperties ? `${area.totalProperties} Properties` : 'N/A' },
+                    { icon: "location", label: area.locationLevel1 || 'N/A' },
+                    { icon: "area", label: area.locationLevel2 || 'N/A' },
+                  ].map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="
+                        flex items-center gap-2 sm:gap-3
+                        bg-white
+                        px-2 sm:px-3
+                        h-12 sm:h-14
+                        rounded-[5px]
+                        shadow-sm
+                      "
+                    >
+                      {/* ICONS */}
+                      {item.icon === "name" && <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                      {item.icon === "status" && <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                      {item.icon === "properties" && <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                      {item.icon === "location" && <FaRegSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
+                      {item.icon === "area" && <FaRegSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
 
-            {/* 🔹 ACCORDION */}
-            <div className="mt-10 divide-y border-t">
-              {['Lifestyle', 'About the Area'].map((item, i) => (
+                      {/* TEXT */}
+                      <p
+                        className="
+                          font-semibold text-[#001730]
+                          text-xs sm:text-sm
+                          whitespace-nowrap
+                          truncate
+                          w-full
+                        "
+                        title={item.label}
+                      >
+                        {item.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Description box */}
+            <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-4">
+              <div className="flex gap-2 sm:gap-4 mb-4">
                 <button
-                  key={i}
-                  onClick={() => toggle(i)}
-                  className="w-full flex justify-between items-center py-4 text-left"
+                  onClick={() => setActiveTab("overview")}
+                  className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+                    activeTab === "overview"
+                      ? "bg-white text-[#001730]"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
                 >
-                  <span className="uppercase tracking-wide text-sm font-medium text-gray-800">
-                    {item}
-                  </span>
-                  <span className="text-xl">{open === i ? '−' : '+'}</span>
+                  Overview
+                  {activeTab === "overview" ? (
+                    <FaChevronDown size={14} />
+                  ) : (
+                    <FaChevronUp size={14} />
+                  )}
                 </button>
-              ))}
+                <button
+                  onClick={() => setActiveTab("nearby")}
+                  className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+                    activeTab === "nearby"
+                      ? "bg-white text-[#001730]"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  Nearby
+                  {activeTab === "nearby" ? (
+                    <FaChevronDown size={14} />
+                  ) : (
+                    <FaChevronUp size={14} />
+                  )}
+                </button>
+                <button
+                  onClick={() => setActiveTab("360view")}
+                  className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
+                    activeTab === "360view"
+                      ? "bg-white text-[#001730]"
+                      : "bg-gray-200 text-gray-500"
+                  }`}
+                >
+                  360 view
+                  {activeTab === "360view" ? (
+                    <FaChevronDown size={14} />
+                  ) : (
+                    <FaChevronUp size={14} />
+                  )}
+                </button>
+              </div>
+
+              {/* Tab Content */}
+              {area ? (
+                <>
+                  {activeTab === "overview" && (
+                    <>
+                      {area.description ? (
+                        <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                          {(() => {
+                            // Function to strip HTML tags and format list items
+                            const formatDescription = (text) => {
+                              if (!text) return '';
+                              
+                              // Remove <ul> and </ul> tags
+                              let formatted = text.replace(/<\/?ul>/gi, '');
+                              
+                              // Replace <li> with bullet point and </li> with line break
+                              formatted = formatted.replace(/<li>/gi, '• ');
+                              formatted = formatted.replace(/<\/li>/gi, '\n');
+                              
+                              // Remove any remaining HTML tags
+                              formatted = formatted.replace(/<[^>]*>/g, '');
+                              
+                              // Decode HTML entities
+                              formatted = formatted
+                                .replace(/&nbsp;/g, ' ')
+                                .replace(/&amp;/g, '&')
+                                .replace(/&lt;/g, '<')
+                                .replace(/&gt;/g, '>')
+                                .replace(/&quot;/g, '"')
+                                .replace(/&#39;/g, "'");
+                              
+                              // Split by line breaks and filter empty lines
+                              const lines = formatted.split('\n').filter(line => line.trim());
+                              
+                              return lines.map((line, index) => (
+                                <p key={index} className="mb-2">
+                                  {line.trim()}
+                                </p>
+                              ));
+                            };
+                            
+                            return formatDescription(area.description);
+                          })()}
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                          No description available for this area.
+                        </p>
+                      )}
+                      {area.description2 && (
+                        <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                          {(() => {
+                            // Function to strip HTML tags and format list items
+                            const formatDescription = (text) => {
+                              if (!text) return '';
+                              
+                              // Remove <ul> and </ul> tags
+                              let formatted = text.replace(/<\/?ul>/gi, '');
+                              
+                              // Replace <li> with bullet point and </li> with line break
+                              formatted = formatted.replace(/<li>/gi, '• ');
+                              formatted = formatted.replace(/<\/li>/gi, '\n');
+                              
+                              // Remove any remaining HTML tags
+                              formatted = formatted.replace(/<[^>]*>/g, '');
+                              
+                              // Decode HTML entities
+                              formatted = formatted
+                                .replace(/&nbsp;/g, ' ')
+                                .replace(/&amp;/g, '&')
+                                .replace(/&lt;/g, '<')
+                                .replace(/&gt;/g, '>')
+                                .replace(/&quot;/g, '"')
+                                .replace(/&#39;/g, "'");
+                              
+                              // Split by line breaks and filter empty lines
+                              const lines = formatted.split('\n').filter(line => line.trim());
+                              
+                              return lines.map((line, index) => (
+                                <p key={index} className="mb-2">
+                                  {line.trim()}
+                                </p>
+                              ));
+                            };
+                            
+                            return formatDescription(area.description2);
+                          })()}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {activeTab === "nearby" && (
+                    <div className="mx-4 sm:mx-10 mb-4">
+                      {nearbyAreas.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {nearbyAreas.map((nearbyArea) => (
+                            <Link
+                              key={nearbyArea.id}
+                              href={`/towerdetails/${nearbyArea.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                            >
+                              <div className="relative h-48">
+                                <Image
+                                  src={nearbyArea.image}
+                                  alt={nearbyArea.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="p-4">
+                                <h3 className="text-lg font-semibold text-[#001730] mb-2">
+                                  {nearbyArea.name}
+                                </h3>
+                                {nearbyArea.description && (
+                                  <p className="text-gray-600 text-sm line-clamp-2">
+                                    {nearbyArea.description}
+                                  </p>
+                                )}
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500">No nearby areas available</p>
+                      )}
+                    </div>
+                  )}
+
+                  {activeTab === "360view" && (
+                    <div className="mx-4 sm:mx-10 mb-4">
+                      <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
+                        {area.virtualTourUrl ? (
+                          <iframe
+                            src={area.virtualTourUrl}
+                            className="w-full h-full"
+                            frameBorder="0"
+                            allow="fullscreen; vr"
+                            allowFullScreen
+                            title="360 Virtual Tour"
+                          ></iframe>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                            <div className="text-center p-8">
+                              <h3 className="text-xl sm:text-2xl font-semibold text-[#001730] mb-2">
+                                360° Virtual Tour
+                              </h3>
+                              <p className="text-gray-600 text-sm sm:text-base">
+                                360° virtual tour will be available here
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-gray-500 mx-4 sm:mx-10">Area details not available</div>
+              )}
+              <div className="w-[90%] h-[0.2px] px-10 mx-4 sm:mx-10 mt-2 3xl:mt-3 bg-gray-400 mb-3 md:mb-4 3xl:mb-5"></div>
+              {/* Bottom stats */}
+              {area && (
+                <div className="grid grid-cols-3 mx-4 sm:mx-10 pt-4 mt-4">
+                  {[
+                    { title: "Total Properties", value: area.totalProperties ? `${area.totalProperties} Properties` : "N/A", icon: "properties" },
+                    { title: "Area Name", value: area.name || "N/A", icon: "name" },
+                    { title: "Status", value: area.status || "N/A", icon: "status" },
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className={`flex flex-col pl-2 sm:pl-4 ${i !== 2 ? "border-r border-gray-400" : ""
+                        }`}
+                    >
+                      {/* TITLE + ICON SIDE BY SIDE */}
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        {item.icon === "properties" && (
+                          <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        )}
+                        {item.icon === "name" && (
+                          <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        )}
+                        {item.icon === "status" && (
+                          <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                        )}
+                        <p className="text-gray-500 text-xs sm:text-sm">{item.title}</p>
+                      </div>
+
+                      {/* VALUE BELOW */}
+                      <h3 className="text-[#001730] text-base sm:text-xl font-semibold mt-1">
+                        {item.value}
+                      </h3>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
+
+            {/* Map Section with Lat/Long Support */}
+            {area && (
+              <div className="mt-4 sm:mt-6 bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden mb-4">
+                <iframe
+                  src={(() => {
+                    // Priority: Use lat/long if available, then location levels, then area name
+                    if (area.latitude && area.longitude) {
+                      // Use coordinates for precise location
+                      return `https://www.google.com/maps?q=${area.latitude},${area.longitude}&output=embed&hl=en&z=15`;
+                    }
+                    
+                    // Fallback to location string
+                    const locationParts = [
+                      area.locationLevel1,
+                      area.locationLevel2,
+                      area.locationLevel3
+                    ].filter(Boolean);
+                    
+                    const locationQuery = locationParts.length > 0 
+                      ? encodeURIComponent(locationParts.join(', ') + ', Qatar')
+                      : encodeURIComponent((area.name || 'Doha') + ', Qatar');
+                    
+                    return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en`;
+                  })()}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+            )}
+
+            {/* Bottom info strip */}
+            {area && (
+              <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
+                <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
+                  {/* Box 1 */}
+                  <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+                    <p className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="font-semibold text-[#001730]">Area ID:</span>
+                      <span className="mt-1 sm:mt-0 sm:ml-1">{area.id || area.areaId || "N/A"}</span>
+                    </p>
+                  </div>
+
+                  {/* Box 2 */}
+                  <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+                    <p className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="font-semibold text-[#001730]">Area Name:</span>
+                      <span className="mt-1 sm:mt-0 sm:ml-1">{area.name || "N/A"}</span>
+                    </p>
+                  </div>
+
+                  {/* Box 3 */}
+                  <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+                    <p className="flex flex-col sm:flex-row sm:items-center">
+                      <span className="font-semibold text-[#001730]">Status:</span>
+                      <span className="mt-1 sm:mt-0 sm:ml-1">{area.status || "Active"}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ================= RIGHT SECTION ================= */}
@@ -478,9 +842,15 @@ export default function TowerDetailsPage() {
                 />
               </div>
 
-              <h2 className="text-lg font-semibold text-gray-900 mb-6 relative z-10">
+              <h2
+                className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap relative z-10"
+                style={{
+                  fontSize: "clamp(16px, 4vw, 24px)"
+                }}
+              >
                 Exclusive properties in {area.name}
               </h2>
+              <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%] mb-5 relative z-10"></div>
 
               {/* 🔹 PROPERTY LIST */}
               <div className="space-y-4 relative z-10">
@@ -584,6 +954,53 @@ export default function TowerDetailsPage() {
           </div>
         </div>
       </section>
+
+      {/* Nearby Areas Section */}
+      {nearbyAreas.length > 0 && (
+        <section className="w-full bg-white py-12">
+          <div className="max-w-[2800px] mx-auto px-4">
+            <h2
+              className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
+              style={{
+                fontSize: "clamp(16px, 4vw, 24px)"
+              }}
+            >
+              Nearby Areas
+            </h2>
+            <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%] mb-8"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {nearbyAreas.map((nearbyArea) => (
+                <Link
+                  key={nearbyArea.id}
+                  href={`/towerdetails/${nearbyArea.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                >
+                  <div className="relative h-48">
+                    <Image
+                      src={nearbyArea.image}
+                      alt={nearbyArea.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-[#001730] mb-2">
+                      {nearbyArea.name}
+                    </h3>
+                    {nearbyArea.description && (
+                      <p className="text-gray-600 text-sm line-clamp-2">
+                        {nearbyArea.description}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <Footer />
     </main>
   )
