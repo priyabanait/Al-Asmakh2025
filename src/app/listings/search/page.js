@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Header from '../../../components/Header'
 import Rent from '../../../components/RentMap'
 import Footer from '../../../components/Footer'
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams()
   const [initialQuery, setInitialQuery] = useState('')
   const [initialFilters, setInitialFilters] = useState({})
@@ -71,13 +71,28 @@ export default function SearchPage() {
   }, [searchParams])
 
   return (
+    <Rent 
+      priceType="rent" 
+      initialSearchQuery={initialQuery}
+      initialFilters={initialFilters}
+    />
+  )
+}
+
+export default function SearchPage() {
+  return (
     <main className="min-h-screen relative">
       <Header />
-      <Rent 
-        priceType="rent" 
-        initialSearchQuery={initialQuery}
-        initialFilters={initialFilters}
-      />
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading search results...</p>
+          </div>
+        </div>
+      }>
+        <SearchContent />
+      </Suspense>
       <Footer />
     </main>
   )
