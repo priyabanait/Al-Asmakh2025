@@ -410,26 +410,15 @@ export default function Rent() {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <section className="w-full bg-gray-50 py-16 px-6 md:px-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-2xl text-[#001730] mb-4 font-semibold">
-            Ready for a smarter, easier way to manage your property?
-          </h2>
-          <p className="subheading text-gray-600 mb-8">
-            Let our team handle day-to-day operations with consistent standards and clear reporting, so you can stay informed, stay compliant, and enjoy peace of mind.
-          </p>
-          <p className="subheading text-gray-600 mb-8">
-            Share your property details and preferred service level, and we'll recommend the best next steps.
-          </p>
-          <button className="btn-details text-[12px]">
-            <span>Contact Us Now</span>
-            <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
-          </button>
-        </div>
-      </section>
 
-      <DreamPropertySection />
+
+      <DreamPropertySection  title=" Ready for a smarter, easier way to manage your property?" 
+      description="            Let our team handle day-to-day operations with consistent standards and clear reporting, so you can stay informed, stay compliant, and enjoy peace of mind.
+Share your property details and preferred service level, and we'll recommend the best next steps."
+      btnText="Contact Us Now"
+      btnLink="/contact"
+      
+      />
     </div>
   );
 }

@@ -1242,14 +1242,20 @@ export default function Profit() {
                             <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span className="text-[0.7rem] break-all">{office.address}</span>
                           </div>
-                          <div className="flex items-start gap-2">
+                          <a 
+                            href={`tel:${office.phone.replace(/\s+/g, '')}`}
+                            className="flex items-start gap-2 cursor-pointer hover:text-[#001730] transition-colors cursor-pointer"
+                          >
                             <Phone className="w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span className="text-[0.7rem] break-all">{office.phone}</span>
-                          </div>
-                          <div className="flex items-start gap-2">
+                          </a>
+                          <a 
+                            href={`mailto:${office.email}`}
+                            className="flex items-start gap-2 cursor-pointer hover:text-[#001730] transition-colors cursor-pointer"
+                          >
                             <Mail className="w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span className="text-[0.7rem] break-all">{office.email}</span>
-                          </div>
+                          </a>
                           <div className="flex items-start gap-2">
                             <Clock className="w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span className="text-[0.7rem] break-all">{office.timing}</span>
@@ -1337,14 +1343,20 @@ export default function Profit() {
                             <MapPin className="w-4 h-4 text-gray-700" />
                             {office.address}
                           </div>
-                          <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <a 
+                            href={`tel:${office.phone.replace(/\s+/g, '')}`}
+                            className="flex items-center gap-2 text-gray-700 text-sm hover:text-[#001730] transition-colors cursor-pointer"
+                          >
                             <Phone className="w-4 h-4 text-gray-700" />
                             {office.phone}
-                          </div>
-                          <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          </a>
+                          <a 
+                            href={`mailto:${office.email}`}
+                            className="flex items-center gap-2 text-gray-700 text-sm hover:text-[#001730] transition-colors cursor-pointer"
+                          >
                             <Mail className="w-4 h-4 text-gray-700" />
                             {office.email}
-                          </div>
+                          </a>
                           <div className="flex items-center gap-2 text-gray-700 text-sm">
                             <Clock className="w-4 h-4 text-gray-700" />
                             {office.timing}

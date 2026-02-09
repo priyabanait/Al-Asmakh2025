@@ -81,21 +81,15 @@ export default function Header() {
 
   // Dropdown menus
   const dropdowns = {
-    HOME: [
-      { label: 'Home', path: '/', external: false },
-      // { label: 'Privilege Program', path: 'https://privilege.alasmakhrealestate.com', external: true },
-    ],
-    'ABOUT US': [
-      { label: 'About Us', path: '/aboutUs' },
-    ],
+    // HOME and ABOUT US are direct links, no dropdowns
     SERVICES: [
       { label: 'Leasing Services', path: '/listings/lease-services' },
       { label: 'Sales Services', path: '/services/services-sales' },
-      { label: 'Project Development', path: '/services/project-devlopment' },
+      // { label: 'Project Development', path: '/services/project-devlopment' },
       { label: 'Property Management', path: '/services/propertyManagement' },
       { label: 'Marketing', path: '/services/marketing' },
       { label: 'Facilities Management', path: '/services/facilities-management' },
-      { label: 'Become an Agent', path: '/services/become-an-agent' },
+      // { label: 'Become an Agent', path: '/services/become-an-agent' },
       { label: 'Other Services', path: '/other-services' },
     ],
     LISTINGS: [
@@ -170,6 +164,8 @@ export default function Header() {
   const handleMobileMenuItemClick = (item) => {
     if (item.key === 'HOME') {
       router.push('/')
+    } else if (item.key === 'ABOUT US') {
+      router.push('/aboutUs')
     } else {
       router.push(`/${item.key.toLowerCase().replace(' ', '-')}`)
     }
@@ -285,6 +281,8 @@ export default function Header() {
                         : router.push(
                           item.key === 'HOME'
                             ? '/'
+                            : item.key === 'ABOUT US'
+                            ? '/aboutUs'
                             : `/${item.key.toLowerCase().replace(' ', '-')}`
                         )
                     }

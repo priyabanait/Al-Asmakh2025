@@ -6,7 +6,8 @@ import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
 import DreamPropertySection from "./DreamPropertySection";
 import { motion, AnimatePresence } from "framer-motion";
-export default function ContactHeadOffice() {
+import { IoIosArrowDown } from "react-icons/io";
+export default function ContactHeadOffice({ isActive }) {
   const [currentOfficeIndex, setCurrentOfficeIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const autoScrollIntervalRef = useRef(null);
@@ -127,6 +128,23 @@ export default function ContactHeadOffice() {
             </p>
           </div>
         </div>
+
+
+        {/* Scroll Indicator */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1 }}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
+        >
+          <span className="text-white text-xs tracking-widest uppercase">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <IoIosArrowDown size={24} className="text-white" />
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Contact Cards Section */}
@@ -153,8 +171,8 @@ export default function ContactHeadOffice() {
                   <h3 className="text-sm font-light mb-3 items-end text-right text-white">Send us an email anytime</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
-                    <span className="text-xs font-light text-white">Sales@aredc.qa</span>
-                    <span className="text-xs font-light text-white">Info@aredc.qa</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`mailto:Sales@aredc.qa`} >Sales@aredc.qa</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`mailto:Info@aredc.qa`} >Info@aredc.qa</span>
                   </div>
                 </div>
               </div>
@@ -179,8 +197,8 @@ export default function ContactHeadOffice() {
                   <h3 className="text-sm font-light mb-3 text-white items-end text-right">Call us during business hours</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
-                    <span className="text-xs font-light text-white">+974 4444 5555</span>
-                    <span className="text-xs font-light text-white">+974 4444 5556</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`tel:+974 4444 5555`} >+974 4444 5555</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`tel:+974 4444 5556`} >+974 4444 5556</span>
                   </div>
                 </div>
               </div>
@@ -205,9 +223,9 @@ export default function ContactHeadOffice() {
                   <h3 className="text-sm font-light mb-3 text-white items-end text-right">Visit our head office</h3>
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-1 text-right">
-                    <span className="text-xs font-light text-white">Tower 1, Floor 15</span>
-                    <span className="text-xs font-light text-white">West Bay Business District</span>
-                    <span className="text-xs font-light text-white">Doha, Qatar</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >Tower 1, Floor 15</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >West Bay Business District</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >Doha, Qatar</span>
                   </div>
                 </div>
               </div>
@@ -233,16 +251,16 @@ export default function ContactHeadOffice() {
                   <div className="h-[1px] bg-gray-600 mb-4"></div>
                   <div className="flex flex-col items-end gap-2 text-right">
                     <div className="flex flex-col items-end">
-                      <span className="text-xs font-light text-white">Friday</span>
-                      <span className="text-xs font-light text-white/70">7:00 AM - 4:00 PM</span>
+                      <span className="text-xs font-light text-white" href={`https://maps.app.goo.gl/1234567890`} >Friday</span>
+                      <span className="text-xs font-light text-white/70 cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >7:00 AM - 4:00 PM</span>
                     </div>
                     <div className="flex flex-col items-end">
                       <span className="text-xs font-light text-white">Sunday - Thursday</span>
-                      <span className="text-xs font-light text-white/70">8:00 AM - 5:00 PM</span>
+                      <span className="text-xs font-light text-white/70 cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >8:00 AM - 5:00 PM</span>
                     </div>
                     <div className="flex flex-col items-end">
                       <span className="text-xs font-light text-white">Saturday</span>
-                      <span className="text-xs font-light text-white/70">Closed</span>
+                      <span className="text-xs font-light text-white/70 cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >Closed</span>
                     </div>
                   </div>
                 </div>
@@ -267,9 +285,9 @@ export default function ContactHeadOffice() {
               <h3 className="text-sm font-light mb-4 text-gray-400">Send us an email anytime</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               <div className="flex items-center justify-center gap-10">
-                <span className="text-xs font-light">Sales@aredc.go</span>
+                <span className="text-xs font-light cursor-pointer" href={`mailto:Sales@aredc.go`} >Sales@aredc.go</span>
                 <div className="h-4 w-[1px] bg-white"></div>
-                <span className="text-xs font-light">info@ared.qa</span>
+                <span className="text-xs font-light cursor-pointer  " href={`mailto:info@ared.qa`} >info@ared.qa</span>
               </div>
             </div>
 
@@ -287,9 +305,9 @@ export default function ContactHeadOffice() {
               <h3 className="text-sm font-light mb-4 text-gray-400">Call us during business hours</h3>
               <div className="w-[90%] h-[1px] bg-gray-600 mb-3 md:mb-4 mx-auto"></div>
               <div className="flex items-center justify-center gap-6">
-                <span className="text-xs font-light">+974 4444 5555</span>
+                <span className="text-xs font-light cursor-pointer" href={`tel:+974 4444 5555`} >+974 4444 5555</span>
                 <div className="h-4 w-[1px] bg-white"></div>
-                <span className="text-xs font-light">+974 4444 5556</span>
+                <span className="text-xs font-light cursor-pointer" href={`tel:+974 4444 5556`} >+974 4444 5556</span>
               </div>
             </div>
 
@@ -385,9 +403,9 @@ export default function ContactHeadOffice() {
               {" - "}
               <span className="text-[#FF0000] ">
                 For urgent property-related emergencies outside business hours{" "}</span>
-              <span className="text-[#FF0000]  ml-4">+974 5555 0000</span>
+              <span className="text-[#FF0000]  ml-4 cursor-pointer" href={`tel:+974 5555 0000`} >+974 5555 0000</span>
               {" "}
-              <span className="text-[#FF0000]  ml-4">24/7 Emergency Line</span>
+              <span className="text-[#FF0000]  ml-4 cursor-pointer" href={`tel:+974 5555 0000`} >24/7 Emergency Line</span>
             </p>
           </div>
         </div>
@@ -699,17 +717,17 @@ export default function ContactHeadOffice() {
                         <div className="space-y-2">
                           <div className="flex items-center gap-2 text-gray-700 text-sm">
                             <MapPin className="w-4 h-4 text-gray-700" />
-                            {office.address}
+                            <a href={`https://maps.app.goo.gl/1234567890`} >{office.address}</a>
                           </div>
-                          <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <div href={`tel:${office.phone.replace(/\s+/g, '')}`} className="flex cursor-pointer items-center gap-2 text-gray-700 text-sm">
                             <Phone className="w-4 h-4 text-gray-700" />
-                            {office.phone}
+                            <a href={`tel:${office.phone.replace(/\s+/g, '')}`} >{office.phone}</a>
                           </div>
-                          <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <div href={`mailto:${office.email}`} className="flex cursor-pointer items-center gap-2 text-gray-700 text-sm">
                             <Mail className="w-4 h-4 text-gray-700" />
-                            {office.email}
+                            <a href={`mailto:${office.email}`} >{office.email}</a>
                           </div>
-                          <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <div className="flex cursor-pointer items-center gap-2 text-gray-700 text-sm">
                             <Clock className="w-4 h-4 text-gray-700" />
                             {office.timing}
                           </div>

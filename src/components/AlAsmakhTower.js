@@ -67,6 +67,7 @@ export default function AlAsmakhTower() {
           const mappedAreas = data.areas.map((area) => ({
             id: area.area_id,
             name: area.area_name || "",
+            nameAr: area.area_title || area.area_name || "",
             subheading: area.area_title || area.area_name || "",
             image: area.area_image || "/images_prop/1.png", // Fallback image
             descriptionEn: area.descriptionEn || "", // English description for hover tooltip
@@ -642,7 +643,14 @@ export default function AlAsmakhTower() {
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
 
-                    {/* Description - Center of card, appears on hover */}
+                    {/* Area Name - Top Left - Always visible */}
+                    <div className="absolute top-4 left-4 opacity-100 z-30">
+                      <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg">
+                        <span className="text-white text-sm font-semibold">{areas[i].name}</span>
+                      </div>
+                    </div>
+
+
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 px-4">
                       <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[90%]">
                         {areas[i].descriptionEn ? (
@@ -658,28 +666,12 @@ export default function AlAsmakhTower() {
                       </div>
                     </div>
 
-                    {/* View More Button - Always visible */}
-                    <div className="absolute bottom-4 right-4 opacity-100 group-hover:opacity-100 transition-opacity z-30">
+
+                    {/* View More Button - Bottom Right - Only visible on hover */}
+                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-30">
                       <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg hover:bg-white/30 transition-colors cursor-pointer">
                         <span className="text-white text-sm font-semibold">View More</span>
                         <FaArrowRight size={14} className="text-white" />
-                      </div>
-                    </div>
-
-                    {/* Hover Overlay - Title and Arrow */}
-                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
-                      <div
-                        className="flex items-center justify-between rounded-b-lg px-4 py-3"
-                        style={{
-                          backdropFilter: 'blur(45px) saturate(180%)',
-                          WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-                          backgroundColor: 'rgba(255, 255, 255, 0.45)',
-                        }}
-                      >
-                        <span className="text-[#001730] font-semibold text-xs">
-                          {areas[i].subheading}
-                        </span>
-                        {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
                       </div>
                     </div>
                   </div>
@@ -704,7 +696,14 @@ export default function AlAsmakhTower() {
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
 
-                    {/* Description - Center of card, appears on hover */}
+                    {/* Area Name - Top Left - Always visible */}
+                    <div className="absolute top-4 left-4 opacity-100 z-30">
+                      <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg">
+                        <span className="text-white text-sm font-semibold">{areas[i].name}</span>
+                      </div>
+                    </div>
+
+
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 px-4">
                       <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[90%]">
                         {areas[i].descriptionEn ? (
@@ -717,31 +716,15 @@ export default function AlAsmakhTower() {
                             <FaArrowRight size={16} className="text-white" />
                           </div>
                         )}
+
                       </div>
                     </div>
 
-                    {/* View More Button - Always visible */}
-                    <div className="absolute bottom-4 right-4 opacity-100 group-hover:opacity-100 transition-opacity z-30">
+                    {/* View More Button - Bottom Right - Only visible on hover */}
+                    <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity z-30">
                       <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md rounded-lg px-4 py-2 border border-white/30 shadow-lg hover:bg-white/30 transition-colors cursor-pointer">
                         <span className="text-white text-sm font-semibold">View More</span>
                         <FaArrowRight size={14} className="text-white" />
-                      </div>
-                    </div>
-
-                    {/* Hover Overlay - Title and Arrow */}
-                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity ">
-                      <div
-                        className="flex items-center justify-between rounded-b-lg px-4 py-3"
-                        style={{
-                          backdropFilter: 'blur(45px) saturate(180%)',
-                          WebkitBackdropFilter: 'blur(45px) saturate(180%)',
-                          backgroundColor: 'rgba(255, 255, 255, 0.45)',
-                        }}
-                      >
-                        <span className="text-[#001730] font-semibold text-xs">
-                          {areas[i].subheading}
-                        </span>
-                        {/* <FaArrowRight className="text-[#001730] w-3 h-3" /> */}
                       </div>
                     </div>
                   </div>

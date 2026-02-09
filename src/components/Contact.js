@@ -222,7 +222,7 @@ export default function MeetOurAgents() {
 
         {/* Header Bar */}
         <div className="bg-white border-gray-200 px-2  lg:px-4">
-          <div className="hidden lg:flex max-w-full mb-1 bg-gray-50    mt-14 mx-auto items-center gap-2">
+          <div className="hidden lg:flex max-w-full mb-1    mt-14 mx-auto items-center gap-2">
 
             {/* Showing Count (Left) */}
             <div className="text-gray-400 text-sm font-medium whitespace-nowrap">

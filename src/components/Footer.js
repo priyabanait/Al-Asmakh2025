@@ -75,7 +75,7 @@ export default function Footer() {
   return (
     <footer
       id="main-footer"
-      className="bg-[#001730] text-white sm:py-5 w-full z-10 mt-auto flex-shrink-0 sm:px-0 md:px-0 3xl:px-0 4xl:px-0 5xl:px-0"
+      className="bg-[#001730] text-white sm:py-0 w-full z-10 mt-auto flex-shrink-0 sm:px-0 md:px-0 3xl:px-0 4xl:px-0 5xl:px-0"
       style={{
         borderTopLeftRadius: "0px",
         borderTopRightRadius: "0px",
