@@ -57,24 +57,23 @@ export default function ListingHeroSection({
     Price: null,
   });
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside (only checks the currently open dropdown)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      Object.keys(dropdownRefs.current).forEach((key) => {
-        if (
-          dropdownRefs.current[key] &&
-          !dropdownRefs.current[key].contains(event.target)
-        ) {
-          setOpenDropdown(null);
-        }
-      });
+      if (
+        openDropdown &&
+        dropdownRefs.current[openDropdown] &&
+        !dropdownRefs.current[openDropdown].contains(event.target)
+      ) {
+        setOpenDropdown(null);
+      }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  }, [openDropdown]);
 
   const handleFilterSelect = (filterName, value) => {
     // Select the clicked value (always set, don't toggle)
@@ -85,8 +84,12 @@ export default function ListingHeroSection({
     setSelectedFilters(newFilters);
     setOpenDropdown(null);
     
-    console.log(`[ListingHeroSection] Filter selected: ${filterName} = ${value}`, newFilters);
-    
+    console.log(
+      `[ListingHeroSection] Filter selected: ${filterName} = ${value}`,
+      newFilters,
+      "current value for this filter:",
+      newFilters[filterName]
+    );
     // Immediately call API with the selected filters when clicked
     // This ensures API is called only when a filter option is clicked
     if (onFilterChange) {
@@ -290,6 +293,7 @@ export default function ListingHeroSection({
             (label, index) => {
               const isOpen = openDropdown === label;
               const selectedValue = selectedFilters[label];
+              console.log(selectedValue,"selectedValue")
 
               return (
                 <div
@@ -311,9 +315,14 @@ export default function ListingHeroSection({
                         <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
                       </div>
 
-                      {/* Label */}
+                      {/* Label / Selected Value */}
                       <span className="text-[13px]">
-                        {selectedValue || label}
+                        {selectedValue
+                          ? // When a value is selected, always show ONLY the value
+                            // e.g. "3" instead of "Beds", "Doha" instead of "Location"
+                            selectedValue
+                          : // Fallback placeholder label when nothing is selected yet
+                            label}
                       </span>
                     </div>
 

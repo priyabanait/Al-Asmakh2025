@@ -250,6 +250,9 @@ function PropertyDetailsContent() {
       baths: property.bathrooms || property.baths || 0,
       area: property.size || property.area || 0,
       image: imageUrl,
+      // For glass overlay badges
+      priceType: property.priceType || property.offeringType || "rent",
+      virtualTourUrl: property.virtualTourUrl || null,
     };
   };
 
@@ -672,30 +675,39 @@ function PropertyDetailsContent() {
 
 
             {/* Bottom info strip */}
-            <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
-              <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
+            <div className="bg-[#F3F5F8] p-3 sm:p-4 mt-4 rounded-[8px] shadow-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
 
                 {/* Box 1 */}
-                <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="flex flex-col sm:flex-row sm:items-center">
-                    <span className="font-semibold text-[#001730]">Property ID:</span>
-                    <span className="mt-1 sm:mt-0 sm:ml-1">{formattedProperty.reference || formattedProperty.id}</span>
+                <div className="bg-white p-3 sm:p-4 rounded-[8px] shadow-sm text-xs sm:text-sm border border-gray-100">
+                  <p className="text-[#001730]">
+                    <span className="font-semibold block">Property ID:</span>
+                    <span className="mt-1 block break-all">
+                      {formattedProperty.reference || formattedProperty.id}
+                    </span>
                   </p>
                 </div>
 
                 {/* Box 2 */}
-                <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="flex flex-col sm:flex-row sm:items-center">
-                    <span className="font-semibold text-[#001730]">Property Type:</span>
-                    <span className="mt-1 sm:mt-0 sm:ml-1">{formattedProperty.type ? formattedProperty.type.charAt(0).toUpperCase() + formattedProperty.type.slice(1) : "N/A"}</span>
+                <div className="bg-white p-3 sm:p-4 rounded-[8px] shadow-sm text-xs sm:text-sm border border-gray-100">
+                  <p className="text-[#001730]">
+                    <span className="font-semibold block">Property Type:</span>
+                    <span className="mt-1 block">
+                      {formattedProperty.type
+                        ? formattedProperty.type.charAt(0).toUpperCase() +
+                          formattedProperty.type.slice(1)
+                        : "N/A"}
+                    </span>
                   </p>
                 </div>
 
                 {/* Box 3 */}
-                <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                  <p className="flex flex-col sm:flex-row sm:items-center">
-                    <span className="font-semibold text-[#001730]">Year Built:</span>
-                    <span className="mt-1 sm:mt-0 sm:ml-1">{formattedProperty.yearBuilt || "N/A"}</span>
+                <div className="bg-white p-3 sm:p-4 rounded-[8px] shadow-sm text-xs sm:text-sm border border-gray-100">
+                  <p className="text-[#001730]">
+                    <span className="font-semibold block">Year Built:</span>
+                    <span className="mt-1 block">
+                      {formattedProperty.yearBuilt || "N/A"}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -760,8 +772,8 @@ function PropertyDetailsContent() {
               relative
               flex-shrink-0
               h-40 sm:h-36
-              lg:min-h-[360px]
-              lg:max-h-[380px]
+              lg:min-h-[300px]
+              lg:max-h-[300px]
               p-4
               lg:pr-0 lg:mr-0
             "
@@ -927,6 +939,40 @@ function PropertyDetailsContent() {
                         className="object-fill rounded-md"
                         unoptimized={formatted.image?.startsWith('http')}
                       />
+
+                      {/* Glass Effect Overlay with Property Type and 360° Icon */}
+                      <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-1.5 lg:p-2">
+                        {/* Property Type Badge - Glass Effect */}
+                        <div 
+                          className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30"
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
+                          }}
+                        >
+                          <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                            {formatted.priceType === 'sale' ? 'SALE' : 
+                             formatted.priceType === 'rent' || formatted.priceType === 'lease' ? 'RENT' : 
+                             formatted.priceType === 'marketing' ? 'MARKETING' : 
+                             formatted.priceType?.toUpperCase() || 'RENT'}
+                          </span>
+                        </div>
+
+                        {/* 360° Icon Badge - Glass Effect */}
+                        <div 
+                          className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30 flex items-center justify-center"
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            backdropFilter: 'blur(8px)',
+                            WebkitBackdropFilter: 'blur(8px)',
+                            boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
+                          }}
+                        >
+                          <Md360 className="text-white w-3 h-3 lg:w-4 lg:h-4" />
+                        </div>
+                      </div>
                     </div>
 
                     {/* Property Info */}

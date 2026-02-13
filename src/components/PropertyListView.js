@@ -5,6 +5,7 @@ import Image from "next/image";
 import { MapPin, ArrowRight } from "lucide-react";
 import ShareButton from "./ShareButton";
 import { FaArrowRight } from "react-icons/fa6";
+import { Md360 } from "react-icons/md";
 import { FaMapLocationDot } from "react-icons/fa6";
 import Link from "next/link";
 import { FaList } from "react-icons/fa";
@@ -78,6 +79,65 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                     fill
                                     className="object-fill rounded-md"
                                 />
+                                {/* Glass Effect Overlay with Property Type and 360° Icon */}
+                                <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-1.5 lg:p-2">
+                                    {/* Property Type Badge - Glass Effect */}
+                                    <div
+                                        className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30"
+                                        style={{
+                                            background: 'rgba(255, 255, 255, 0.15)',
+                                            backdropFilter: 'blur(8px)',
+                                            WebkitBackdropFilter: 'blur(8px)',
+                                            boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
+                                        }}
+                                    >
+                                        {/*
+                                          Normalize priceType so we always show correct label:
+                                          - "sale"  -> SALE
+                                          - "rent"/"lease" -> RENT
+                                          - "marketing" -> MARKETING
+                                          - fallback -> uppercased raw value or RENT
+                                        */}
+                                        
+                                        {(() => {
+                                            const normalized = (property.priceType || "").toString().toLowerCase().trim();
+                                            if (normalized === "sale") return (
+                                                <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                                                    SALE
+                                                </span>
+                                            );
+                                            if (normalized === "rent" || normalized === "lease") return (
+                                                <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                                                    RENT
+                                                </span>
+                                            );
+                                            if (normalized === "marketing") return (
+                                                <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                                                    MARKETING
+                                                </span>
+                                            );
+                                            const fallback = normalized || "rent";
+                                            return (
+                                                <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                                                    {fallback.toUpperCase()}
+                                                </span>
+                                            );
+                                        })()}
+                                    </div>
+
+                                    {/* 360° Icon Badge - Glass Effect */}
+                                    <div
+                                        className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30 flex items-center justify-center"
+                                        style={{
+                                            background: 'rgba(255, 255, 255, 0.15)',
+                                            backdropFilter: 'blur(8px)',
+                                            WebkitBackdropFilter: 'blur(8px)',
+                                            boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
+                                        }}
+                                    >
+                                        <Md360 className="text-white w-3 h-3 lg:w-4 lg:h-4" />
+                                    </div>
+                                </div>
                                 {/* Share Button Overlay */}
                                 <div className="absolute bottom-2 right-2 z-10">
                                     <ShareButton
