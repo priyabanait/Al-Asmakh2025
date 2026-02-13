@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
+import { Md360 } from "react-icons/md";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { fetchProperties, fetchPropertiesByOfferingType } from "../utils/propertyapi";
@@ -125,6 +126,8 @@ export default function FeaturedProperties({
         baths: property.bathrooms || property.baths || 0,
         area: property.area || 0,
         image: property.image || "/div.property-thumbnail-wrapper.png",
+        priceType: property.priceType || property.offeringType || "rent",
+        virtualTourUrl: property.virtualTourUrl || null,
       };
     }
 
@@ -177,6 +180,8 @@ export default function FeaturedProperties({
       baths: baths,
       area: area,
       image: imageUrl,
+      priceType: property.priceType || property.offeringType || "rent",
+      virtualTourUrl: property.virtualTourUrl || null,
     };
   };
 
@@ -260,6 +265,40 @@ export default function FeaturedProperties({
                       className="object-fill rounded-md"
                       unoptimized={property.image?.startsWith('http')}
                     />
+                    
+                    {/* Glass Effect Overlay with Property Type and 360° Icon */}
+                    <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-1.5 lg:p-2">
+                      {/* Property Type Badge - Glass Effect */}
+                      <div 
+                        className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.15)',
+                          backdropFilter: 'blur(8px)',
+                          WebkitBackdropFilter: 'blur(8px)',
+                          boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
+                        }}
+                      >
+                        <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                          {property.priceType === 'sale' ? 'SALE' : 
+                           property.priceType === 'rent' || property.priceType === 'lease' ? 'RENT' : 
+                           property.priceType === 'marketing' ? 'MARKETING' : 
+                           property.priceType?.toUpperCase() || 'RENT'}
+                        </span>
+                      </div>
+
+                      {/* 360° Icon Badge - Glass Effect */}
+                      <div 
+                        className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30 flex items-center justify-center"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.15)',
+                          backdropFilter: 'blur(8px)',
+                          WebkitBackdropFilter: 'blur(8px)',
+                          boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
+                        }}
+                      >
+                        <Md360 className="text-white w-3 h-3 lg:w-4 lg:h-4" />
+                      </div>
+                    </div>
                   </div>
 
                   {/* Property Info */}

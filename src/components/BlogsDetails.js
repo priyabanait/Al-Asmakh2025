@@ -1,61 +1,90 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import Link from "next/link";
+import { useBlog, useBlogs } from "../hooks/useBlogs";
 
 export default function BlogHero() {
-  const blogs = [
-    {
-      title: "Discover the Art of Living in Qatar",
-      description:
-        "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description:
-        "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description:
-        "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description:
-        "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-    {
-      title: "Discover the Art of Living in Qatar",
-      description:
-        "Explore lifestyle stories, community highlights, and home inspirations that define modern living across Qatar.",
-      image: "/Image.png",
-    },
-  ];
+  const searchParams = useSearchParams();
+  const blogId = searchParams?.get("id");
+
+  // Fetch the current blog
+  const { data: blogData, isLoading: blogLoading, error: blogError } = useBlog(blogId);
+  const blog = blogData;
+
+  // Fetch all blogs for related blogs section
+  const { data: allBlogsData, isLoading: allBlogsLoading } = useBlogs({
+    page: 1,
+    limit: 50,
+    publishStatus: 'Published',
+  });
+
+  const allBlogs = allBlogsData?.blogs || [];
+  
+  // Get related blogs (exclude current blog, limit to 3)
+  const relatedBlogs = allBlogs
+    .filter(b => b.id !== blogId)
+    .slice(0, 3);
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day} / ${month} / ${year}`;
+    } catch {
+      return '';
+    }
+  };
+
+  // Loading state
+  if (blogLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-[#001730] text-lg">Loading blog...</div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (blogError || !blog) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-red-600 text-lg">Error loading blog: {blogError?.message || 'Blog not found'}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="relative w-full h-[70vh]">
         {/* BACKGROUND IMAGE */}
         <Image
-          src="/Image (12).png"
-          alt="Blog Header"
+          src={blog.image || "/Image (12).png"}
+          alt={blog.title}
           fill
           className="object-cover"
+          priority
+          unoptimized={blog.image && blog.image.startsWith('http')}
+          onError={(e) => {
+            e.target.src = '/Image (12).png';
+          }}
         />
 
         {/* DARK OVERLAY */}
-        <div className="absolute inset-0"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
 
         {/* TOP BAR */}
         <div className="absolute top-16 left-2 flex items-center justify-between w-full px-0.5">
           {/* BACK BUTTON */}
           <Link
-            href="/news"
-            className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md"
+            href="/listings/blogs"
+            className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md hover:bg-[#1b3a70] transition"
           >
             <FaArrowLeft size={18} />
             <span className="text-sm lg:ml-20 ml-4 font-medium">Back</span>
@@ -64,107 +93,94 @@ export default function BlogHero() {
           {/* DATE + TAG */}
           <div className="flex flex-col mt-10 mr-4 items-end gap-2 w-32">
             <div className="bg-white/20 backdrop-blur-sm text-white px-4 py-1 rounded-md text-sm text-center w-full">
-              12 / 03 / 2025
+              {formatDate(blog.createdAt)}
             </div>
-            <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-1 rounded-md text-sm text-center w-full">
-              News
-            </button>
+            <div className="bg-white/20 backdrop-blur-sm text-white px-4 py-1 rounded-md text-sm text-center w-full">
+              {blog.contentType || 'Blog'}
+            </div>
           </div>
         </div>
 
         {/* CENTER TITLE */}
         <div className="absolute bottom-10 w-full text-center px-4">
           <h1 className="text-3xl md:text-4xl font-semibold text-white">
-            Redefining Luxury Living in the Heart of Qatar
+            {blog.title}
           </h1>
         </div>
       </div>
 
       {/* BLOG CONTENT */}
-      <div className="lg:px-20 px-4">
-        <h1 className="text-lg font-semibold mt-8">
-          Discover the Art of Living in Qatar - We are now at a pivotal moment
-          in our AI journey. Breakthroughs in generative AI are fundamentally
-          changing how people interact with technology
+      <div className="lg:px-20 px-4 py-8">
+        <h1 className="text-lg font-semibold mt-8 mb-4">
+          {blog.title}
         </h1>
 
-        <p className="mt-10">
-          Google has been investing in AI for many years and bringing its
-          benefits to individuals, businesses and communities. Whether it is
-          publishing state-of-the-art research, building helpful products or
-          developing tools and resources that enable others, we are committed to
-          making AI accessible to everyone.
-        </p>
+        {blog.body && (
+          <div 
+            className="mt-10 prose prose-lg max-w-none text-gray-700 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: blog.body }}
+          />
+        )}
 
-        <p className="mt-4">
-          We are now at a pivotal moment in our AI journey. Breakthroughs in
-          generative AI are fundamentally changing how people interact with
-          technology — and at Google, we have been responsibly developing large
-          language models so we can safely bring them to our products. Today, we
-          are excited to share our early progress. Developers and businesses can
-          now try new APIs and products that make it easy, safe and scalable to
-          start building with Google is best AI models through Google Cloud and
-          a new prototyping environment called MakerSuite. And in Google
-          Workspace, we’re introducing new features that help people harness the
-          power of generative AI to create, connect and collaborate.
-        </p>
-
-        <p className="mt-4">
-          Google has been investing in AI for many years and bringing its
-          benefits to individuals, businesses and communities. Whether it is
-          publishing state-of-the-art research, building helpful products or
-          developing tools and resources that enable others, we are committed to
-          making AI accessible to everyone.
-        </p>
-
-        <p className="mt-4">
-          More than 3 billion people already benefit from AI-powered features in
-          Google Workspace...
-        </p>
-
-        {/* Additional paragraphs... (Your text stays same) */}
+        {!blog.body && blog.description && (
+          <div className="mt-10 text-gray-700 leading-relaxed space-y-4">
+            <p>{blog.description}</p>
+          </div>
+        )}
       </div>
 
       {/* SIMILAR BLOGS */}
-      <div className="container-custom mt-10 text-center">
-        <h2 className="text-[27px] md:text-[36px] font-bold text-[#001730] uppercase">
-          Similar Blogs
-        </h2>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 md:px-10 p-4 sm:p-6">
-        {blogs.map((blog, i) => (
-          <div
-            key={i}
-            className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-          >
-            <div className="relative w-full h-80">
-              <Link href={`/BlogsDetails`}>
-                <Image
-                  src={blog.image}
-                  alt={blog.title}
-                  fill
-                  className="object-fill cursor-pointer"
-                />
-              </Link>
-
-              <button className="absolute top-4 left-3 bg-[#001730] text-white text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
-                <span>EXPLORE</span>
-                <FaArrowRight size={10} />
-              </button>
-
-              <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 z-10">
-                <h3 className="text-white font-bold text-lg mb-2">
-                  {blog.title}
-                </h3>
-                <p className="text-white text-sm opacity-90">
-                  {blog.description}
-                </p>
-              </div>
-            </div>
+      {relatedBlogs.length > 0 && (
+        <>
+          <div className="container-custom mt-10 text-center">
+            <h2 className="text-[27px] md:text-[36px] font-bold text-[#001730] uppercase">
+              Related Blogs
+            </h2>
           </div>
-        ))}
-      </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-4 sm:px-8 md:px-10 p-4 sm:p-6">
+            {relatedBlogs.map((relatedBlog, i) => (
+              <div
+                key={relatedBlog.id || i}
+                className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              >
+                <div className="relative w-full h-80 lg:h-80">
+                  <Link href={`/BlogsDetails?id=${relatedBlog.id}`}>
+                    <Image
+                      src={relatedBlog.image || '/Image.png'}
+                      alt={relatedBlog.title}
+                      fill
+                      className="object-cover cursor-pointer"
+                      unoptimized={relatedBlog.image && relatedBlog.image.startsWith('http')}
+                      onError={(e) => {
+                        e.target.src = '/Image.png';
+                      }}
+                    />
+                  </Link>
+
+                  {/* EXPLORE Button */}
+                  <Link href={`/BlogsDetails?id=${relatedBlog.id}`}>
+                    <button className="absolute top-4 sm:top-8 left-3 sm:left-4 bg-[#001730] text-white text-[10px] sm:text-xs font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
+                      <span>EXPLORE</span>
+                      <FaArrowRight size={10} className="sm:w-[12px] sm:h-[12px] sm:ml-6" />
+                    </button>
+                  </Link>
+
+                  {/* Text Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 sm:p-6 z-10">
+                    <h3 className="text-white font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3">
+                      {relatedBlog.title}
+                    </h3>
+                    <p className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90">
+                      {relatedBlog.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* CTA SECTION */}
       <section className="py-8 bg-gray-100">

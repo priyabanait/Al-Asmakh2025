@@ -15,6 +15,7 @@ import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa
 import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
+import Header from "../../../components/Header";
 export default function Sale({ priceType: initialPriceType = "rent" }) {
     const params = useParams();
     const projectId = params?.id;
@@ -377,6 +378,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     fill
                     className="object-cover" />
 
+<Header />
                 {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-black/40 z-10"></div>
 
@@ -458,7 +460,15 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                         return (
                           <div
                             key={idx}
-                            className="flex items-center gap-2 sm:gap-3 bg-gray-100 px-2 sm:px-3 h-10 sm:h-12 rounded-[5px] shadow-sm"
+                            className="
+                              flex items-center gap-2 sm:gap-3
+                              bg-white/40
+                              px-2 sm:px-3
+                              h-10 sm:h-10
+                              rounded-[5px]
+                              shadow-sm
+                              backdrop-blur-md
+                            "
                           >
                             {/* Icon */}
                             {getAmenityIcon(amenity)}
@@ -480,7 +490,52 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         </div>
             </section>
 
-<section className="w-full bg-white">
+<section className="w-full  bg-[#F5F7FA]">
+
+
+<div className="flex items-center gap-4 mb-2 mt-4">
+          {/* Label on left */}
+          <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
+            {viewMode === "properties" ? "Viewing properties" : "Viewing agents"}
+          </div>
+
+          {/* Center line */}
+          <div className="flex-1 h-[1px] bg-gray-300 hidden sm:block"></div>
+
+          {/* Properties / Agents buttons (glass style) */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewMode("properties")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                ${
+                  viewMode === "properties"
+                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                    : "text-gray-600"
+                }`}
+            >
+              <FaHome size={14} />
+              <span>Properties</span>
+            </button>
+
+            {/* Divider */}
+            <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
+
+            <button
+              onClick={() => setViewMode("agents")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                ${
+                  viewMode === "agents"
+                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                    : "text-gray-600"
+                }`}
+            >
+              <FaUser size={14} />
+              <span>Agents</span>
+            </button>
+          </div>
+        </div>
+
+
   {/* 🔹 CONTENT GRID */}
   <div className="max-w-[2800px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
     {/* ================= LEFT SECTION ================= */}
@@ -511,7 +566,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 "
                 title={project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
               >
-                {project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
+               Year of completion: {project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
               </p>
             </div>
 
@@ -537,6 +592,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 "
                 title={project?.projectType || 'N/A'}
               >
+                Project type: 
                 {project?.projectType || 'N/A'}
               </p>
             </div>
@@ -919,39 +975,19 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       )}
     </div>
 
+  
+
+
     {/* ================= RIGHT SECTION ================= */}
     <div className="lg:col-span-5">
       <div className="lg:sticky lg:top-24 relative">
-        {/* Navigation Buttons - Properties/Agents */}
-        <div className="flex gap-2 mb-5 justify-end">
-          <button
-            onClick={() => setViewMode("properties")}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-md shadow transition-all text-sm ${
-              viewMode === "properties"
-                ? "bg-[#001730] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            <FaHome size={14} />
-            <span>Properties</span>
-          </button>
-          <button
-            onClick={() => setViewMode("agents")}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-md shadow transition-all text-sm ${
-              viewMode === "agents"
-                ? "bg-[#001730] text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-          >
-            <FaUser size={14} />
-            <span>Agents</span>
-          </button>
-        </div>
+        {/* Navigation Bar - match PropertyListView glass design */}
+    
 
         {viewMode === "properties" ? (
           <>
             <h2
-              className="text-[#001730] uppercase mb-2 mt-4 lg:mb-2 text-center whitespace-nowrap relative z-10"
+              className="text-[#001730] uppercase mb-2 mt-0 lg:mb-2 text-center whitespace-nowrap relative z-10"
               style={{
                 fontSize: "clamp(16px, 4vw, 24px)"
               }}

@@ -244,15 +244,28 @@ export default function Buy() {
                   </button>
                 </Link>
 
+
+                 {/* Text Overlay - absolute positioned at bottom with transparent dark gray background */}
+                 <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm z-10 transition-all duration-300 ease-in-out py-4 px-4 group-hover:pb-4">
+                          <h3 className="text-white font-semibold text-[10px] mb-0 group-hover:mb-2 transition-all duration-300">
+                            {blog.title}
+                          </h3>
+                          <div className="overflow-hidden max-h-0 group-hover:max-h-[200px] transition-all duration-300 ease-in-out">
+                            <p className="text-white text-sm leading-relaxed opacity-0 group-hover:opacity-90 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
+                              {blog.description}
+                            </p>
+                          </div>
+                        </div>
+
                 {/* Text Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 sm:p-6 z-10">
+                {/* <div className="absolute bottom-0 left-0 right-0 bg-[#001730]/50 backdrop-blur-sm p-4 sm:p-6 z-10">
                   <h3 className="text-white font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3">
                     {blog.title}
                   </h3>
                   <p className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90">
                     {blog.description}
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}

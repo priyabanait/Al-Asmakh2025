@@ -819,7 +819,7 @@ export default function Profit() {
                           }}
                         />
                         {/* EXPLORE Button - overlapping top-left corner */}
-                        <Link href={blog.slug ? `/blog/${blog.slug}` : `/blog/${blog.id}`}>
+                        <Link href={`/BlogsDetails?id=${blog.id}`}>
                           <motion.button
                             className="absolute top-6 left-3 bg-[#001730] text-white text-[10px] font-semibold px-3 py-1.5 rounded flex items-center gap-1.5 hover:bg-[#1b3a70] transition z-10 shadow-md"
                             animate={{
@@ -919,7 +919,7 @@ export default function Profit() {
                         }}
                       />
                       {/* EXPLORE Button - overlapping top-left corner, partially on image and white space */}
-                      <Link href={blog.slug ? `/blog/${blog.slug}` : `/blog/${blog.id}`}>
+                      <Link href={`/BlogsDetails?id=${blog.id}`}>
                         <button className="absolute top-8 left-4 -translate-y-1/2 bg-[#001730] text-white text-xs font-semibold px-4 py-2 rounded flex items-center gap-2 hover:bg-[#1b3a70] transition z-10 shadow-md">
                           <span>EXPLORE</span>
                           <FaArrowRight size={12} className="ml-6" />
