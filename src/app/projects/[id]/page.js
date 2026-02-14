@@ -367,10 +367,10 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     }, []);
 
     return (
-        <div>
+        <div className="bg-[#F5F7FA]">
             {/* ---------- HERO SECTION WITH FILTERS ---------- */}
 
-            <section className="relative w-full min-h-[95vh] lg:min-h-[95vh] flex flex-col items-center justify-center overflow-visible">
+            <section className=" bg-[#F5F7FA] relative w-full min-h-[95vh] lg:min-h-[95vh] flex flex-col items-center justify-center overflow-visible">
                 {/* Background Image */}
                 <Image
                     src="/images_pages/listings.png"
@@ -493,7 +493,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 <section className="w-full  bg-[#F5F7FA]">
 
 
-<div className="flex items-center gap-4 mb-2 mt-4">
+<div className="flex items-center bg-[#F5F7FA] gap-4  mt-5">
           {/* Label on left */}
           <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
             {viewMode === "properties" ? "Viewing properties" : "Viewing agents"}
@@ -601,13 +601,13 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       )}
 
       {/* Description box */}
-      <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-4">
+      <div className="bg-[#F5F7FA] p-4 sm:p-6 rounded-[5px] shadow mb-4">
         <div className="flex gap-2 sm:gap-4 mb-4">
           <button
             onClick={() => setActiveTab("overview")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
               activeTab === "overview"
-                ? "bg-white text-[#001730]"
+                ? "bg-[#F5F7FA] text-[#001730]"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
@@ -622,7 +622,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             onClick={() => setActiveTab("gallery")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
               activeTab === "gallery"
-                ? "bg-white text-[#001730]"
+                ? "bg-[#F5F7FA] text-[#001730]"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
@@ -637,7 +637,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             onClick={() => setActiveTab("document")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
               activeTab === "document"
-                ? "bg-white text-[#001730]"
+                ? "bg-[#F5F7FA] text-[#001730]"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
@@ -652,7 +652,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             onClick={() => setActiveTab("nearby")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
               activeTab === "nearby"
-                ? "bg-white text-[#001730]"
+                ? "bg-[#F5F7FA] text-[#001730]"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
@@ -667,7 +667,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             onClick={() => setActiveTab("360view")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
               activeTab === "360view"
-                ? "bg-white text-[#001730]"
+                ? "bg-[#F5F7FA] text-[#001730]"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
@@ -896,8 +896,8 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       </div>
 
       {/* Pricing and Terms Section */}
-      {project && (
-        <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-4 mt-4 sm:mt-6">
+      {/* {project && (
+        <div className="bg-[#F5F7FA] p-4 sm:p-6 rounded-[5px] shadow mb-4 mt-4 sm:mt-6">
           <p className="text-gray-700 text-sm md:text-base">
             {project.startingPrice ? (
               <>
@@ -911,11 +911,11 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             )}
           </p>
         </div>
-      )}
+      )} */}
 
       {/* Map Section */}
       {project && (
-        <div className="mt-4 sm:mt-6 bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden mb-4">
+        <div className="mt-4 sm:mt-6 bg-[#F5F7FA] rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden mb-4">
           <iframe
             src={(() => {
               // Build location string from project location levels
@@ -948,7 +948,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
           <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
             {/* Box 1 */}
-            <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+            <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
               <p className="flex flex-col sm:flex-row sm:items-center">
                 <span className="font-semibold text-[#001730]">Project ID:</span>
                 <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectReference || project.id || "N/A"}</span>
@@ -956,7 +956,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             </div>
 
             {/* Box 2 */}
-            <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+            <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
               <p className="flex flex-col sm:flex-row sm:items-center">
                 <span className="font-semibold text-[#001730]">Project Type:</span>
                 <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectType ? project.projectType.charAt(0).toUpperCase() + project.projectType.slice(1) : "N/A"}</span>
@@ -964,7 +964,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             </div>
 
             {/* Box 3 */}
-            <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
+            <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
               <p className="flex flex-col sm:flex-row sm:items-center">
                 <span className="font-semibold text-[#001730]">Owned by:</span>
                 <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectOwnership || "Al-Asmakh"}</span>
@@ -980,7 +980,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
     {/* ================= RIGHT SECTION ================= */}
     <div className="lg:col-span-5">
-      <div className="lg:sticky lg:top-24 relative">
+      <div className="lg:sticky lg:top-10 relative">
         {/* Navigation Bar - match PropertyListView glass design */}
     
 
@@ -1142,7 +1142,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             )}
           </>
         ) : (
-          <div className="bg-white p-6 rounded-md shadow">
+          <div className="bg-[#F5F7FA] p-6 rounded-md shadow">
             <h2
               className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
               style={{
@@ -1209,7 +1209,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 </section>
 
 {/* Related Projects Section */}
-<section className="w-full bg-white py-12">
+<section className="w-full bg-[#F5F7FA] py-12">
   <div className="max-w-[2800px] mx-auto px-4">
     <div className="mb-8 text-center">
       <h2
@@ -1303,7 +1303,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                   </div>
 
                   {/* Units */}
-                  <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-md px-2 py-2">
+                  <div className="flex items-center gap-2 bg-[#F5F7FA] border border-gray-200 shadow-sm rounded-md px-2 py-2">
                     <Image src="/3_Icons Used_Project Dvt 1 (1).png" width={16} height={16} alt="Units" className="object-contain" />
                     <span className="text-xs font-semibold text-[#001730]">
                       {formattedProject.units} <span className="text-xs text-gray-500">Units</span>
@@ -1311,7 +1311,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                   </div>
 
                   {/* Status */}
-                  <div className="flex flex-col justify-center bg-white border border-gray-200 shadow-sm rounded-md px-3 py-2 w-fit">
+                  <div className="flex flex-col justify-center bg-[#F5F7FA] border border-gray-200 shadow-sm rounded-md px-3 py-2 w-fit">
                     <div className="flex items-center gap-2">
                       <div className={`w-4 h-4 rounded-full ${formattedProject.statusType === "completed" ? "bg-green-500" : "bg-yellow-500"} flex items-center justify-center`}>
                         <Check size={12} className="text-white" />
