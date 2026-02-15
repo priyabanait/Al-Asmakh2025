@@ -38,6 +38,8 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     const [propertiesLoadedFromProject, setPropertiesLoadedFromProject] = useState(false);
     const [relatedProjects, setRelatedProjects] = useState([]);
     const [relatedProjectsLoading, setRelatedProjectsLoading] = useState(false);
+    const [heroImageSrc, setHeroImageSrc] = useState("/images_pages/listings.png");
+    const [imageError, setImageError] = useState(false);
 
     // Filter options
     const filterOptions = {
@@ -122,6 +124,19 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             setLoading(false);
         }
     }, [priceType, projectId]);
+
+    // Update hero image when project changes
+    useEffect(() => {
+        if (project?.coverPicture) {
+            // Reset error state and set new image source
+            setImageError(false);
+            setHeroImageSrc(project.coverPicture);
+        } else {
+            // Use fallback if no cover picture
+            setHeroImageSrc("/images_pages/listings.png");
+            setImageError(false);
+        }
+    }, [project?.coverPicture]);
 
     // Fetch project data
     useEffect(() => {
@@ -370,13 +385,31 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         <div className="bg-[#F5F7FA]">
             {/* ---------- HERO SECTION WITH FILTERS ---------- */}
 
-            <section className=" bg-[#F5F7FA] relative w-full min-h-[95vh] lg:min-h-[95vh] flex flex-col items-center justify-center overflow-visible">
+            <section className="bg-[#F5F7FA] relative w-full min-h-[95vh] lg:min-h-[95vh] flex flex-col items-center justify-center overflow-visible">
                 {/* Background Image */}
-                <Image
-                    src="/images_pages/listings.png"
-                    alt="City Skyline"
-                    fill
-                    className="object-cover" />
+                {heroImageSrc && (
+                    <Image
+                        src={heroImageSrc}
+                        alt={project?.nameEn || project?.name || "Project Cover"}
+                        fill
+                        className="object-cover"
+                        unoptimized={heroImageSrc.startsWith('http')}
+                        priority
+                        onError={() => {
+                            // Only fallback once to prevent infinite loops
+                            if (!imageError) {
+                                setImageError(true);
+                                setHeroImageSrc("/images_pages/listings.png");
+                            }
+                        }}
+                        onLoad={() => {
+                            // Reset error state on successful load
+                            if (imageError) {
+                                setImageError(false);
+                            }
+                        }}
+                    />
+                )}
 
 <Header />
                 {/* Dark Overlay */}
@@ -402,7 +435,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
             {/* Project Name */}
             {projectLoading ? (
-              <div className="text-white text-2xl lg:text-3xl font-bold mb-4">Loading...</div>
+              <div className="text-white text-2xl lg:text-3xl font-bold mb-4"></div>
             ) : project ? (
               <>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#001730] mb-3 sm:mb-4 px-10 lg:px-0">
@@ -495,9 +528,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
 <div className="flex items-center bg-[#F5F7FA] gap-4  mt-5">
           {/* Label on left */}
-          <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
+          {/* <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
             {viewMode === "properties" ? "Viewing properties" : "Viewing agents"}
-          </div>
+          </div> */}
 
           {/* Center line */}
           <div className="flex-1 h-[1px] bg-gray-300 hidden sm:block"></div>
@@ -537,7 +570,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
 
   {/* 🔹 CONTENT GRID */}
-  <div className="max-w-[2800px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <div className="max-w-[2400px] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
     {/* ================= LEFT SECTION ================= */}
     <div className="lg:col-span-7">
       {/* TOP SPECS */}
@@ -731,7 +764,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     No description available for this project.
                   </p>
                 )}
-                {project.descriptionAr && (
+                {/* {project.descriptionAr && (
                   <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
                     {(() => {
                       // Function to strip HTML tags and format list items
@@ -770,7 +803,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                       return formatDescription(project.descriptionAr);
                     })()}
                   </div>
-                )}
+                )} */}
               </>
             )}
 
@@ -965,11 +998,13 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
             {/* Box 3 */}
             <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-              <p className="flex flex-col sm:flex-row sm:items-center">
-                <span className="font-semibold text-[#001730]">Owned by:</span>
-                <span className="mt-1 sm:mt-0 sm:ml-1">{project.projectOwnership || "Al-Asmakh"}</span>
-              </p>
-            </div>
+  <p className="flex flex-col">
+    <span className="font-semibold text-[#001730]">Owned by:</span>
+    <span className="mt-1">
+      {project.projectOwnership || "Al-Asmakh"}
+    </span>
+  </p>
+</div>
           </div>
         </div>
       )}
@@ -1003,63 +1038,160 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         ) : properties.length > 0 ? (
           <div className="space-y-3 relative z-10">
             {properties.slice(0, 4).map((property) => {
+              // Handle nested property structure - check all possible locations
+              const prop = property.property || property;
+              
               // Build location string
               const locationParts = [
-                property.locationLevel2,
-                property.locationLevel3,
-                property.locationLevel4
+                prop.locationLevel2,
+                prop.locationLevel3,
+                prop.locationLevel4
               ].filter(Boolean);
               const location = locationParts.length > 0 
                 ? locationParts.join(' – ') 
-                : property.locationLevel1 || 'Doha';
+                : prop.locationLevel1 || 'Doha';
 
               // Handle area - could be number, string, or object
               let areaDisplay = 'N/A';
-              if (property.area) {
-                if (typeof property.area === 'number') {
-                  areaDisplay = `${property.area} sqft`;
-                } else if (typeof property.area === 'string') {
-                  areaDisplay = `${property.area} sqft`;
-                } else if (typeof property.area === 'object' && property.area.value) {
-                  areaDisplay = `${property.area.value} sqft`;
-                } else if (typeof property.area === 'object' && property.area.area) {
-                  areaDisplay = `${property.area.area} sqft`;
+              if (prop.area) {
+                if (typeof prop.area === 'number') {
+                  areaDisplay = `${prop.area} sqft`;
+                } else if (typeof prop.area === 'string') {
+                  areaDisplay = `${prop.area} sqft`;
+                } else if (typeof prop.area === 'object' && prop.area.value) {
+                  areaDisplay = `${prop.area.value} sqft`;
+                } else if (typeof prop.area === 'object' && prop.area.area) {
+                  areaDisplay = `${prop.area.area} sqft`;
                 }
-              } else if (property.areaSqft) {
-                areaDisplay = typeof property.areaSqft === 'number' 
-                  ? `${property.areaSqft} sqft` 
-                  : `${property.areaSqft} sqft`;
+              } else if (prop.areaSqft) {
+                areaDisplay = typeof prop.areaSqft === 'number' 
+                  ? `${prop.areaSqft} sqft` 
+                  : `${prop.areaSqft} sqft`;
+              }
+
+              // Process images - check at all possible nested levels
+              let imagesArray = [];
+              if (prop.images && Array.isArray(prop.images)) {
+                imagesArray = prop.images;
+              } else if (property.images && Array.isArray(property.images)) {
+                imagesArray = property.images;
+              } else if (property.property && property.property.images && Array.isArray(property.property.images)) {
+                imagesArray = property.property.images;
+              }
+              
+              // Get main image - prioritize images array, then coverPicture, then gallery, then fallback
+              let mainImage = "/div.property-thumbnail-wrapper.png";
+              
+              if (imagesArray && imagesArray.length > 0) {
+                // Filter out invalid images and sort by order field
+                const validImages = imagesArray.filter(img => img && (img.url || img.thumbnailUrl));
+                
+                if (validImages.length > 0) {
+                  // Sort images by order field (if order exists, otherwise use index)
+                  const sortedImages = [...validImages].sort((a, b) => {
+                    const orderA = a.order !== undefined && a.order !== null ? a.order : 0;
+                    const orderB = b.order !== undefined && b.order !== null ? b.order : 0;
+                    return orderA - orderB;
+                  });
+                  
+                  // Get first image (order 0 or index 0) as main image
+                  const firstImage = sortedImages.find(img => {
+                    const order = img.order !== undefined && img.order !== null ? img.order : 0;
+                    return order === 0;
+                  }) || sortedImages[0];
+                  
+                  if (firstImage && (firstImage.url || firstImage.thumbnailUrl)) {
+                    mainImage = firstImage.url || firstImage.thumbnailUrl;
+                  }
+                }
+              }
+              
+              // Fallback to coverPicture, gallery, or imageUrl if images array didn't work
+              if (mainImage === "/div.property-thumbnail-wrapper.png") {
+                mainImage = prop.coverPicture || property.coverPicture || 
+                           prop.gallery?.[0] || property.gallery?.[0] || 
+                           prop.imageUrl || property.imageUrl || 
+                           "/div.property-thumbnail-wrapper.png";
+              }
+              
+              // Get additional images (order > 0) for thumbnails
+              let additionalImages = [];
+              if (imagesArray && imagesArray.length > 0) {
+                const validImages = imagesArray.filter(img => img && (img.url || img.thumbnailUrl));
+                if (validImages.length > 0) {
+                  const sortedImages = [...validImages].sort((a, b) => {
+                    const orderA = a.order !== undefined && a.order !== null ? a.order : 0;
+                    const orderB = b.order !== undefined && b.order !== null ? b.order : 0;
+                    return orderA - orderB;
+                  });
+                  
+                  additionalImages = sortedImages.filter((img, idx) => {
+                    const order = img.order !== undefined && img.order !== null ? img.order : idx;
+                    return order > 0;
+                  }).slice(0, 3);
+                }
               }
 
               return (
                 <div
-                  key={property.id || property.propertyId}
+                  key={prop.id || prop.propertyId || property.id || property.propertyId}
                   className="bg-[#E9E9E9] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
                 >
                   <div className="flex flex-col sm:flex-row">
                     {/* Image Section */}
                     <div className="relative w-full sm:w-[200px] h-[200px] sm:h-auto flex-shrink-0">
                       <Image
-                        src={property.coverPicture || property.gallery?.[0] || property.imageUrl || "/div.property-thumbnail-wrapper.png"}
-                        alt={property.titleEn || property.title || "Property"}
+                        src={mainImage}
+                        alt={prop.titleEn || prop.title || "Property"}
                         fill
                         className="object-cover"
+                        unoptimized={mainImage.startsWith('http')}
+                        onError={(e) => {
+                          e.target.src = "/div.property-thumbnail-wrapper.png";
+                        }}
                       />
                       {/* Share Button Overlay */}
                       <div className="absolute bottom-2 right-2 z-10">
                         <ShareButton
-                          propertyTitle={property.titleEn || property.title || "Property"}
+                          propertyTitle={prop.titleEn || prop.title || "Property"}
                           propertyLocation={location}
                           propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
                         />
                       </div>
+                      {/* Additional Property Images (starting from order > 0) */}
+                      {additionalImages.length > 0 && (
+                        <div className="absolute top-2 right-2 flex gap-1 z-10 flex-wrap max-w-[140px]">
+                          {additionalImages.map((img, idx) => {
+                            const imgUrl = img.url || img.thumbnailUrl || "/div.property-thumbnail-wrapper.png";
+                            return (
+                              <div key={img.id || idx} className="relative w-12 h-12 rounded-md overflow-hidden border-2 border-white shadow-md">
+                                <Image
+                                  src={imgUrl}
+                                  alt={`${prop.titleEn || prop.title || "Property"} image ${idx + 2}`}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized={imgUrl.startsWith('http')}
+                                  onError={(e) => {
+                                    e.target.src = "/div.property-thumbnail-wrapper.png";
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
+                          {(imagesArray && imagesArray.length > additionalImages.length + 1) && (
+                            <div className="relative w-12 h-12 rounded-md overflow-hidden border-2 border-white shadow-md bg-black/50 flex items-center justify-center">
+                              <span className="text-white text-xs font-semibold">+{imagesArray.length - additionalImages.length - 1}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Details Section */}
                     <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
                       <div>
                         <h3 className="text-base sm:text-lg font-bold text-[#001730] mb-2 line-clamp-2">
-                          {property.titleEn || property.title || "Property"}
+                          {prop.titleEn || prop.title || "Property"}
                         </h3>
 
                         <div className="flex items-center text-[#001730] text-xs sm:text-sm mb-3">
@@ -1077,7 +1209,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                               height={14}
                               className="w-4 h-4 flex-shrink-0"
                             />
-                            <span className="font-medium">{property.bedrooms || '0'}</span>
+                            <span className="font-medium">{prop.bedrooms || '0'}</span>
                           </div>
 
                           {/* Baths */}
@@ -1089,7 +1221,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                               height={14}
                               className="w-4 h-4 flex-shrink-0"
                             />
-                            <span className="font-medium">{property.bathrooms || '0'}</span>
+                            <span className="font-medium">{prop.bathrooms || '0'}</span>
                           </div>
 
                           {/* Area */}
@@ -1110,9 +1242,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                       
                       <div className="flex items-center justify-between gap-3 mt-2">
                         <p className="text-base sm:text-lg font-bold text-[#001730]">
-                          {property.priceAmount ? property.priceAmount.toLocaleString() : '0'} QAR
+                          {prop.priceAmount ? prop.priceAmount.toLocaleString() : '0'} QAR
                         </p>
-                        <Link href={`/propertydetails?id=${property.id || property.propertyId}`}>
+                        <Link href={`/propertydetails?id=${prop.id || prop.propertyId}`}>
                           <button className="bg-[#001730] text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52] whitespace-nowrap">
                             <span>Details</span>
                             <FaArrowRight size={12} />
