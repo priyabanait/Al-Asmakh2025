@@ -11,11 +11,14 @@ import { fetchProperties } from "../../../utils/propertyapi";
 import { searchProperties } from "../../../utils/searchApi";
 import { fetchProjectById, fetchProjects } from "../../../utils/projectapi";
 import MoreFiltersModal from "../../../components/MoreFiltersModal";
-import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
+import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath,  } from "react-icons/fa6";
+import { FaCheckCircle } from "react-icons/fa";
+
 import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 import Header from "../../../components/Header";
+import LoadingOverlay from "@/components/LoadingOverlay";
 export default function Sale({ priceType: initialPriceType = "rent" }) {
     const params = useParams();
     const projectId = params?.id;
@@ -32,7 +35,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     const [projectLoading, setProjectLoading] = useState(true);
     const [openDropdown, setOpenDropdown] = useState(null);
     const dropdownRefs = useRef({});
-    const [activeTab, setActiveTab] = useState("overview"); // overview, gallery, document, nearby, 360view
+    const [activeTab, setActiveTab] = useState("overview"); // overview, gallery, document, area, 360view
     const [viewMode, setViewMode] = useState("properties"); // properties or agents
     const [agents, setAgents] = useState([]);
     const [propertiesLoadedFromProject, setPropertiesLoadedFromProject] = useState(false);
@@ -40,6 +43,8 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     const [relatedProjectsLoading, setRelatedProjectsLoading] = useState(false);
     const [heroImageSrc, setHeroImageSrc] = useState("/images_pages/listings.png");
     const [imageError, setImageError] = useState(false);
+    const [galleryModalOpen, setGalleryModalOpen] = useState(false);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     // Filter options
     const filterOptions = {
@@ -149,6 +154,10 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     // Response structure: { project, properties, projectAssignedAgentsList, listingsCount, area, ... }
                     // Set project info
                     const projectInfo = projectData.project || projectData;
+                    // Attach area data to project if available at top level
+                    if (projectData.area && !projectInfo.area) {
+                        projectInfo.area = projectData.area;
+                    }
                     setProject(projectInfo);
                     
                     // Extract properties from response
@@ -334,6 +343,26 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         };
     }, []);
 
+    // Keyboard navigation for gallery modal
+    useEffect(() => {
+        if (!galleryModalOpen || !project || !project.gallery) return;
+
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setGalleryModalOpen(false);
+            } else if (e.key === 'ArrowLeft' && selectedImageIndex > 0) {
+                setSelectedImageIndex(selectedImageIndex - 1);
+            } else if (e.key === 'ArrowRight' && selectedImageIndex < project.gallery.length - 1) {
+                setSelectedImageIndex(selectedImageIndex + 1);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [galleryModalOpen, selectedImageIndex, project]);
+
     const handleFilterSelect = (filterName, value) => {
         const newFilters = {
             ...selectedFilters,
@@ -383,6 +412,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
     return (
         <div className="bg-[#F5F7FA]">
+            {/* Loading Overlay */}
+            <LoadingOverlay isLoading={projectLoading} />
+
             {/* ---------- HERO SECTION WITH FILTERS ---------- */}
 
             <section className="bg-[#F5F7FA] relative w-full min-h-[95vh] lg:min-h-[95vh] flex flex-col items-center justify-center overflow-visible">
@@ -574,9 +606,40 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     {/* ================= LEFT SECTION ================= */}
     <div className="lg:col-span-6">
       {/* TOP SPECS */}
+
+  
+
+
       {project && (
         <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
-          <div className="grid grid-cols-2 gap-2 sm:gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+
+          <div
+              className="
+                flex items-center gap-2 sm:gap-3
+                bg-white
+                px-2 sm:px-3
+                h-12 sm:h-14
+                rounded-[5px]
+                shadow-sm
+              "
+            >
+              <FaCheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" /> 
+              <p
+                className="
+                  font-semibold text-[#001730]
+                  text-xs sm:text-sm
+                  whitespace-nowrap
+                  truncate
+                  w-full
+                "
+                title={project?.projectStatus || 'N/A'}
+              >
+Status: {project?.projectStatus || 'N/A'}
+              </p>
+            </div>
+
+
             {/* Year Of Completion */}
             <div
               className="
@@ -625,7 +688,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 "
                 title={project?.projectType || 'N/A'}
               >
-                Project type: 
+                Project type:  
+
+                
                 {project?.projectType || 'N/A'}
               </p>
             </div>
@@ -682,15 +747,14 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             )}
           </button>
           <button
-            onClick={() => setActiveTab("nearby")}
+            onClick={() => setActiveTab("area")}
             className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
-              activeTab === "nearby"
+              activeTab === "area"
                 ? "bg-[#F5F7FA] text-[#001730]"
                 : "bg-gray-200 text-gray-500"
             }`}
           >
-            Nearby
-            {activeTab === "nearby" ? (
+Area            {activeTab === "Area" ? (
               <FaChevronDown size={14} />
             ) : (
               <FaChevronUp size={14} />
@@ -809,15 +873,23 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
             {activeTab === "gallery" && (
               <div className="mx-4 sm:mx-10 mb-4">
-                {project.gallery && project.gallery.length > 0 ? (
+                {project && project.gallery && project.gallery.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {project.gallery.map((image, index) => (
-                      <div key={index} className="relative w-full h-48 rounded-md overflow-hidden">
+                      <div 
+                        key={index} 
+                        className="relative w-full h-48 rounded-md overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => {
+                          setSelectedImageIndex(index);
+                          setGalleryModalOpen(true);
+                        }}
+                      >
                         <Image
                           src={image}
                           alt={`Gallery image ${index + 1}`}
                           fill
                           className="object-cover"
+                          unoptimized={image?.startsWith('http')}
                         />
                       </div>
                     ))}
@@ -851,13 +923,6 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
               </div>
             )}
 
-            {activeTab === "nearby" && (
-              <div className="mx-4 sm:mx-10 mb-4">
-                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                  Nearby amenities and locations information will be displayed here.
-                </p>
-              </div>
-            )}
 
             {activeTab === "360view" && (
               <div className="mx-4 sm:mx-10 mb-4">
@@ -886,6 +951,120 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 </div>
               </div>
             )}
+
+            
+{activeTab === "area" && (
+              <div className="mx-4 sm:mx-10 mb-4">
+                {project && project.area ? (
+                  <div className="space-y-6">
+                    {/* Area Image */}
+                    {(project.area.imageUrl || project.area.imageUrlEn || project.area.imageUrlAr) && (
+                      <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-md">
+                        <Image
+                          src={project.area.imageUrl || project.area.imageUrlEn || project.area.imageUrlAr}
+                          alt={project.area.nameEn || project.area.nameAr || "Area Image"}
+                          fill
+                          className="object-cover"
+                          unoptimized={(project.area.imageUrl || project.area.imageUrlEn || project.area.imageUrlAr)?.startsWith('http')}
+                        />
+                      </div>
+                    )}
+
+                    {/* Area Description */}
+                    {(project.area.descriptionEn || project.area.descriptionAr) && (
+                      <div>
+                        <h3 className="text-lg font-semibold text-[#001730] mb-2">
+                          About {project.area.nameEn || project.area.nameAr || "the Area"}
+                        </h3>
+                        {project.area.descriptionEn && (
+                          <p className="text-gray-600 leading-relaxed text-sm sm:text-base mb-3">
+                            {project.area.descriptionEn}
+                          </p>
+                        )}
+                        {project.area.descriptionAr && (
+                          <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
+                            {project.area.descriptionAr}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Nearest Places */}
+                    {project.area.nearestPlaces && Array.isArray(project.area.nearestPlaces) && project.area.nearestPlaces.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-semibold text-[#001730] mb-4">Nearest Places</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {project.area.nearestPlaces.map((place, index) => (
+                            <div
+                              key={index}
+                              className="bg-gray-50 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                            >
+                              {place.pictureUrl && (
+                                <div className="relative w-full h-48">
+                                  <Image
+                                    src={place.pictureUrl}
+                                    alt={place.titleEn || place.titleAr || `Place ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                    unoptimized={place.pictureUrl?.startsWith('http')}
+                                  />
+                                </div>
+                              )}
+                              <div className="p-4">
+                                <h4 className="text-base font-semibold text-[#001730] mb-2">
+                                  {place.titleEn || place.titleAr || `Place ${index + 1}`}
+                                </h4>
+                                {place.descriptionEn && (
+                                  <p className="text-gray-600 text-sm leading-relaxed">
+                                    {place.descriptionEn}
+                                  </p>
+                                )}
+                                {(place.latitude && place.longitude) && (
+                                  <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+                                    <MapPin size={12} />
+                                    <span>{place.latitude.toFixed(4)}, {place.longitude.toFixed(4)}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Area Info */}
+                    <div className="bg-gray-50 rounded-lg p-4 shadow-md">
+                      <h3 className="text-lg font-semibold text-[#001730] mb-3">Area Info</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        {project.area.nameEn && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Area Name (English)</p>
+                            <p className="text-sm font-semibold text-[#001730]">{project.area.nameEn}</p>
+                          </div>
+                        )}
+                 
+                        {project.area.areaReference && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Area Reference</p>
+                            <p className="text-sm font-semibold text-[#001730]">{project.area.areaReference}</p>
+                          </div>
+                        )}
+                        {project.area.locationLevel1 && (
+                          <div>
+                            <p className="text-xs text-gray-500 mb-1">Location Level 1</p>
+                            <p className="text-sm font-semibold text-[#001730]">{project.area.locationLevel1}</p>
+                          </div>
+                        )}
+              
+                 
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No area information available</p>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <div className="text-gray-500 mx-4 sm:mx-10">Project details not available</div>
@@ -895,9 +1074,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         {project && (
           <div className="grid grid-cols-3 mx-4 sm:mx-10 pt-4 mt-4">
             {[
-              { title: "Starting Price", value: project.startingPrice ? `QAR ${project.startingPrice.toLocaleString()}` : "N/A", icon: "price" },
-              { title: "Project Type", value: project.projectType || "N/A", icon: "type" },
-              { title: "Status", value: project.status || "N/A", icon: "status" },
+              { title: "Average  Price  ", value: project.startingPrice ? `QAR ${project.startingPrice.toLocaleString()}` : "N/A", icon: "price" },
+              { title: "Owned by", value: project.projectOwnership || "Al-Asmakh", icon: "owner" },
+              { title: "Project Id ", value: project.projectReference || project.id || "N/A", icon: "projectId" },
             ].map((item, i) => (
               <div
                 key={i}
@@ -909,10 +1088,10 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                   {item.icon === "price" && (
                     <FaDollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                   )}
-                  {item.icon === "type" && (
-                    <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  {item.icon === "owner" && (
+                    <FaUser className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                   )}
-                  {item.icon === "status" && (
+                  {item.icon === "projectId" && (
                     <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                   )}
                   <p className="text-gray-500 text-xs sm:text-sm">{item.title}</p>
@@ -977,10 +1156,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
       )}
 
       {/* Bottom info strip */}
-      {project && (
+      {/* {project && (
         <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
           <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
-            {/* Box 1 */}
             <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
               <p className="flex flex-col sm:flex-row sm:items-center">
                 <span className="font-semibold text-[#001730]">Project ID:</span>
@@ -988,7 +1166,6 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
               </p>
             </div>
 
-            {/* Box 2 */}
             <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
               <p className="flex flex-col sm:flex-row sm:items-center">
                 <span className="font-semibold text-[#001730]">Project Type:</span>
@@ -996,7 +1173,6 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
               </p>
             </div>
 
-            {/* Box 3 */}
             <div className="bg-[#F5F7FA] p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
   <p className="flex flex-col">
     <span className="font-semibold text-[#001730]">Owned by:</span>
@@ -1007,7 +1183,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
 
   
@@ -1139,7 +1315,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 >
                   <div className="flex flex-col sm:flex-row">
                     {/* Image Section */}
-                    <div className="relative w-full sm:w-[200px] h-[200px] sm:h-auto flex-shrink-0">
+                    <div className="relative w-full sm:w-[260px] h-[200px] sm:h-auto flex-shrink-0">
                       <Image
                         src={mainImage}
                         alt={prop.titleEn || prop.title || "Property"}
@@ -1275,15 +1451,14 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           </>
         ) : (
           <div className="bg-[#F5F7FA] p-6 rounded-md shadow">
-            <h2
+            {/* <h2
               className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
               style={{
                 fontSize: "clamp(16px, 4vw, 24px)"
               }}
             >
               Agents for {project?.nameEn || project?.name || "this project"}
-            </h2>
-            <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%] mb-6"></div>
+            </h2> */}
             {agents && agents.length > 0 ? (
               <div className="space-y-4">
                 {agents.map((agent, index) => {
@@ -1492,6 +1667,111 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
        
 
             <DreamPropertySection />
+
+            {/* Gallery Modal */}
+            {galleryModalOpen && project && project.gallery && project.gallery.length > 0 && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+                onClick={() => setGalleryModalOpen(false)}
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setGalleryModalOpen(false)}
+                  className="absolute top-4 right-4 z-10 text-white hover:text-gray-300 transition-colors bg-black/50 rounded-full p-2"
+                  aria-label="Close modal"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+
+                {/* Previous Button */}
+                {selectedImageIndex > 0 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedImageIndex(selectedImageIndex - 1);
+                    }}
+                    className="absolute left-4 z-10 text-white hover:text-gray-300 transition-colors bg-black/50 rounded-full p-3"
+                    aria-label="Previous image"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Next Button */}
+                {selectedImageIndex < project.gallery.length - 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedImageIndex(selectedImageIndex + 1);
+                    }}
+                    className="absolute right-4 z-10 text-white hover:text-gray-300 transition-colors bg-black/50 rounded-full p-3"
+                    aria-label="Next image"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Image Container */}
+                <div
+                  className="relative w-full h-full max-w-7xl max-h-[90vh] mx-4 flex items-center justify-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Image
+                    src={project.gallery[selectedImageIndex]}
+                    alt={`Gallery image ${selectedImageIndex + 1}`}
+                    width={1920}
+                    height={1080}
+                    className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                    unoptimized={project.gallery[selectedImageIndex]?.startsWith('http')}
+                    priority
+                  />
+                </div>
+
+                {/* Image Counter */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
+                  {selectedImageIndex + 1} / {project.gallery.length}
+                </div>
+              </div>
+            )}
         </div>
     );
 }
