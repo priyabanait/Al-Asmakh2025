@@ -24,6 +24,41 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
         return "Commercial"; // Default label
     };
 
+    // Generate Google Maps embed URL based on property location
+    const getMapUrl = (property) => {
+        // Priority 1: Use exact coordinates if available
+        if (property.latitude && property.longitude) {
+            return `https://www.google.com/maps?q=${property.latitude},${property.longitude}&output=embed&hl=en&z=15`;
+        }
+
+        // Priority 2: Use area coordinates if available (for projects)
+        if (property.area?.latitude && property.area?.longitude) {
+            return `https://www.google.com/maps?q=${property.area.latitude},${property.area.longitude}&output=embed&hl=en&z=15`;
+        }
+
+        // Priority 3: Build location string from location levels
+        const locationParts = [
+            property.locationLevel1,
+            property.locationLevel2,
+            property.locationLevel3,
+            property.locationLevel4
+        ].filter(Boolean);
+
+        if (locationParts.length > 0) {
+            const locationQuery = encodeURIComponent(locationParts.join(', ') + ', Qatar');
+            return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&z=15`;
+        }
+
+        // Priority 4: Use location string if available
+        if (property.location) {
+            const locationQuery = encodeURIComponent(property.location + ', Qatar');
+            return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&z=15`;
+        }
+
+        // Fallback: Default to Doha, Qatar
+        return `https://www.google.com/maps?q=Doha,Qatar&output=embed&hl=en&z=15`;
+    };
+
     if (viewMode === "MAP") {
         return (
             /* MAP View */
@@ -206,12 +241,20 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
 
 
-                            {/* Map - Static */}
-                            <img
-                                src="/div.property-thumbnail-wrapper (2).png"
-                                className="w-full h-20 mt-3 object-cover"
-                                alt="Property map"
-                            />
+                            {/* Map - Dynamic based on location */}
+                            <div className="w-full h-20 mt-3 rounded-md overflow-hidden relative">
+                                <iframe
+                                    src={getMapUrl(property)}
+                                    width="100%"
+                                    height="100%"
+                                    style={{ border: 0 }}
+                                    allowFullScreen=""
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    className="absolute inset-0"
+                                    title={`Map for ${property.title || property.titleEn || "Property"}`}
+                                />
+                            </div>
                         </div>
 
                         {/* Footer - Dynamic Price from API */}

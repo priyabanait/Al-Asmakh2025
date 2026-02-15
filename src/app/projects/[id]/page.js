@@ -1021,14 +1021,14 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
         {viewMode === "properties" ? (
           <>
-            <h2
+            {/* <h2
               className="text-[#001730] uppercase mb-2 mt-0 lg:mb-2 text-center whitespace-nowrap relative z-10"
               style={{
                 fontSize: "clamp(16px, 4vw, 24px)"
               }}
             >
               Exclusive properties in {project?.nameEn || project?.name || "this project"}
-            </h2>
+            </h2> */}
 
         {/* 🔹 PROPERTY LIST */}
         {loading ? (

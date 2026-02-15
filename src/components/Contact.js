@@ -264,12 +264,12 @@ export default function MeetOurAgents() {
                 {/* Combined Header Section (Image + Name + Title) */}
                 <div className="shadow-md bg-gray-100 rounded-md overflow-hidden mx-2 sm:mx-4 mt-2 sm:mt-4">
                   {/* Profile Image */}
-                  <div className="relative w-full h-80">
+                  <div className="relative w-full h-48">
                     <Image
                       src={agent.image || "/div.png"}
                       alt={agent.name || agent.title || "Agent"}
                       fill
-                      className="object-fill"
+                      className="object-cover"
                     />
 
                     {/* Name + Title - Absolute positioned over image */}
