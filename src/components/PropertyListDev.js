@@ -242,19 +242,21 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
 
                             {/* Map - Dynamic based on location */}
+    
                             <div className="w-full h-20 mt-3 rounded-md overflow-hidden relative">
-                                <iframe
-                                    src={getMapUrl(property)}
-                                    width="100%"
-                                    height="100%"
-                                    style={{ border: 0 }}
-                                    allowFullScreen=""
-                                    loading="lazy"
-                                    referrerPolicy="no-referrer-when-downgrade"
-                                    className="absolute inset-0"
-                                    title={`Map for ${property.title || property.titleEn || "Property"}`}
-                                />
-                            </div>
+  <iframe
+    src={getMapUrl(property)}
+    title={`Map for ${property.title || property.titleEn || "Property"}`}
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+    className="absolute inset-0 w-full h-full grayscale brightness-40 contrast-55 saturate-0"
+    style={{ border: 0 }}
+  />
+
+  {/* Soft white fade overlay */}
+  <div className="absolute inset-0 bg-white/35 pointer-events-none"></div>
+</div>
+
                         </div>
 
                         {/* Footer - Dynamic Price from API */}
