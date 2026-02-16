@@ -88,7 +88,7 @@ export default function LoadingOverlay({ isLoading }) {
               alt="Loading"
               width={200}
               height={200}
-              className="w-auto h-auto max-w-[200px] max-h-[200px]"
+              className="w-auto h-auto max-w-[300px] max-h-[300px]"
               priority
               unoptimized
             />

@@ -36,13 +36,16 @@ export default function AlAsmakhTower() {
     return slugMap[areaName] || areaName.toLowerCase().replace(/\s+/g, "-");
   };
 
-  // Function to handle area click - use area ID if available, otherwise use name
+  // Function to handle area click - navigate using area ID when available
   const handleAreaClick = (area) => {
-    // If area is an object with id, use it; otherwise treat as name string
-    const areaName = typeof area === 'object' ? area.name : area;
-    const areaId = typeof area === 'object' ? area.id : null;
+    // If area is an object with id, prefer navigating by ID
+    if (typeof area === "object" && area.id) {
+      router.push(`/towerdetails/${area.id}`);
+      return;
+    }
 
-    // Create slug from name
+    // Fallback: if only a name/slug is available, use slug-based navigation
+    const areaName = typeof area === "object" ? area.name : area;
     const slug = getAreaSlug(areaName);
     router.push(`/towerdetails/${slug}`);
   };

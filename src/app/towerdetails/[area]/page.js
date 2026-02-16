@@ -1,10 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { MapPin } from 'lucide-react'
 import { FaArrowRight, FaChevronUp, FaChevronDown } from 'react-icons/fa6'
-import { FaHome, FaBuilding, FaRegSquare, FaDollarSign } from 'react-icons/fa'
+import { FaHome, FaBuilding, FaRegSquare, FaDollarSign, FaUser } from 'react-icons/fa'
 import Link from 'next/link'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
@@ -12,314 +12,32 @@ import ShareButton from '../../../components/ShareButton'
 import { useParams } from 'next/navigation'
 import { getApiUrl } from '@/config/api'
 
-// Slug to name mapping for finding areas
-const slugToNameMap = {
-  'west-bay': 'West Bay',
-  'lusail-city': 'Lusail City',
-  'pearl-island': 'Pearl Island',
-  'the-pearl-island': 'Pearl Island',
-  'the-pearl': 'Pearl Island',
-  'doha': 'Doha',
-  'al-sadd': 'Al Sadd',
-  'al-dafna': 'Al Dafna',
-  'ain-khaled': 'Ain Khaled',
-  'ain-khalid': 'Ain Khaled'
-}
-
-// Hardcoded area data (fallback)
-const areaData = {
-  'west-bay': {
-    name: 'West Bay',
-    title: 'Welcome to West Bay',
-    image: '/images/west-bay.jpg',
-    description: `West Bay District or famously known as West Bay is considered as the downtown of Doha
-      where you can find the tallest skyscrapers, luxurious four and five-star hotels,
-      schools, residential towers, oil and gas companies, private and public governmental
-      sectors that are located at the west coast of Doha. It also encompasses the city's east
-      coast districts, namely, Al Qassar, Al Dafna, West Bay Lagoon, and Onaiza.`,
-    description2: `As of 2018, the Qatar Metro Rail, which is a major urban development project funded by
-      the government of Qatar officially opened a train station that connected the districts
-      from each line (Gold, Red, Green, and Yellow) within Doha to Lusail City.`,
-    properties: [
-      {
-        id: 1,
-        image: '/images/property.jpg',
-        location: 'West Bay – Doha',
-        title: 'Fully Furnished Junior Studio in West Bay | Bills Included',
-        price: '7,500',
-        bedrooms: '1',
-        bathrooms: '1',
-        area: '500 sqft'
-      },
-      {
-        id: 2,
-        image: '/images/property.jpg',
-        location: 'West Bay – Doha',
-        title: 'Luxury 2 Bedroom Apartment with Sea View',
-        price: '12,000',
-        bedrooms: '2',
-        bathrooms: '2',
-        area: '1,200 sqft'
-      },
-      {
-        id: 3,
-        image: '/images/property.jpg',
-        location: 'West Bay – Doha',
-        title: 'Modern 3 Bedroom Penthouse',
-        price: '18,000',
-        bedrooms: '3',
-        bathrooms: '3',
-        area: '2,000 sqft'
-      }
-    ]
-  },
-  'lusail-city': {
-    name: 'Lusail City',
-    title: 'Welcome to Lusail City',
-    image: '/images/lusail.jpg',
-    description: `Lusail City is a planned city in Qatar, located on the coast, in the northern part of the municipality of Al Daayen. Lusail is located about 23 km north of the city centre of Doha, just north of the West Bay Lagoon, on over 38 km² of land.`,
-    description2: `The city is being developed by Qatari Diar, a real estate investment company owned by the Qatar Investment Authority. Lusail is designed to accommodate 450,000 people and will include commercial, residential, entertainment, and hospitality districts.`,
-    properties: [
-      {
-        id: 4,
-        image: '/images/property.jpg',
-        location: 'Lusail City – Doha',
-        title: 'Spacious 4 Bedroom Villa with Private Pool',
-        price: '25,000',
-        bedrooms: '4',
-        bathrooms: '4',
-        area: '3,500 sqft'
-      },
-      {
-        id: 5,
-        image: '/images/property.jpg',
-        location: 'Lusail City – Doha',
-        title: 'Luxury Apartment in Lusail Marina',
-        price: '15,000',
-        bedrooms: '2',
-        bathrooms: '2',
-        area: '1,500 sqft'
-      },
-      {
-        id: 6,
-        image: '/images/property.jpg',
-        location: 'Lusail City – Doha',
-        title: 'Modern Studio in Lusail Downtown',
-        price: '8,500',
-        bedrooms: '1',
-        bathrooms: '1',
-        area: '600 sqft'
-      }
-    ]
-  },
-  'pearl-island': {
-    name: 'Pearl Island',
-    title: 'Welcome to The Pearl Island',
-    image: '/images/pearl.jpg',
-    description: `The Pearl-Qatar is an artificial island spanning nearly four million square meters. It is the first land in Qatar to be available for freehold ownership by foreign nationals.`,
-    description2: `The Pearl Island features luxury residential towers, villas, and townhouses, along with world-class retail, dining, and entertainment options. It's one of the most prestigious addresses in Doha.`,
-    properties: [
-      {
-        id: 7,
-        image: '/images/property.jpg',
-        location: 'Pearl Island – Doha',
-        title: 'Beachfront Villa on The Pearl',
-        price: '35,000',
-        bedrooms: '5',
-        bathrooms: '5',
-        area: '4,500 sqft'
-      },
-      {
-        id: 8,
-        image: '/images/property.jpg',
-        location: 'Pearl Island – Doha',
-        title: 'Luxury Apartment with Marina View',
-        price: '20,000',
-        bedrooms: '3',
-        bathrooms: '3',
-        area: '2,200 sqft'
-      },
-      {
-        id: 9,
-        image: '/images/property.jpg',
-        location: 'Pearl Island – Doha',
-        title: 'Penthouse with Panoramic Views',
-        price: '45,000',
-        bedrooms: '4',
-        bathrooms: '4',
-        area: '3,800 sqft'
-      }
-    ]
-  },
-  'doha': {
-    name: 'Doha',
-    title: 'Welcome to Doha',
-    image: '/div.property-thumbnail-wrapper.png',
-    description: `Doha is the capital and most populous city of Qatar. Located on the coast of the Persian Gulf, Doha is Qatar's fastest-growing city, with over 80% of the nation's population living in Doha or its surrounding suburbs.`,
-    description2: `Doha is the economic center of Qatar and one of the principal financial centers in the Middle East. The city is home to many international organizations and has a rapidly growing skyline.`,
-    properties: [
-      {
-        id: 10,
-        image: '/images/property.jpg',
-        location: 'Doha',
-        title: 'Modern Apartment in Downtown Doha',
-        price: '10,000',
-        bedrooms: '2',
-        bathrooms: '2',
-        area: '1,000 sqft'
-      },
-      {
-        id: 11,
-        image: '/images/property.jpg',
-        location: 'Doha',
-        title: 'Luxury Villa in Doha',
-        price: '22,000',
-        bedrooms: '4',
-        bathrooms: '4',
-        area: '3,200 sqft'
-      },
-      {
-        id: 12,
-        image: '/images/property.jpg',
-        location: 'Doha',
-        title: 'Studio Apartment in City Center',
-        price: '6,500',
-        bedrooms: '1',
-        bathrooms: '1',
-        area: '450 sqft'
-      }
-    ]
-  },
-  'al-sadd': {
-    name: 'Al Sadd',
-    title: 'Welcome to Al Sadd',
-    image: '/div.property-thumbnail-wrapper.png',
-    description: `Al Sadd is a district in Doha, Qatar. It is one of the oldest districts in Doha and is known for its commercial and residential mix. The area features traditional markets, modern shopping centers, and residential buildings.`,
-    description2: `Al Sadd is well-connected to other parts of Doha and offers a mix of traditional Qatari culture and modern amenities. It's a popular area for both locals and expatriates.`,
-    properties: [
-      {
-        id: 13,
-        image: '/images/property.jpg',
-        location: 'Al Sadd – Doha',
-        title: 'Family Villa in Al Sadd',
-        price: '15,000',
-        bedrooms: '4',
-        bathrooms: '3',
-        area: '2,800 sqft'
-      },
-      {
-        id: 14,
-        image: '/images/property.jpg',
-        location: 'Al Sadd – Doha',
-        title: 'Modern 2 Bedroom Apartment',
-        price: '9,500',
-        bedrooms: '2',
-        bathrooms: '2',
-        area: '1,100 sqft'
-      },
-      {
-        id: 15,
-        image: '/images/property.jpg',
-        location: 'Al Sadd – Doha',
-        title: 'Spacious 3 Bedroom Flat',
-        price: '12,000',
-        bedrooms: '3',
-        bathrooms: '2',
-        area: '1,600 sqft'
-      }
-    ]
-  },
-  'al-dafna': {
-    name: 'Al Dafna',
-    title: 'Welcome to Al Dafna',
-    image: '/div.property-thumbnail-wrapper.png',
-    description: `Al Dafna is a district in West Bay, Doha. It is known for its modern architecture, luxury hotels, and commercial buildings. The area is part of the West Bay business district and features some of Doha's most iconic skyscrapers.`,
-    description2: `Al Dafna is home to many embassies, corporate headquarters, and luxury residential towers. It offers stunning views of the Persian Gulf and is one of the most prestigious areas in Doha.`,
-    properties: [
-      {
-        id: 16,
-        image: '/images/property.jpg',
-        location: 'Al Dafna – Doha',
-        title: 'Luxury Penthouse with Sea View',
-        price: '30,000',
-        bedrooms: '4',
-        bathrooms: '4',
-        area: '3,600 sqft'
-      },
-      {
-        id: 17,
-        image: '/images/property.jpg',
-        location: 'Al Dafna – Doha',
-        title: 'Executive Apartment in Business District',
-        price: '18,000',
-        bedrooms: '3',
-        bathrooms: '3',
-        area: '2,400 sqft'
-      },
-      {
-        id: 18,
-        image: '/images/property.jpg',
-        location: 'Al Dafna – Doha',
-        title: 'Modern Studio in Al Dafna',
-        price: '11,000',
-        bedrooms: '1',
-        bathrooms: '1',
-        area: '700 sqft'
-      }
-    ]
-  }
-}
-
 export default function TowerDetailsPage() {
   const params = useParams()
-  const areaSlug = params.area
+  // Route param now represents the area ID directly
+  const areaIdFromRoute = params.area
   const [open, setOpen] = useState(null)
   const [area, setArea] = useState(null)
   const [properties, setProperties] = useState([])
+  const [agents, setAgents] = useState([])
+  const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("overview") // overview, nearby, 360view
   const [nearbyAreas, setNearbyAreas] = useState([])
+  const [viewMode, setViewMode] = useState("properties") // "properties" | "agents" | "projects"
 
   const toggle = (i) => setOpen(open === i ? null : i)
 
-  // OPTIMIZED: Single API call to fetch area + all properties
+  // Fetch area details and all properties for this area ID
   useEffect(() => {
     const fetchAreaData = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        // Get area name from slug
-        const areaName = slugToNameMap[areaSlug] || areaSlug.split('-').map(word => 
-          word.charAt(0).toUpperCase() + word.slice(1)
-        ).join(' ')
-
-        // Step 1: Get area ID from areas list (single call)
-        const areasListUrl = getApiUrl('api/v1/areas/list')
-        const areasResponse = await fetch(areasListUrl)
-        
-        if (!areasResponse.ok) {
-          throw new Error('Failed to fetch areas list')
-        }
-
-        const areasData = await areasResponse.json()
-        const foundArea = areasData.areas?.find(a => 
-          a.area_name?.toLowerCase() === areaName.toLowerCase() ||
-          a.area_name?.toLowerCase().includes(areaName.toLowerCase()) ||
-          areaName.toLowerCase().includes(a.area_name?.toLowerCase())
-        )
-
-        if (!foundArea) {
-          const fallbackArea = areaData[areaSlug] || areaData['west-bay']
-          setArea(fallbackArea)
-          setProperties(fallbackArea.properties || [])
-          setLoading(false)
-          return
-        }
-
-        // Step 2: OPTIMIZED - Single call to get area details + all properties
-        const areaDetailsUrl = getApiUrl(`api/v1/areas/${foundArea.area_id}/full-details?page=1&limit=50`)
+        // Step 1: Direct call using area ID from route to get area details
+        const areaDetailsUrl = getApiUrl(`api/v1/areas/${areaIdFromRoute}/full-details?page=1&limit=50`)
         const detailsResponse = await fetch(areaDetailsUrl)
         
         if (!detailsResponse.ok) {
@@ -331,79 +49,100 @@ export default function TowerDetailsPage() {
         
         // Map area data
         const mappedArea = {
-          id: areaInfo.id || foundArea.area_id,
-          name: areaInfo.nameEn || foundArea.area_name,
-          title: `Welcome to ${areaInfo.nameEn || foundArea.area_name}`,
-          image: areaInfo.imageUrl || areaInfo.imageUrlEn || foundArea.area_image || '/images_pages/listings.png',
+          id: areaInfo.id || areaIdFromRoute,
+          name: areaInfo.nameEn || areaInfo.name || '',
+          title: `Welcome to ${areaInfo.nameEn || areaInfo.name || ''}`,
+          image: areaInfo.imageUrl || areaInfo.imageUrlEn || '/images_pages/listings.png',
           description: areaInfo.descriptionEn || '',
           description2: areaInfo.descriptionAr || '',
-          areaId: foundArea.area_id,
+          areaId: areaInfo.id || areaIdFromRoute,
           totalProperties: detailsData.listingsCount || detailsData.properties?.length || 0,
           status: areaInfo.status || 'active',
-          locationLevel1: areaInfo.locationLevel1 || foundArea.area_name,
+          locationLevel1: areaInfo.locationLevel1 || areaInfo.nameEn || '',
           locationLevel2: areaInfo.locationLevel2,
           locationLevel3: areaInfo.locationLevel3,
           latitude: areaInfo.latitude || areaInfo.lat,
           longitude: areaInfo.longitude || areaInfo.lng || areaInfo.lon,
           virtualTourUrl: areaInfo.virtualTourUrl || null,
-          amenities: areaInfo.amenities || []
+          amenities: areaInfo.amenities || [],
+          nearestPlaces: Array.isArray(areaInfo.nearestPlaces) ? areaInfo.nearestPlaces : []
         }
 
-        // Map properties
-        const mappedProperties = (detailsData.properties || []).map((item, index) => {
-          const prop = item.property || item
-          const locationParts = [
-            prop.locationLevel2,
-            prop.locationLevel3,
-            prop.locationLevel4
-          ].filter(Boolean)
-          const location = locationParts.length > 0 
-            ? locationParts.join(' – ') 
-            : foundArea.area_name || 'Doha'
-          
-          return {
-            id: prop.id || prop.propertyId || index + 1,
-            image: prop.coverPicture || prop.gallery?.[0] || prop.imageUrl || '/div.property-thumbnail-wrapper.png',
-            location: location,
-            title: prop.titleEn || prop.title || 'Property',
-            price: prop.priceAmount ? prop.priceAmount.toLocaleString() : '0',
-            bedrooms: prop.bedrooms?.toString() || '0',
-            bathrooms: prop.bathrooms?.toString() || '0',
-            area: prop.area ? `${prop.area} sqft` : (prop.areaSqft ? `${prop.areaSqft} sqft` : 'N/A')
+        // Step 2: Fetch properties for this area WITH agent details
+        const areaPropertiesUrl = getApiUrl(`api/v1/areas/${areaIdFromRoute}/properties`)
+        const areaPropertiesResponse = await fetch(areaPropertiesUrl)
+        if (!areaPropertiesResponse.ok) {
+          throw new Error('Failed to fetch properties for this area')
+        }
+        const areaPropertiesData = await areaPropertiesResponse.json()
+
+        const rawProperties = Array.isArray(areaPropertiesData.properties)
+          ? areaPropertiesData.properties
+          : []
+
+        // Derive unique agents from properties (for Agents view)
+        const agentsMap = new Map()
+        rawProperties.forEach((item) => {
+          if (item.agent && typeof item.agent === 'object') {
+            const agentObj = item.agent
+            const agentId = agentObj.id || agentObj._id || agentObj.userId || agentObj.email || agentObj.name
+            if (agentId && !agentsMap.has(agentId)) {
+              agentsMap.set(agentId, agentObj)
+            }
           }
         })
 
-        setArea(mappedArea)
-        setProperties(mappedProperties.length > 0 ? mappedProperties : (areaData[areaSlug]?.properties || []))
+        // Prefer totalProperties/count from this endpoint
+        const updatedArea = {
+          ...mappedArea,
+          totalProperties: areaPropertiesData.count ?? mappedArea.totalProperties
+        }
 
-        // Step 3: Fetch nearby areas (other areas in the same location)
-        const allAreas = areasData.areas || []
-        const nearby = allAreas
-          .filter(a => a.area_id !== foundArea.area_id && a.area_name)
-          .slice(0, 6)
-          .map(a => ({
-            id: a.area_id,
-            name: a.area_name,
-            image: a.area_image || '/images_pages/listings.png',
-            description: a.descriptionEn || ''
-          }))
-        setNearbyAreas(nearby)
+        setArea(updatedArea)
+        setProperties(rawProperties)
+        setAgents(Array.from(agentsMap.values()))
+
+        // Step 3: Fetch projects for this area
+        const areaProjectsUrl = getApiUrl(`api/v1/areas/${areaIdFromRoute}/projects`)
+        const areaProjectsResponse = await fetch(areaProjectsUrl)
+        if (areaProjectsResponse.ok) {
+          const areaProjectsData = await areaProjectsResponse.json()
+          setProjects(Array.isArray(areaProjectsData.projects) ? areaProjectsData.projects : [])
+        } else {
+          setProjects([])
+        }
+
+        // Step 4: Fetch nearby areas list (other areas)
+        const areasListUrl = getApiUrl('api/v1/areas/list')
+        const areasResponse = await fetch(areasListUrl)
+        if (areasResponse.ok) {
+          const areasData = await areasResponse.json()
+          const allAreas = areasData.areas || []
+          const nearby = allAreas
+            .filter(a => a.area_id !== mappedArea.id && a.area_name)
+            .slice(0, 6)
+            .map(a => ({
+              id: a.area_id,
+              name: a.area_name,
+              image: a.area_image || '/images_pages/listings.png',
+              description: a.descriptionEn || ''
+            }))
+          setNearbyAreas(nearby)
+        }
       } catch (err) {
         console.error('Error fetching area data:', err)
         setError(err.message)
-        // Fallback to hardcoded data
-        const fallbackArea = areaData[areaSlug] || areaData['west-bay']
-        setArea(fallbackArea)
-        setProperties(fallbackArea.properties || [])
+        setArea(null)
+        setProperties([])
       } finally {
         setLoading(false)
       }
     }
 
-    if (areaSlug) {
+    if (areaIdFromRoute) {
       fetchAreaData()
     }
-  }, [areaSlug])
+  }, [areaIdFromRoute])
 
   // Show loading state
   if (loading) {
@@ -454,11 +193,36 @@ export default function TowerDetailsPage() {
 
         {/* Centered Transparent Box with Title */}
         <div className="relative z-20 flex items-center justify-center w-full">
-          <div className="bg-white/20 backdrop-blur-md rounded-lg px-8 py-6 border border-white/30 shadow-lg">
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#001730]   text-center">
-              {area.title}
-            </h1>
-          </div>
+          <div className="bg-white/20 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/30 shadow-lg max-w-5xl w-full mx-4">
+            <div className="mb-6">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#001730] text-center mb-3">
+                {area.title}
+              </h1>
+              <div className="flex items-center justify-center text-sm sm:text-base text-[#001730] gap-2">
+                <MapPin size={16} />
+                <span>{area.locationLevel1 || 'Kingdom Of Qatar'}</span>
+              </div>
+            </div>
+
+            {/* Nearest places gallery */}
+            {area.nearestPlaces && area.nearestPlaces.length > 0 && (
+              <div className="flex justify-center gap-4 sm:gap-6">
+                {area.nearestPlaces.slice(0, 4).map((place, index) => (
+                  <div
+                    key={place.titleEn || place.titleAr || index}
+                    className="relative w-24 h-20 sm:w-32 sm:h-24 md:w-40 md:h-28 rounded-2xl overflow-hidden shadow-md"
+                  >
+                    <Image
+                      src={place.pictureUrl || "/images_pages/listings.png"}
+                      alt={place.titleEn || place.titleAr || 'Nearby place'}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div> 
         </div>
       </section>
 
@@ -664,7 +428,7 @@ export default function TowerDetailsPage() {
                           {nearbyAreas.map((nearbyArea) => (
                             <Link
                               key={nearbyArea.id}
-                              href={`/towerdetails/${nearbyArea.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              href={`/towerdetails/${nearbyArea.id}`}
                               className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                             >
                               <div className="relative h-48">
@@ -832,124 +596,377 @@ export default function TowerDetailsPage() {
           {/* ================= RIGHT SECTION ================= */}
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-24 relative">
-              {/* Background Image - Behind Properties */}
-              <div className="absolute inset-0 -z-10 opacity-5 lg:opacity-10">
-                <Image
-                  src={area.image || "/div.property-thumbnail-wrapper.png"}
-                  alt={area.name}
-                  fill
-                  className="object-cover rounded-lg"
-                />
-              </div>
+            
 
-              <h2
-                className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap relative z-10"
-                style={{
-                  fontSize: "clamp(16px, 4vw, 24px)"
-                }}
-              >
-                Exclusive properties in {area.name}
-              </h2>
-              <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%] mb-5 relative z-10"></div>
-
-              {/* 🔹 PROPERTY LIST */}
-              <div className="space-y-4 relative z-10">
-                {properties.map((property) => (
-                  <div
-                    key={property.id}
-                    className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+              {/* Toggle between Properties and Agents (same design as project page) */}
+              <div className="flex items-center gap-4 mt-2 mb-4 relative z-10">
+                <div className="flex-1 h-[1px] bg-gray-300 hidden sm:block"></div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setViewMode("properties")}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                      ${
+                        viewMode === "properties"
+                          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                          : "text-gray-600"
+                      }`}
                   >
-                    <div className="flex p-4 rounded-md">
-                      {/* Image Section - Left */}
-                      <div className="relative w-[220px] h-[192px] flex-shrink-0">
-                        <Image
-                          src={property.image || "/div.property-thumbnail-wrapper.png"}
-                          alt={property.title}
-                          fill
-                          className="object-cover rounded-md"
-                        />
-                        {/* Share Button Overlay */}
-                        <div className="absolute bottom-2 right-2 z-10">
-                          <ShareButton
-                            propertyTitle={property.title}
-                            propertyLocation={property.location}
-                            propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                          />
-                        </div>
-                      </div>
+                    <FaHome size={14} />
+                    <span>Properties</span>
+                  </button>
 
-                      {/* Details Section - Right */}
-                      <div className="flex-1 p-4 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-lg font-bold text-[#001730] mb-1">
-                            {property.title}
-                          </h3>
+                  <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
 
-                          <div className="flex items-center text-[#001730] text-sm mb-3">
-                            <MapPin size={12} className="mr-2" />
-                            <span>{property.location}</span>
-                          </div>
-                          <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
-                            {/* Beds */}
-                            <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                              <Image
-                                src="/Icon (1).png"
-                                alt="Beds"
-                                width={16}
-                                height={16}
-                                className="w-[18px] h-[18px]"
-                              />
-                              <span className="text-xs lg:text-sm">{property.bedrooms}</span>
-                            </div>
+                  <button
+                    onClick={() => setViewMode("agents")}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                      ${
+                        viewMode === "agents"
+                          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                          : "text-gray-600"
+                      }`}
+                  >
+                    <FaUser size={14} />
+                    <span>Agents</span>
+                  </button>
 
-                            {/* Baths */}
-                            <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                              <Image
-                                src="/Icon.png"
-                                alt="Baths"
-                                width={16}
-                                height={16}
-                                className="w-[18px] h-[18px]"
-                              />
-                              <span className="text-xs lg:text-sm">{property.bathrooms}</span>
-                            </div>
-
-                            {/* Area */}
-                            <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                              <Image
-                                src="/Icon (2).png"
-                                alt="Area"
-                                width={16}
-                                height={16}
-                                className="w-[18px] h-[18px]"
-                              />
-                              <span className="text-xs lg:text-sm">{property.area}</span>
-                            </div>
-                          </div>
-                          <div className="w-[100%] h-[0.5px] bg-gray-300 my-3"></div>
-                        </div>
-                        <div className="flex items-center justify-between gap-2">
-                          <p className="text-lg font-bold text-[#001730] m-0">
-                            {property.price} QAR
-                          </p>
-                          <button className="bg-[#001730] text-white text-[12px] font-medium px-4 py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                            <Link
-                              href={`/propertydetails?id=${property.id}`}
-                              className="flex items-center gap-2 w-full"
-                            >
-                              <span>Details</span>
-                              <FaArrowRight
-                                size={12}
-                                className="w-3 h-3 lg:w-[16px] ml-10"
-                              />
-                            </Link>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  <button
+                    onClick={() => setViewMode("projects")}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                      ${
+                        viewMode === "projects"
+                          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                          : "text-gray-600"
+                      }`}
+                  >
+                    <FaBuilding size={14} />
+                    <span>Projects</span>
+                  </button>
+                </div>
               </div>
+
+              {viewMode === "properties" ? (
+                <>
+                
+
+                  {/* 🔹 PROPERTY LIST (same layout as project page) */}
+                  <div className="space-y-3 relative z-10">
+                    {error ? (
+                      <div className="text-red-500 text-sm">{error}</div>
+                    ) : properties.length > 0 ? (
+                      properties.slice(0, 4).map((property) => {
+                        const prop = property.property || property
+
+                        const locationParts = [
+                          prop.locationLevel2,
+                          prop.locationLevel3,
+                          prop.locationLevel4
+                        ].filter(Boolean)
+                        const location = locationParts.length > 0
+                          ? locationParts.join(' – ')
+                          : prop.locationLevel1 || area.name || 'Doha'
+
+                        let areaDisplay = 'N/A'
+                        if (prop.area) {
+                          if (typeof prop.area === 'number' || typeof prop.area === 'string') {
+                            areaDisplay = `${prop.area} sqft`
+                          } else if (typeof prop.area === 'object' && (prop.area.value || prop.area.area)) {
+                            areaDisplay = `${prop.area.value || prop.area.area} sqft`
+                          }
+                        } else if (prop.areaSqft) {
+                          areaDisplay = `${prop.areaSqft} sqft`
+                        }
+
+                        // Image selection logic similar to project page
+                        let mainImage = prop.coverPicture || prop.gallery?.[0] || prop.imageUrl || "/div.property-thumbnail-wrapper.png"
+
+                        return (
+                          <div
+                            key={prop.id || prop.propertyId || property.id}
+                            className="bg-[#E9E9E9] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
+                          >
+                            <div className="flex flex-col sm:flex-row">
+                              {/* Image Section */}
+                              <div className="relative w-full sm:w-[260px] h-[200px] sm:h-auto flex-shrink-0">
+                                <Image
+                                  src={mainImage}
+                                  alt={prop.titleEn || prop.title || "Property"}
+                                  fill
+                                  className="object-cover"
+                                  unoptimized={mainImage.startsWith('http')}
+                                />
+                                <div className="absolute bottom-2 right-2 z-10">
+                                  <ShareButton
+                                    propertyTitle={prop.titleEn || prop.title || "Property"}
+                                    propertyLocation={location}
+                                    propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Details Section */}
+                              <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
+                                <div>
+                                  <h3 className="text-base sm:text-lg font-bold text-[#001730] mb-2 line-clamp-2">
+                                    {prop.titleEn || prop.title || "Property"}
+                                  </h3>
+
+                                  <div className="flex items-center text-[#001730] text-xs sm:text-sm mb-3">
+                                    <MapPin size={12} className="mr-1.5 flex-shrink-0" />
+                                    <span className="truncate">{location}</span>
+                                  </div>
+
+                                  <div className="grid grid-cols-3 gap-2 text-[#001730] text-xs sm:text-sm mb-4">
+                                    {/* Beds */}
+                                    <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                                      <Image
+                                        src="/Icon (1).png"
+                                        alt="Beds"
+                                        width={14}
+                                        height={14}
+                                        className="w-4 h-4 flex-shrink-0"
+                                      />
+                                      <span className="font-medium">{prop.bedrooms || '0'}</span>
+                                    </div>
+
+                                    {/* Baths */}
+                                    <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                                      <Image
+                                        src="/Icon.png"
+                                        alt="Baths"
+                                        width={14}
+                                        height={14}
+                                        className="w-4 h-4 flex-shrink-0"
+                                      />
+                                      <span className="font-medium">{prop.bathrooms || '0'}</span>
+                                    </div>
+
+                                    {/* Area */}
+                                    <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                                      <Image
+                                        src="/Icon (2).png"
+                                        alt="Area"
+                                        width={14}
+                                        height={14}
+                                        className="w-4 h-4 flex-shrink-0"
+                                      />
+                                      <span className="font-medium truncate text-xs">{areaDisplay}</span>
+                                    </div>
+                                  </div>
+
+                                  <div className="w-full h-[0.5px] bg-gray-300 my-3"></div>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-3 mt-2">
+                                  <p className="text-base sm:text-lg font-bold text-[#001730]">
+                                    {prop.priceAmount ? prop.priceAmount.toLocaleString() : '0'} QAR
+                                  </p>
+                                  <Link href={`/propertydetails?id=${prop.id || prop.propertyId}`}>
+                                    <button className="bg-[#001730] text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52] whitespace-nowrap">
+                                      <span>Details</span>
+                                      <FaArrowRight size={12} />
+                                    </button>
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })
+                    ) : (
+                      <div className="text-gray-500 text-sm">No properties available in this area</div>
+                    )}
+                  </div>
+
+                  {/* View All Button */}
+                  {properties.length > 4 && (
+                    <div className="mt-6 relative z-10">
+                      <Link href={`/listings?areaId=${area.id || area.areaId}`}>
+                        <button className="bg-[#001730] text-white text-sm font-medium px-6 py-3 rounded-md flex items-center justify-center gap-2 w-full shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                          <span>View All</span>
+                          <FaArrowRight size={14} />
+                        </button>
+                      </Link>
+                    </div>
+                  )}
+                </>
+              ) : viewMode === "agents" ? (
+                <div className="bg-white/80 p-4 sm:p-6 rounded-md shadow relative z-10">
+                  {agents && agents.length > 0 ? (
+                    <div className="space-y-4">
+                      {agents.map((agent, index) => {
+                        const agentName = agent.name || agent.fullName || agent.firstName || `Agent ${index + 1}`
+                        const agentEmail = agent.email || ''
+                        const agentPhone = agent.phone || agent.mobile || ''
+                        const agentImage = agent.profilePicture || agent.image || '/div.property-thumbnail-wrapper.png'
+
+                        return (
+                          <div
+                            key={agent.id || agent._id || agent.userId || index}
+                            className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="relative w-16 h-16 flex-shrink-0">
+                                <Image
+                                  src={agentImage}
+                                  alt={agentName}
+                                  fill
+                                  className="object-cover rounded-full"
+                                  unoptimized={agentImage.startsWith('http')}
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="text-lg font-bold text-[#001730] mb-1">
+                                  {agentName}
+                                </h3>
+                                {agentEmail && (
+                                  <p className="text-sm text-gray-600 mb-1">
+                                    {agentEmail}
+                                  </p>
+                                )}
+                                {agentPhone && (
+                                  <p className="text-sm text-gray-600">
+                                    {agentPhone}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">No agents available for this area.</p>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-white/80 p-4 sm:p-6 rounded-md shadow relative z-10">
+                  {projects && projects.length > 0 ? (
+                    <div className="space-y-4">
+                      {projects.map((proj) => {
+                        const projectId = proj.id || proj._id
+                        const title = proj.nameEn || proj.nameAr || proj.name || "Untitled Project"
+                        const location = [
+                          proj.locationLevel1,
+                          proj.locationLevel2,
+                          proj.locationLevel3,
+                          proj.locationLevel4
+                        ].filter(Boolean).join(', ')
+
+                        const year = proj.projectCompletionDate
+                          ? new Date(proj.projectCompletionDate).getFullYear().toString()
+                          : (proj.projectDate
+                              ? new Date(proj.projectDate).getFullYear().toString()
+                              : '')
+
+                        const units = proj.listingsCount || proj.propertiesCount || "N/A"
+
+                        const image =
+                          proj.coverPicture ||
+                          (Array.isArray(proj.gallery) && proj.gallery[0]) ||
+                          "/div.property-thumbnail-wrapper.png"
+
+                        return (
+                          <div
+                            key={projectId}
+                            className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                          >
+                            <div className="flex p-4 rounded-md">
+                              {/* Image Section - Left */}
+                              <div className="relative w-[260px] h-[192px] flex-shrink-0">
+                                <Image
+                                  src={image}
+                                  alt={title}
+                                  fill
+                                  className="object-cover rounded-md"
+                                  unoptimized={image?.startsWith('http')}
+                                />
+                                {/* Share Button Overlay */}
+                                <div className="absolute bottom-2 right-2 z-10">
+                                  <ShareButton
+                                    propertyTitle={title}
+                                    propertyLocation={location}
+                                    propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Details Section - Right */}
+                              <div className="flex-1 p-4 flex flex-col justify-between">
+                                <div>
+                                  <h3 className="text-lg font-bold text-[#001730] mb-1">
+                                    {title}
+                                  </h3>
+
+                                  <div className="flex items-center text-[#001730] text-sm mb-3">
+                                    <MapPin size={12} className="mr-2" />
+                                    <span>{location || "Location not specified"}</span>
+                                  </div>
+
+                                  <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
+                                    {/* Year */}
+                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
+                                      <Image
+                                        src="/Time.png"
+                                        alt="Year"
+                                        width={16}
+                                        height={16}
+                                        className="w-[18px] h-[18px]"
+                                      />
+                                      <span className="text-xs lg:text-sm">{year || "N/A"}</span>
+                                    </div>
+
+                                    {/* Units */}
+                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
+                                      <Image
+                                        src="/3_Icons Used_Project Dvt 1 (1).png"
+                                        alt="Units"
+                                        width={16}
+                                        height={16}
+                                        className="w-[18px] h-[18px]"
+                                      />
+                                      <span className="text-xs lg:text-sm">{units}</span>
+                                    </div>
+
+                                    {/* Status (simple) */}
+                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
+                                      <span className="text-xs lg:text-sm">
+                                        {proj.projectStatus || proj.status || "Active"}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="w-[100%] h-[0.5px] bg-gray-300 my-3"></div>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className="text-lg font-bold text-[#001730] m-0">
+                                    Price on request
+                                  </p>
+                                  <button className="bg-[#001730] text-white text-[12px] font-medium px-4 py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                                    <Link
+                                      href={`/projects/${projectId}`}
+                                      className="flex items-center gap-2 w-full"
+                                    >
+                                      <span>Details</span>
+                                      <FaArrowRight
+                                        size={12}
+                                        className="w-3 h-3 lg:w-[16px] ml-10"
+                                      />
+                                    </Link>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">No projects available for this area.</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -973,7 +990,7 @@ export default function TowerDetailsPage() {
               {nearbyAreas.map((nearbyArea) => (
                 <Link
                   key={nearbyArea.id}
-                  href={`/towerdetails/${nearbyArea.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  href={`/towerdetails/${nearbyArea.id}`}
                   className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <div className="relative h-48">
