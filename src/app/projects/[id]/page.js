@@ -609,95 +609,6 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
   
 
-
-      {project && (
-        <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
-
-          <div
-              className="
-                flex items-center gap-2 sm:gap-3
-                bg-white
-                px-2 sm:px-3
-                h-12 sm:h-14
-                rounded-[5px]
-                shadow-sm
-              "
-            >
-              <FaCheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" /> 
-              <p
-                className="
-                  font-semibold text-[#001730]
-                  text-xs sm:text-sm
-                  whitespace-nowrap
-                  truncate
-                  w-full
-                "
-                title={project?.projectStatus || 'N/A'}
-              >
-Status: {project?.projectStatus || 'N/A'}
-              </p>
-            </div>
-
-
-            {/* Year Of Completion */}
-            <div
-              className="
-                flex items-center gap-2 sm:gap-3
-                bg-white
-                px-2 sm:px-3
-                h-12 sm:h-14
-                rounded-[5px]
-                shadow-sm
-              "
-            >
-              <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-              <p
-                className="
-                  font-semibold text-[#001730]
-                  text-xs sm:text-sm
-                  whitespace-nowrap
-                  truncate
-                  w-full
-                "
-                title={project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
-              >
-               Year of completion: {project?.projectCompletionDate ? new Date(project.projectCompletionDate).getFullYear() : project?.deliveryDate ? new Date(project.deliveryDate).getFullYear() : 'N/A'}
-              </p>
-            </div>
-
-            {/* Project Type */}
-            <div
-              className="
-                flex items-center gap-2 sm:gap-3
-                bg-white
-                px-2 sm:px-3
-                h-12 sm:h-14
-                rounded-[5px]
-                shadow-sm
-              "
-            >
-              <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />
-              <p
-                className="
-                  font-semibold text-[#001730]
-                  text-xs sm:text-sm
-                  whitespace-nowrap
-                  truncate
-                  w-full
-                "
-                title={project?.projectType || 'N/A'}
-              >
-                Project type:  
-
-                
-                {project?.projectType || 'N/A'}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Description box */}
       <div className="bg-[#F5F7FA] p-4 sm:p-6 rounded-[5px] shadow mb-4">
         <div className="flex gap-2 sm:gap-4 mb-4">
@@ -1516,8 +1427,9 @@ Area            {activeTab === "Area" ? (
 </section>
 
 {/* Related Projects Section */}
-<section className="w-full bg-[#F5F7FA] py-12">
-  <div className="w-full mx-auto px-4">
+{/* Related Projects Section */}
+<section className="w-full bg-white py-12">
+  <div className="max-w-[2800px] mx-auto px-4">
     <div className="mb-8 text-center">
       <h2
         className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
@@ -1538,7 +1450,7 @@ Area            {activeTab === "Area" ? (
         <p className="text-gray-500">Loading related projects...</p>
       </div>
     ) : relatedProjects.length > 0 ? (
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {relatedProjects.map((relatedProject) => {
           const formattedProject = {
             id: relatedProject.id || relatedProject._id,
@@ -1564,92 +1476,116 @@ Area            {activeTab === "Area" ? (
           return (
             <div
               key={formattedProject.id}
-              className="bg-[#E9E9E9] rounded-md mt-2 shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
             >
-              <div className="flex p-4 rounded-md">
-                {/* Image Section - Left */}
-                <div className="relative w-[320px] h-[192px] lg:w-[220px] lg:h-[192px] xl:w-[320px] xl:h-[192px] flex-shrink-0">
-                  <Image
-                    src={formattedProject.image}
-                    alt={formattedProject.title}
-                    fill
-                    className="object-cover rounded-md"
-                    unoptimized={formattedProject.image?.startsWith('http')}
-                  />
-                  {/* Share Button Overlay */}
-                  <div className="absolute bottom-2 right-2 z-10">
-                    <ShareButton
-                      propertyTitle={formattedProject.title}
-                      propertyLocation={formattedProject.location}
-                      propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                    />
+              {/* Image */}
+              <div className="relative">
+                <Image
+                  src={formattedProject.image}
+                  alt={formattedProject.title}
+                  width={800}
+                  height={320}
+                  className="w-full h-80 object-cover"
+                />
+                
+                {/* Status Badge */}
+                <div className="absolute top-3 right-3">
+                  <span className="bg-[#8C8C8C66] text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
+                    {formattedProject.statusType === "completed" ? "Completed" : "Ongoing"}
+                  </span>
+                </div>
+
+                {/* Title + Location Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 p-4">
+                  <h3 className="text-lg font-semibold text-[#001730] mb-2 truncate">
+                    {formattedProject.title}
+                  </h3>
+                  <div className="flex items-center text-[#001730] text-sm mb-2">
+                    <MapPin size={12} className="mr-1" />
+                    <span className="truncate">{formattedProject.location || "Location not specified"}</span>
+                  </div>
+                  <div className="w-[60%] h-[1px] bg-gray-500 my-2"></div>
+                  <p className="text-xs text-[#001730] leading-snug line-clamp-2">
+                    {relatedProject.descriptionEn || "Luxury residential towers offering stunning sea views and premium residential, commercial, and leisure facilities."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-3">
+                {/* Info Row */}
+                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-3">
+                  {/* Year */}
+                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 shadow-sm rounded-md px-2 py-2">
+                    <Image src="/Time.png" width={16} height={16} alt="Year" className="object-contain" />
+                    <span className="text-xs font-semibold text-[#001730]">{formattedProject.year}</span>
+                  </div>
+
+                  {/* Units */}
+                  <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-md px-2 py-2">
+                    <Image src="/3_Icons Used_Project Dvt 1 (1).png" width={16} height={16} alt="Units" className="object-contain" />
+                    <span className="text-xs font-semibold text-[#001730]">
+                      {formattedProject.units} <span className="text-xs text-gray-500">Units</span>
+                    </span>
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex flex-col justify-center bg-white border border-gray-200 shadow-sm rounded-md px-3 py-2 w-fit">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded-full ${formattedProject.statusType === "completed" ? "bg-green-500" : "bg-yellow-500"} flex items-center justify-center`}>
+                        <Check size={12} className="text-white" />
+                      </div>
+                      <span className="text-xs font-semibold">{formattedProject.status}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Details Section - Right */}
-                <div className="flex-1 p-4 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-lg font-bold text-[#001730] mb-1">
-                      {formattedProject.title}
-                    </h3>
-
-                    <div className="flex items-center text-[#001730] text-sm mb-3">
-                      <MapPin size={12} className="mr-2" />
-                      <span>{formattedProject.location || "Location not specified"}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
-                      {/* Year */}
-                      <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                        <Image
-                          src="/Time.png"
-                          alt="Year"
-                          width={16}
-                          height={16}
-                          className="w-[18px] h-[18px]"
-                        />
-                        <span className="text-xs lg:text-sm">{formattedProject.year}</span>
-                      </div>
-
-                      {/* Units */}
-                      <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                        <Image
-                          src="/3_Icons Used_Project Dvt 1 (1).png"
-                          alt="Units"
-                          width={16}
-                          height={16}
-                          className="w-[18px] h-[18px]"
-                        />
-                        <span className="text-xs lg:text-sm">{formattedProject.units}</span>
-                      </div>
-
-                      {/* Status */}
-                      <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                        <div className={`w-4 h-4 rounded-full ${formattedProject.statusType === "completed" ? "bg-green-500" : "bg-yellow-500"} flex items-center justify-center`}>
-                          <Check size={12} className="text-white" />
+                {/* Tags */}
+                {relatedProject.amenities && relatedProject.amenities.length > 0 && (
+                  <div className="p-2 shadow-md bg-gray-50 rounded-md mb-3">
+                    <div className="grid grid-cols-3 gap-1">
+                      {relatedProject.amenities.slice(0, 3).map((amenity, idx) => {
+                        const amenityName = amenity.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                        return (
+                          <div
+                            key={idx}
+                            className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md h-10 text-[0.6rem] font-semibold whitespace-nowrap px-1"
+                          >
+                            {amenityName}
+                          </div>
+                        );
+                      })}
+                      {relatedProject.amenities.length > 3 && (
+                        <div className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md h-10 text-[0.6rem] font-semibold whitespace-nowrap">
+                          +{relatedProject.amenities.length - 3}
                         </div>
-                        <span className="text-xs lg:text-sm">{formattedProject.status}</span>
-                      </div>
+                      )}
                     </div>
-                    <div className="w-[100%] h-[0.5px] bg-gray-300 my-3"></div>
                   </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-lg font-bold text-[#001730] m-0">
-                      {formattedProject.price}
-                    </p>
-                    <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                      <Link
-                        href={`/projects/${formattedProject.id}`}
-                        className="flex items-center gap-2 w-full"
-                      >
-                        <span>Details</span>
-                        <FaArrowRight
-                          size={12}
-                          className="w-3 h-3 lg:w-[16px] ml-10"
-                        />
-                      </Link>
-                    </button>
-                  </div>
+                )}
+
+                {/* Map */}
+                <Image
+                  src="/div.property-thumbnail-wrapper (2).png"
+                  width={800}
+                  height={80}
+                  className="w-full h-20 object-cover rounded-md"
+                  alt="Project map"
+                />
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-100 border-t border-gray-200 px-4 py-3 flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-gray-500">Starting at</p>
+                  <p className="text-lg font-semibold text-[#001730]">{formattedProject.price}</p>
                 </div>
+                <Link href={`/projects/${formattedProject.id}`}>
+                  <button className="bg-[#001730] text-white text-xs font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                    <span>Details</span>
+                    <FaArrowRight size={12} />
+                  </button>
+                </Link>
               </div>
             </div>
           );

@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
 import { MapPin } from 'lucide-react'
 import { FaArrowRight, FaChevronUp, FaChevronDown } from 'react-icons/fa6'
-import { FaHome, FaBuilding, FaRegSquare, FaDollarSign, FaUser } from 'react-icons/fa'
+import { FaHome, FaBuilding, FaRegSquare, FaDollarSign, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp } from 'react-icons/fa'
 import Link from 'next/link'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
@@ -25,9 +25,19 @@ export default function TowerDetailsPage() {
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("overview") // overview, nearby, 360view
   const [nearbyAreas, setNearbyAreas] = useState([])
+  const [allNearbyAreas, setAllNearbyAreas] = useState([]) // Store all nearby areas
+  const [displayedAreasCount, setDisplayedAreasCount] = useState(6) // Initial display count
   const [viewMode, setViewMode] = useState("properties") // "properties" | "agents" | "projects"
 
   const toggle = (i) => setOpen(open === i ? null : i)
+
+  // Handle Load More for nearby areas
+  const handleLoadMoreAreas = () => {
+    const nextCount = displayedAreasCount + 6
+    const newCount = Math.min(nextCount, allNearbyAreas.length)
+    setDisplayedAreasCount(newCount)
+    setNearbyAreas(allNearbyAreas.slice(0, newCount))
+  }
 
   // Fetch area details and all properties for this area ID
   useEffect(() => {
@@ -120,14 +130,17 @@ export default function TowerDetailsPage() {
           const allAreas = areasData.areas || []
           const nearby = allAreas
             .filter(a => a.area_id !== mappedArea.id && a.area_name)
-            .slice(0, 6)
             .map(a => ({
               id: a.area_id,
               name: a.area_name,
               image: a.area_image || '/images_pages/listings.png',
               description: a.descriptionEn || ''
             }))
-          setNearbyAreas(nearby)
+          // Store all nearby areas
+          setAllNearbyAreas(nearby)
+          // Initially display only first 6
+          setNearbyAreas(nearby.slice(0, 6))
+          setDisplayedAreasCount(6)
         }
       } catch (err) {
         console.error('Error fetching area data:', err)
@@ -174,9 +187,9 @@ export default function TowerDetailsPage() {
   }
 
   return (
-    <main className="min-h-screen relative">
+    <main className="min-h-screen bg-[#F5F7FA] relative">
       {/* 🔹 HERO SECTION - Full Height with Header Overlay */}
-      <section className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative w-full bg-[#F5F7FA] min-h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Background Image */}
         <Image
           src={area.image || "/images_pages/listings.png"}
@@ -191,93 +204,169 @@ export default function TowerDetailsPage() {
           <Header />
         </div>
 
-        {/* Centered Transparent Box with Title */}
-        <div className="relative z-20 flex items-center justify-center w-full">
-          <div className="bg-white/20 backdrop-blur-md rounded-2xl px-8 py-6 border border-white/30 shadow-lg max-w-5xl w-full mx-4">
-            <div className="mb-6">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-[#001730] text-center mb-3">
-                {area.title}
-              </h1>
-              <div className="flex items-center justify-center text-sm sm:text-base text-[#001730] gap-2">
-                <MapPin size={16} />
-                <span>{area.locationLevel1 || 'Kingdom Of Qatar'}</span>
-              </div>
-            </div>
+        {/* Left-side positioned glass box (same as projects page) */}
+        <div className="absolute left-4 md:left-8 lg:left-12 top-[55%] md:top-[56%] lg:top-[57%] transform -translate-y-1/2 z-20 w-[90%] md:w-[60%] lg:w-[60%]">
+          <div className="glass-effect text-center rounded-lg shadow-lg p-4 sm:p-6 md:p-10 lg:text-left w-full max-w-5xl mx-auto mt-4 md:mt-6 lg:mt-8">
+            {/* Area Name */}
+            {loading ? (
+              <div className="text-white text-2xl lg:text-3xl font-bold mb-4"></div>
+            ) : area ? (
+              <>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text4xl font-bold text-[#001730] mb-3 sm:mb-4 px-10 lg:px-0">
+                  {area.name || area.title || "Area"}
+                </h1>
+                
+              
 
-            {/* Nearest places gallery */}
-            {area.nearestPlaces && area.nearestPlaces.length > 0 && (
-              <div className="flex justify-center gap-4 sm:gap-6">
-                {area.nearestPlaces.slice(0, 4).map((place, index) => (
-                  <div
-                    key={place.titleEn || place.titleAr || index}
-                    className="relative w-24 h-20 sm:w-32 sm:h-24 md:w-40 md:h-28 rounded-2xl overflow-hidden shadow-md"
-                  >
-                    <Image
-                      src={place.pictureUrl || "/images_pages/listings.png"}
-                      alt={place.titleEn || place.titleAr || 'Nearby place'}
-                      fill
-                      className="object-cover"
-                    />
+                {/* Divider */}
+                <div className="w-[80%] h-[0.5px] bg-gray-300 my-4 sm:my-6 mx-auto lg:mx-0 lg:mr-40"></div>
+
+                {/* Amenities Section */}
+                {area.amenities && area.amenities.length > 0 && (
+                  <div className="px-10 lg:px-0 lg:mr-40">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#001730] mb-3 sm:mb-4">
+                      Amenities
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                      {area.amenities.map((amenity, idx) => {
+                        // Map amenity names to icons
+                        const getAmenityIcon = (amenityName) => {
+                          const name = amenityName?.toLowerCase() || '';
+                          if (name.includes('wifi') || name.includes('internet')) return <FaWifi className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('pool') || name.includes('swimming')) return <FaSwimmingPool className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('gym') || name.includes('fitness')) return <FaDumbbell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('parking')) return <FaParking className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('ac') || name.includes('air conditioning')) return <FaSnowflake className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('pet') || name.includes('dog')) return <FaDog className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('security') || name.includes('guard')) return <FaShieldAlt className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('elevator') || name.includes('lift')) return <FaArrowUp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('tv') || name.includes('television')) return <FaTv className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          if (name.includes('kitchen') || name.includes('restaurant')) return <FaUtensils className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                          return <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />;
+                        };
+
+                        // Format amenity name (convert "shared-pool" to "Shared Pool")
+                        const amenityName = amenity
+                          .split('-')
+                          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                          .join(' ');
+
+                        return (
+                          <div
+                            key={idx}
+                            className="
+                              flex items-center gap-2 sm:gap-3
+                              bg-white/40
+                              px-2 sm:px-3
+                              h-10 sm:h-10
+                              rounded-[5px]
+                              shadow-sm
+                              backdrop-blur-md
+                            "
+                          >
+                            {/* Icon */}
+                            {getAmenityIcon(amenity)}
+                            {/* Text */}
+                            <p className="font-semibold text-[#001730] text-xs sm:text-sm whitespace-nowrap truncate w-full" title={amenityName}>
+                              {amenityName}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                ))}
-              </div>
+                )}
+
+                {/* Nearest places gallery */}
+                {area.nearestPlaces && area.nearestPlaces.length > 0 && (
+                  <div className="px-10 lg:px-0 lg:mr-40 mt-4">
+                    <h3 className="text-lg sm:text-xl font-semibold text-[#001730] mb-3 sm:mb-4">
+                      Nearest Places
+                    </h3>
+                    <div className="flex justify-start gap-4 sm:gap-6">
+                      {area.nearestPlaces.slice(0, 4).map((place, index) => (
+                        <div
+                          key={place.titleEn || place.titleAr || index}
+                          className="relative w-28 h-24 sm:w-36 sm:h-28 md:w-48 md:h-32 rounded-2xl overflow-hidden shadow-md"
+                        >
+                          <Image
+                            src={place.pictureUrl || "/images_pages/listings.png"}
+                            alt={place.titleEn || place.titleAr || 'Nearby place'}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#001730]">Area</h1>
             )}
-          </div> 
+          </div>
         </div>
       </section>
 
-      <section className="w-full bg-white">
+      <section className="w-full bg-[#F5F7FA]">
+        {/* Toggle buttons section (same as projects page) */}
+        <div className="flex items-center bg-[#F5F7FA] gap-4 mt-5">
+          {/* Center line */}
+          <div className="flex-1 h-[1px] bg-gray-300 hidden sm:block"></div>
+
+          {/* Properties / Agents / Projects buttons (glass style) */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewMode("properties")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                ${
+                  viewMode === "properties"
+                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                    : "text-gray-600"
+                }`}
+            >
+              <FaHome size={14} />
+              <span>Properties</span>
+            </button>
+
+            {/* Divider */}
+            <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
+
+            <button
+              onClick={() => setViewMode("agents")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                ${
+                  viewMode === "agents"
+                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                    : "text-gray-600"
+                }`}
+            >
+              <FaUser size={14} />
+              <span>Agents</span>
+            </button>
+            
+            <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
+
+            <button
+              onClick={() => setViewMode("projects")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+                ${
+                  viewMode === "projects"
+                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+                    : "text-gray-600"
+                }`}
+            >
+              <FaBuilding size={14} />
+              <span>Projects</span>
+            </button>
+          </div>
+        </div>
+
         {/* 🔹 CONTENT GRID */}
         <div className="max-w-[2800px] mx-auto px-4 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* ================= LEFT SECTION ================= */}
           <div className="lg:col-span-7">
-            {/* TOP SPECS */}
-            {area && (
-              <div className="bg-gray-100 p-3 sm:p-4 shadow-lg rounded-[5px] mb-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
-                  {[
-                    { icon: "name", label: area.name || 'N/A' },
-                    { icon: "status", label: area.status || 'Active' },
-                    { icon: "properties", label: area.totalProperties ? `${area.totalProperties} Properties` : 'N/A' },
-                    { icon: "location", label: area.locationLevel1 || 'N/A' },
-                    { icon: "area", label: area.locationLevel2 || 'N/A' },
-                  ].map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="
-                        flex items-center gap-2 sm:gap-3
-                        bg-white
-                        px-2 sm:px-3
-                        h-12 sm:h-14
-                        rounded-[5px]
-                        shadow-sm
-                      "
-                    >
-                      {/* ICONS */}
-                      {item.icon === "name" && <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
-                      {item.icon === "status" && <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
-                      {item.icon === "properties" && <FaHome className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
-                      {item.icon === "location" && <FaRegSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
-                      {item.icon === "area" && <FaRegSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 flex-shrink-0" />}
-
-                      {/* TEXT */}
-                      <p
-                        className="
-                          font-semibold text-[#001730]
-                          text-xs sm:text-sm
-                          whitespace-nowrap
-                          truncate
-                          w-full
-                        "
-                        title={item.label}
-                      >
-                        {item.label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+    
 
             {/* Description box */}
             <div className="bg-white p-4 sm:p-6 rounded-[5px] shadow mb-4">
@@ -297,7 +386,7 @@ export default function TowerDetailsPage() {
                     <FaChevronUp size={14} />
                   )}
                 </button>
-                <button
+                {/* <button
                   onClick={() => setActiveTab("nearby")}
                   className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
                     activeTab === "nearby"
@@ -326,7 +415,7 @@ export default function TowerDetailsPage() {
                   ) : (
                     <FaChevronUp size={14} />
                   )}
-                </button>
+                </button> */}
               </div>
 
               {/* Tab Content */}
@@ -518,7 +607,7 @@ export default function TowerDetailsPage() {
                       </div>
 
                       {/* VALUE BELOW */}
-                      <h3 className="text-[#001730] text-base sm:text-xl font-semibold mt-1">
+                      <h3 className="text-[#001730] text-base sm:text-md font-semibold mt-1">
                         {item.value}
                       </h3>
                     </div>
@@ -596,54 +685,6 @@ export default function TowerDetailsPage() {
           {/* ================= RIGHT SECTION ================= */}
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-24 relative">
-            
-
-              {/* Toggle between Properties and Agents (same design as project page) */}
-              <div className="flex items-center gap-4 mt-2 mb-4 relative z-10">
-                <div className="flex-1 h-[1px] bg-gray-300 hidden sm:block"></div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setViewMode("properties")}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
-                      ${
-                        viewMode === "properties"
-                          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-                          : "text-gray-600"
-                      }`}
-                  >
-                    <FaHome size={14} />
-                    <span>Properties</span>
-                  </button>
-
-                  <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
-
-                  <button
-                    onClick={() => setViewMode("agents")}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
-                      ${
-                        viewMode === "agents"
-                          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-                          : "text-gray-600"
-                      }`}
-                  >
-                    <FaUser size={14} />
-                    <span>Agents</span>
-                  </button>
-
-                  <button
-                    onClick={() => setViewMode("projects")}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
-                      ${
-                        viewMode === "projects"
-                          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-                          : "text-gray-600"
-                      }`}
-                  >
-                    <FaBuilding size={14} />
-                    <span>Projects</span>
-                  </button>
-                </div>
-              </div>
 
               {viewMode === "properties" ? (
                 <>
@@ -973,18 +1014,23 @@ export default function TowerDetailsPage() {
       </section>
 
       {/* Nearby Areas Section */}
-      {nearbyAreas.length > 0 && (
+      {allNearbyAreas.length > 0 && (
         <section className="w-full bg-white py-12">
           <div className="max-w-[2800px] mx-auto px-4">
-            <h2
-              className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
-              style={{
-                fontSize: "clamp(16px, 4vw, 24px)"
-              }}
-            >
-              Nearby Areas
-            </h2>
-            <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%] mb-8"></div>
+            <div className="mb-8 text-center">
+              <h2
+                className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
+                style={{
+                  fontSize: "clamp(16px, 4vw, 24px)"
+                }}
+              >
+                Nearby Areas
+              </h2>
+              <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%]"></div>
+              <p className="text-gray-600 text-sm sm:text-base mt-4">
+                Discover similar areas that might interest you in the same location or with comparable features.
+              </p>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {nearbyAreas.map((nearbyArea) => (
@@ -1014,6 +1060,19 @@ export default function TowerDetailsPage() {
                 </Link>
               ))}
             </div>
+
+            {/* Load More Button */}
+            {allNearbyAreas.length > displayedAreasCount && (
+              <div className="mt-8 text-center">
+                <button 
+                  onClick={handleLoadMoreAreas}
+                  className="bg-[#001730] text-white text-sm font-medium px-6 py-3 rounded-md flex items-center justify-center gap-2 mx-auto shadow-lg transition-all duration-300 hover:bg-[#002d52]"
+                >
+                  <span>Load More</span>
+                  <FaArrowRight size={14} />
+                </button>
+              </div>
+            )}
           </div>
         </section>
       )}
