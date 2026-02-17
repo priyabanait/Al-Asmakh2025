@@ -215,7 +215,10 @@ export default function TowerDetailsPage() {
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text4xl font-bold text-[#001730] mb-3 sm:mb-4 px-10 lg:px-0">
                   {area.name || area.title || "Area"}
                 </h1>
+
+                <div className="flex items-center gap-2 mb-4 sm:mb-6 px-10 lg:px-0">  <MapPin size={18} className="text-[#001730] flex-shrink-0" /> Kingdom of Qatar</div>
                 
+
               
 
                 {/* Divider */}
@@ -650,36 +653,7 @@ export default function TowerDetailsPage() {
               </div>
             )}
 
-            {/* Bottom info strip */}
-            {area && (
-              <div className="bg-gray-100 p-3 sm:p-4 mt-4 shadow-lg rounded-[5px]">
-                <div className="grid grid-cols-[1.5fr_2fr_0.8fr] gap-3 sm:gap-4">
-                  {/* Box 1 */}
-                  <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                    <p className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-semibold text-[#001730]">Area ID:</span>
-                      <span className="mt-1 sm:mt-0 sm:ml-1">{area.id || area.areaId || "N/A"}</span>
-                    </p>
-                  </div>
-
-                  {/* Box 2 */}
-                  <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                    <p className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-semibold text-[#001730]">Area Name:</span>
-                      <span className="mt-1 sm:mt-0 sm:ml-1">{area.name || "N/A"}</span>
-                    </p>
-                  </div>
-
-                  {/* Box 3 */}
-                  <div className="bg-white p-3 sm:p-4 rounded-[5px] shadow text-xs sm:text-sm">
-                    <p className="flex flex-col sm:flex-row sm:items-center">
-                      <span className="font-semibold text-[#001730]">Status:</span>
-                      <span className="mt-1 sm:mt-0 sm:ml-1">{area.status || "Active"}</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+        
           </div>
 
           {/* ================= RIGHT SECTION ================= */}
@@ -1024,7 +998,7 @@ export default function TowerDetailsPage() {
                   fontSize: "clamp(16px, 4vw, 24px)"
                 }}
               >
-                Nearby Areas
+                Similar Areas
               </h2>
               <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2 mx-auto w-[60%] md:w-[40%] lg:w-[20%]"></div>
               <p className="text-gray-600 text-sm sm:text-base mt-4">

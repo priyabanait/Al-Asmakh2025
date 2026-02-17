@@ -49,12 +49,11 @@ const timelineData = [
   }
 ];
 
-// Total slides = Hero (1) + Timeline items (6) + Footer (1)
 const HERO_SLIDE = 0;
 const TIMELINE_START = 1;
-const TIMELINE_END = timelineData.length + 1; // 6
-const FOOTER_SLIDE = timelineData.length + 2; // 7
-const TOTAL_SLIDES = timelineData.length + 2; // 8 (hero + 6 timeline + footer)
+const TIMELINE_END = timelineData.length;
+const FORM_SLIDE = timelineData.length + 1;
+const TOTAL_SLIDES = timelineData.length + 2;
 
 // Hero Section Component
 const HeroSection = ({ isActive }) => {
@@ -483,24 +482,15 @@ export default function AboutUsPage() {
     };
   }, [showCountryDropdown]);
 
-  // Check if we should show UI elements (not on footer)
-  const showUI = currentSlide < FOOTER_SLIDE;
-
+  const showUI = currentSlide <= FORM_SLIDE;
   // Navigate to specific slide
   const navigateToSlide = useCallback((targetSlide) => {
     if (isAnimating) return;
-    if (targetSlide < HERO_SLIDE || targetSlide > FOOTER_SLIDE) return;
+    if (targetSlide < HERO_SLIDE || targetSlide > FORM_SLIDE) return;
     if (targetSlide === currentSlide) return;
     
     setIsAnimating(true);
     setCurrentSlide(targetSlide);
-    
-    // Show footer when navigating to footer slide
-    if (targetSlide === FOOTER_SLIDE) {
-      setShowFooter(true);
-    } else {
-      setShowFooter(false);
-    }
     
     // Reset animation lock
     setTimeout(() => {
@@ -515,11 +505,6 @@ export default function AboutUsPage() {
     const scrollCooldown = 1000;
 
     const handleWheel = (e) => {
-      // Allow normal scrolling on footer slide
-      if (showFooter) {
-        return;
-      }
-      
       if (isAnimating) {
         e.preventDefault();
         return;
@@ -554,11 +539,6 @@ export default function AboutUsPage() {
     };
 
     const handleTouchEnd = (e) => {
-      // Allow normal scrolling on footer slide
-      if (showFooter) {
-        return;
-      }
-      
       if (isAnimating) return;
       
       const now = Date.now();
@@ -583,11 +563,6 @@ export default function AboutUsPage() {
     };
 
     const handleKeyDown = (e) => {
-      // Allow normal scrolling on footer slide
-      if (showFooter) {
-        return;
-      }
-      
       if (isAnimating) return;
       
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
@@ -639,7 +614,7 @@ export default function AboutUsPage() {
 
       {/* Main Slides Container */}
       <motion.div
-        animate={{ y: showFooter ? `-${(FOOTER_SLIDE - 1) * 100}vh` : `-${currentSlide * 100}vh` }}
+        animate={{ y: showFooter ? `-${(FORM_SLIDE - 1) * 100}vh` : `-${currentSlide * 100}vh` }}
         transition={{ 
           duration: showFooter ? 0 : 0.9,
           ease: [0.43, 0.13, 0.23, 0.96]
@@ -856,28 +831,19 @@ export default function AboutUsPage() {
             </form>
             </div>
 
-            {/* Map Section - Below the blur card */}
-            <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
-              <Image
-                src="/675.png"
-                alt="Map"
-                fill
-                className="object-cover rounded-md"
-              />
-            </div>
+          
           </div>
         </div>
       </section>
 
     
 </div>
-        {/* Footer Section - Slide 7 */}
        
       </motion.div>
 
       {/* Back to Top Button - Only on Footer */}
       <AnimatePresence>
-        {currentSlide === FOOTER_SLIDE && (
+        {currentSlide === FORM_SLIDE && (
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

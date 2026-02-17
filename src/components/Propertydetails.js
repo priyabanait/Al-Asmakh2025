@@ -296,7 +296,7 @@ function PropertyDetailsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-[#001730] text-white p-4 sm:p-6 rounded-[5px] shadow-md flex flex-col justify-center lg:col-span-2">
             <h1 className="text-xl sm:text-2xl ">
-              {formattedProperty.title}...
+              {formattedProperty.title}
             </h1>
             <div className="flex items-center text-gray-200 text-xs sm:text-sm mt-2">
               <MapPin size={16} className="mr-1" /> {formattedProperty.location}

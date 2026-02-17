@@ -611,412 +611,142 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
       {/* Description box */}
       <div className="bg-[#F5F7FA] p-4 sm:p-6 rounded-[5px] shadow mb-4">
-        <div className="flex gap-2 sm:gap-4 mb-4">
-          <button
-            onClick={() => setActiveTab("overview")}
-            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
-              activeTab === "overview"
-                ? "bg-[#F5F7FA] text-[#001730]"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            Overview
-            {activeTab === "overview" ? (
-              <FaChevronDown size={14} />
-            ) : (
-              <FaChevronUp size={14} />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("gallery")}
-            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
-              activeTab === "gallery"
-                ? "bg-[#F5F7FA] text-[#001730]"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            Gallery
-            {activeTab === "gallery" ? (
-              <FaChevronDown size={14} />
-            ) : (
-              <FaChevronUp size={14} />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("document")}
-            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
-              activeTab === "document"
-                ? "bg-[#F5F7FA] text-[#001730]"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            Document
-            {activeTab === "document" ? (
-              <FaChevronDown size={14} />
-            ) : (
-              <FaChevronUp size={14} />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("area")}
-            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
-              activeTab === "area"
-                ? "bg-[#F5F7FA] text-[#001730]"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-Area            {activeTab === "Area" ? (
-              <FaChevronDown size={14} />
-            ) : (
-              <FaChevronUp size={14} />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("360view")}
-            className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-xs sm:text-base font-semibold transition-all ${
-              activeTab === "360view"
-                ? "bg-[#F5F7FA] text-[#001730]"
-                : "bg-gray-200 text-gray-500"
-            }`}
-          >
-            360 view
-            {activeTab === "360view" ? (
-              <FaChevronDown size={14} />
-            ) : (
-              <FaChevronUp size={14} />
-            )}
-          </button>
-        </div>
-
-        {/* Tab Content */}
-        {projectLoading ? (
-          <div className="text-gray-500">Loading project details...</div>
-        ) : project ? (
-          <>
-            {activeTab === "overview" && (
-              <>
-                {project.descriptionEn || project.description ? (
-                  <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                    {(() => {
-                      // Function to strip HTML tags and format list items
-                      const formatDescription = (text) => {
-                        if (!text) return '';
-                        
-                        // Remove <ul> and </ul> tags
-                        let formatted = text.replace(/<\/?ul>/gi, '');
-                        
-                        // Replace <li> with bullet point and </li> with line break
-                        formatted = formatted.replace(/<li>/gi, '• ');
-                        formatted = formatted.replace(/<\/li>/gi, '\n');
-                        
-                        // Remove any remaining HTML tags
-                        formatted = formatted.replace(/<[^>]*>/g, '');
-                        
-                        // Decode HTML entities
-                        formatted = formatted
-                          .replace(/&nbsp;/g, ' ')
-                          .replace(/&amp;/g, '&')
-                          .replace(/&lt;/g, '<')
-                          .replace(/&gt;/g, '>')
-                          .replace(/&quot;/g, '"')
-                          .replace(/&#39;/g, "'");
-                        
-                        // Split by line breaks and filter empty lines
-                        const lines = formatted.split('\n').filter(line => line.trim());
-                        
-                        return lines.map((line, index) => (
-                          <p key={index} className="mb-2">
-                            {line.trim()}
-                          </p>
-                        ));
-                      };
-                      
-                      return formatDescription(project.descriptionEn || project.description || "");
-                    })()}
-                  </div>
-                ) : (
-                  <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                    No description available for this project.
-                  </p>
-                )}
-                {/* {project.descriptionAr && (
-                  <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                    {(() => {
-                      // Function to strip HTML tags and format list items
-                      const formatDescription = (text) => {
-                        if (!text) return '';
-                        
-                        // Remove <ul> and </ul> tags
-                        let formatted = text.replace(/<\/?ul>/gi, '');
-                        
-                        // Replace <li> with bullet point and </li> with line break
-                        formatted = formatted.replace(/<li>/gi, '• ');
-                        formatted = formatted.replace(/<\/li>/gi, '\n');
-                        
-                        // Remove any remaining HTML tags
-                        formatted = formatted.replace(/<[^>]*>/g, '');
-                        
-                        // Decode HTML entities
-                        formatted = formatted
-                          .replace(/&nbsp;/g, ' ')
-                          .replace(/&amp;/g, '&')
-                          .replace(/&lt;/g, '<')
-                          .replace(/&gt;/g, '>')
-                          .replace(/&quot;/g, '"')
-                          .replace(/&#39;/g, "'");
-                        
-                        // Split by line breaks and filter empty lines
-                        const lines = formatted.split('\n').filter(line => line.trim());
-                        
-                        return lines.map((line, index) => (
-                          <p key={index} className="mb-2">
-                            {line.trim()}
-                          </p>
-                        ));
-                      };
-                      
-                      return formatDescription(project.descriptionAr);
-                    })()}
-                  </div>
-                )} */}
-              </>
-            )}
-
-            {activeTab === "gallery" && (
-              <div className="mx-4 sm:mx-10 mb-4">
-                {project && project.gallery && project.gallery.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {project.gallery.map((image, index) => (
-                      <div 
-                        key={index} 
-                        className="relative w-full h-48 rounded-md overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => {
-                          setSelectedImageIndex(index);
-                          setGalleryModalOpen(true);
-                        }}
-                      >
-                        <Image
-                          src={image}
-                          alt={`Gallery image ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          unoptimized={image?.startsWith('http')}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No gallery images available</p>
-                )}
-              </div>
-            )}
-
-            {activeTab === "document" && (
-              <div className="mx-4 sm:mx-10 mb-4">
-                {project.documents && project.documents.length > 0 ? (
-                  <div className="space-y-3">
-                    {project.documents.map((doc, index) => (
-                      <a
-                        key={index}
-                        href={doc}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-                      >
-                        <span className="text-[#001730] font-medium">Document {index + 1}</span>
-                        <FaArrowRight size={14} />
-                      </a>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No documents available</p>
-                )}
-              </div>
-            )}
-
-
-            {activeTab === "360view" && (
-              <div className="mx-4 sm:mx-10 mb-4">
-                <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
-                  {project.virtualTourUrl ? (
-                    <iframe
-                      src={project.virtualTourUrl}
-                      className="w-full h-full"
-                      frameBorder="0"
-                      allow="fullscreen; vr"
-                      allowFullScreen
-                      title="360 Virtual Tour"
-                    ></iframe>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
-                      <div className="text-center p-8">
-                        <h3 className="text-xl sm:text-2xl font-semibold text-[#001730] mb-2">
-                          360° Virtual Tour
-                        </h3>
-                        <p className="text-gray-600 text-sm sm:text-base">
-                          360° virtual tour will be available here
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            
-{activeTab === "area" && (
-              <div className="mx-4 sm:mx-10 mb-4">
-                {project && project.area ? (
-                  <div className="space-y-6">
-                    {/* Area Image */}
-                    {(project.area.imageUrl || project.area.imageUrlEn || project.area.imageUrlAr) && (
-                      <div className="relative w-full h-64 rounded-lg overflow-hidden shadow-md">
-                        <Image
-                          src={project.area.imageUrl || project.area.imageUrlEn || project.area.imageUrlAr}
-                          alt={project.area.nameEn || project.area.nameAr || "Area Image"}
-                          fill
-                          className="object-cover"
-                          unoptimized={(project.area.imageUrl || project.area.imageUrlEn || project.area.imageUrlAr)?.startsWith('http')}
-                        />
-                      </div>
-                    )}
-
-                    {/* Area Description */}
-                    {(project.area.descriptionEn || project.area.descriptionAr) && (
-                      <div>
-                        <h3 className="text-lg font-semibold text-[#001730] mb-2">
-                          About {project.area.nameEn || project.area.nameAr || "the Area"}
-                        </h3>
-                        {project.area.descriptionEn && (
-                          <p className="text-gray-600 leading-relaxed text-sm sm:text-base mb-3">
-                            {project.area.descriptionEn}
-                          </p>
-                        )}
-                        {project.area.descriptionAr && (
-                          <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
-                            {project.area.descriptionAr}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Nearest Places */}
-                    {project.area.nearestPlaces && Array.isArray(project.area.nearestPlaces) && project.area.nearestPlaces.length > 0 && (
-                      <div>
-                        <h3 className="text-lg font-semibold text-[#001730] mb-4">Nearest Places</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {project.area.nearestPlaces.map((place, index) => (
-                            <div
-                              key={index}
-                              className="bg-gray-50 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                            >
-                              {place.pictureUrl && (
-                                <div className="relative w-full h-48">
-                                  <Image
-                                    src={place.pictureUrl}
-                                    alt={place.titleEn || place.titleAr || `Place ${index + 1}`}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized={place.pictureUrl?.startsWith('http')}
-                                  />
-                                </div>
-                              )}
-                              <div className="p-4">
-                                <h4 className="text-base font-semibold text-[#001730] mb-2">
-                                  {place.titleEn || place.titleAr || `Place ${index + 1}`}
-                                </h4>
-                                {place.descriptionEn && (
-                                  <p className="text-gray-600 text-sm leading-relaxed">
-                                    {place.descriptionEn}
-                                  </p>
-                                )}
-                                {(place.latitude && place.longitude) && (
-                                  <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
-                                    <MapPin size={12} />
-                                    <span>{place.latitude.toFixed(4)}, {place.longitude.toFixed(4)}</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Area Info */}
-                    <div className="bg-gray-50 rounded-lg p-4 shadow-md">
-                      <h3 className="text-lg font-semibold text-[#001730] mb-3">Area Info</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        {project.area.nameEn && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">Area Name (English)</p>
-                            <p className="text-sm font-semibold text-[#001730]">{project.area.nameEn}</p>
-                          </div>
-                        )}
-                 
-                        {project.area.areaReference && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">Area Reference</p>
-                            <p className="text-sm font-semibold text-[#001730]">{project.area.areaReference}</p>
-                          </div>
-                        )}
-                        {project.area.locationLevel1 && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">Location Level 1</p>
-                            <p className="text-sm font-semibold text-[#001730]">{project.area.locationLevel1}</p>
-                          </div>
-                        )}
-              
-                 
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No area information available</p>
-                )}
-              </div>
-            )}
-          </>
+  <div className="flex gap-2 sm:gap-4 mb-4">
+    {[
+      { key: "overview", label: "Overview" },
+      { key: "gallery", label: "Gallery" },
+      { key: "document", label: "Document" },
+      { key: "area", label: "Area" },
+      { key: "360view", label: "360 view" },
+    ].map((tab) => (
+      <button
+        key={tab.key}
+        onClick={() => setActiveTab(tab.key)}
+        className={`flex items-center gap-2 px-3 sm:px-5 py-2 rounded-[5px] shadow text-[10px] sm:text-sm font-semibold transition-all ${
+          activeTab === tab.key
+            ? "bg-[#F5F7FA] text-[#001730]"
+            : "bg-gray-200 text-gray-500"
+        }`}
+      >
+        {tab.label}
+        {activeTab === tab.key ? (
+          <FaChevronDown size={12} />
         ) : (
-          <div className="text-gray-500 mx-4 sm:mx-10">Project details not available</div>
+          <FaChevronUp size={12} />
         )}
-        <div className="w-[90%] h-[0.2px] px-10 mx-4 sm:mx-10 mt-2 3xl:mt-3 bg-gray-400 mb-3 md:mb-4 3xl:mb-5"></div>
-        {/* Bottom stats */}
-        {project && (
-          <div className="grid grid-cols-3 mx-4 sm:mx-10 pt-4 mt-4">
-            {[
-              { title: "Average  Price  ", value: project.startingPrice ? `QAR ${project.startingPrice.toLocaleString()}` : "N/A", icon: "price" },
-              { title: "Owned by", value: project.projectOwnership || "Al-Asmakh", icon: "owner" },
-              { title: "Project Id ", value: project.projectReference || project.id || "N/A", icon: "projectId" },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className={`flex flex-col pl-2 sm:pl-4 ${i !== 2 ? "border-r border-gray-400" : ""
-                  }`}
-              >
-                {/* TITLE + ICON SIDE BY SIDE */}
-                <div className="flex items-center gap-1 sm:gap-2">
-                  {item.icon === "price" && (
-                    <FaDollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                  )}
-                  {item.icon === "owner" && (
-                    <FaUser className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                  )}
-                  {item.icon === "projectId" && (
-                    <FaBuilding className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-                  )}
-                  <p className="text-gray-500 text-xs sm:text-sm">{item.title}</p>
-                </div>
+      </button>
+    ))}
+  </div>
 
-                {/* VALUE BELOW */}
-                <h3 className="text-[#001730] text-base sm:text-xl font-semibold mt-1">
-                  {item.value}
-                </h3>
+  {project && (
+    <>
+      {activeTab === "overview" && (
+        <div className="text-gray-600 text-xs sm:text-sm mx-4 sm:mx-10 leading-relaxed mb-4">
+          {project.descriptionEn || "No description available"}
+        </div>
+      )}
+
+      {activeTab === "gallery" && (
+        <div className="mx-4 sm:mx-10 mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {project.gallery?.map((image, index) => (
+              <div key={index} className="relative w-full h-44 rounded-md overflow-hidden">
+                <Image
+                  src={image}
+                  alt=""
+                  fill
+                  className="object-cover"
+                />
               </div>
             ))}
           </div>
-        )}
+        </div>
+      )}
+
+      {activeTab === "document" && (
+        <div className="mx-4 sm:mx-10 mb-4 space-y-3">
+          {project.documents?.map((doc, index) => (
+            <a
+              key={index}
+              href={doc}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors text-xs sm:text-sm"
+            >
+              Document {index + 1}
+              <FaArrowRight size={12} />
+            </a>
+          ))}
+        </div>
+      )}
+
+      {activeTab === "area" && (
+        <div className="mx-4 sm:mx-10 mb-4 text-xs sm:text-sm">
+          <h3 className="text-sm sm:text-base font-semibold text-[#001730] mb-2">
+            About {project.area?.nameEn}
+          </h3>
+          <p className="text-gray-600 leading-relaxed">
+            {project.area?.descriptionEn}
+          </p>
+        </div>
+      )}
+
+      {activeTab === "360view" && (
+        <div className="mx-4 sm:mx-10 mb-4">
+          <div className="relative w-full h-[380px] sm:h-[450px] md:h-[520px] rounded-[5px] overflow-hidden bg-gray-100 shadow-lg">
+            {project.virtualTourUrl ? (
+              <iframe
+                src={project.virtualTourUrl}
+                className="w-full h-full"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-xs sm:text-sm text-gray-500">
+                360° virtual tour will be available here
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="w-[90%] h-[0.2px] mx-4 sm:mx-10 mt-2 bg-gray-400 mb-3"></div>
+
+      <div className="grid grid-cols-3 mx-4 sm:mx-10 pt-4 mt-4">
+        {[
+          {
+            title: "Average Price",
+            value: project.startingPrice
+              ? `QAR ${project.startingPrice.toLocaleString()}`
+              : "N/A",
+          },
+          {
+            title: "Owned by",
+            value: project.projectOwnership || "Al-Asmakh",
+          },
+          {
+            title: "Project Id",
+            value: project.projectReference || project.id || "N/A",
+          },
+        ].map((item, i) => (
+          <div
+            key={i}
+            className={`flex flex-col pl-2 sm:pl-4 ${
+              i !== 2 ? "border-r border-gray-400" : ""
+            }`}
+          >
+            <p className="text-gray-500 text-[10px] sm:text-xs">
+              {item.title}
+            </p>
+            <h3 className="text-[#001730] text-sm sm:text-base font-semibold mt-1">
+              {item.value}
+            </h3>
+          </div>
+        ))}
       </div>
+    </>
+  )}
+</div>
 
       {/* Pricing and Terms Section */}
       {/* {project && (

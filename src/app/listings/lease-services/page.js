@@ -87,7 +87,7 @@ export default function  leaseServices() {
           {/* Contact Team Button - Below the box */}
           <div className="mt-4 lg:mt-6">
             <div className="flex-shrink-0 lg:mr-40">
-              <button className="btn-details text-[12px]">
+              <button className="btn-details text-[12px]" onClick={() => window.location.href = '/contact'}>
                 <span>Speak to a Sales Advisor</span>
                 <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
               </button>

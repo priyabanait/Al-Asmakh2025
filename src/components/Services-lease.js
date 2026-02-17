@@ -138,11 +138,11 @@ export default function Services({
                 key={index}
                 className="flex flex-col items-center  border border-white/10 backdrop-blur-[10px] bg-white/20  rounded-md p-3  lg:p-6 text-white h-28 lg:h-32"
               >
-                <h2 className="text-lg  lg:text-2xl font-semibold mb-2">
+                <h2 className="text-lg text-gray-800  lg:text-2xl font-semibold mb-2">
                   {item.value}
                 </h2>
                 <div className="w-[60%] h-[0.5px] bg-gray-300 lg:mb-2"></div>
-                <p className="text-white text-[10px] lg:text-sm text-center">
+                <p className="text-gray-800 text-[10px] lg:text-sm text-center">
                   {item.label}
                 </p>
               </div>

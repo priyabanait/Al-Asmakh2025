@@ -1,12 +1,38 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa'
-
+import DreamPropertySection from '../../../components/DreamPropertySection'
 export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const sectionRef = useRef(null)
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true)
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current)
+      }
+    }
+  }, [])
 
   const faqCategories = [
     {
@@ -114,15 +140,36 @@ export default function FAQPage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative w-full bg-gradient-to-br from-[#001730] to-[#003366] py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Frequently Asked Questions
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto">
-              Find answers to common questions about our services, properties, and processes
-            </p>
+      <section
+        className="relative w-full bg-cover bg-center bg-no-repeat py-20 md:py-32"
+        style={{ backgroundImage: "url('/services/Faq.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-white/70" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center" ref={sectionRef}>
+            <div className="lg:mt-16 lg:mb-16 mt-8 mb-8">
+              <h1
+                className="text-[#10284C] uppercase mb-2 md:mb-3 lg:mb-4 px-2 sm:px-4"
+                style={{
+                  fontSize: "clamp(18px, 3.5vw, 23px)",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Frequently Asked Questions
+              </h1>
+
+              <div
+                className={`w-32 lg:w-40 mt-2 3xl:mt-5 4xl:mt-6 h-[0.5px] bg-gray-300 mx-auto mb-4 3xl:mb-8 4xl:mb-10 transition-all duration-1000 delay-200 opacity-100 scale-x-100'
+                }`}
+              ></div>
+
+              <p
+                style={{ fontSize: "clamp(13px, 0.8vw, 17px)", color: "#919191" }}
+                className="mb-7"
+              >
+                Find answers to common questions about our services, properties, and processes
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -178,23 +225,20 @@ export default function FAQPage() {
           ))}
         </div>
 
-        {/* Contact CTA */}
-        <div className="mt-12 md:mt-16 bg-gradient-to-r from-[#001730] to-[#003366] rounded-lg p-8 md:p-12 text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-            Still have questions?
-          </h3>
-          <p className="text-lg text-gray-200 mb-6 max-w-2xl mx-auto">
-            Our team is here to help. Contact us for personalized assistance with any inquiries.
-          </p>
-          <a
-            href="/contact"
-            className="inline-block bg-white text-[#001730] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
-          >
-            Contact Us
-          </a>
-        </div>
+
+
+
+      
       </section>
 
+
+      <DreamPropertySection 
+        title="            Still have questions?"
+        description="Our team is here to help. Contact us for personalized assistance with any inquiries."
+        btnText="Contact Us Today"
+        btnLink="/contact"
+      />
+      
       <Footer />
     </main>
   )

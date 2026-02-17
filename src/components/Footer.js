@@ -1,29 +1,103 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   FaFacebookF,
   FaInstagram,
   FaYoutube,
   FaLinkedinIn,
 } from "react-icons/fa";
-import { FaXTwitter, FaSnapchat, FaTiktok } from "react-icons/fa6";
+import { FaXTwitter, FaSnapchat, FaTiktok, FaArrowLeft } from "react-icons/fa6";
 import Image from "next/image";
 import Link from "next/link";
 import { RiArrowRightLine } from "react-icons/ri";
+import { IoIosArrowDown } from "react-icons/io";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useRouter } from "next/navigation";
 // import AlertModal from "./AlertModal";
 
 const API_BASE_URL = 'https://api.alasmakhrealestate.com/api/privilege';
 
 export default function Footer() {
   const { language } = useTranslation();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("success");
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const dropdownRef = useRef(null);
   const currentYear = new Date().getFullYear();
+
+  // Dropdown menus (same as Header)
+  const dropdowns = {
+    SERVICES: [
+      { label: 'Leasing Services', path: '/listings/lease-services' },
+      { label: 'Sales Services', path: '/services/services-sales' },
+      { label: 'Property Management', path: '/services/propertyManagement' },
+      { label: 'Marketing', path: '/services/marketing' },
+      { label: 'Facilities Management', path: '/services/facilities-management' },
+      { label: 'Other Services', path: '/other-services' },
+    ],
+    LISTINGS: [
+      { label: 'Rent', path: '/listings/rent' },
+      { label: 'Sale', path: '/listings/listing-sale' },
+    ],
+    DEVELOPMENT: [
+      { label: 'Luxury Residences', path: '/listings/luxury' },
+      { label: 'Commercial', path: '/commercial' },
+      { label: 'Industrial', path: '/industrial' },
+      { label: 'Mixed-Use', path: '/development/mixed-use' },
+      { label: 'Upcoming', path: '/development/upcoming' },
+    ],
+    CONTACT: [
+      { label: 'Our Agents', path: '/contact' },
+      { label: 'Head Office', path: '/contactheadoffice' },
+    ],
+  };
+
+  // Navigation menu items
+  const menuItems = [
+    { key: 'HOME', label: 'HOME' },
+    { key: 'ABOUT US', label: 'ABOUT US' },
+    { key: 'SERVICES', label: 'SERVICES' },
+    { key: 'LISTINGS', label: 'LISTINGS' },
+    { key: 'DEVELOPMENT', label: 'DEVELOPMENT' },
+    { key: 'CONTACT', label: 'CONTACT' },
+  ];
+
+  // Toggle dropdown
+  const toggleDropdown = (key) => {
+    setActiveDropdown(activeDropdown === key ? null : key);
+  };
+
+  // Handle dropdown item click
+  const handleDropdownItemClick = (item) => {
+    if (item.external) {
+      window.open(item.path, '_blank', 'noopener,noreferrer');
+    } else {
+      router.push(item.path);
+    }
+    setActiveDropdown(null);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setActiveDropdown(null);
+      }
+    };
+
+    if (activeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeDropdown]);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -98,24 +172,66 @@ export default function Footer() {
             />
           </Link>
 
-          {/* Navigation Links */}
-          {/* <nav className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-4 md:gap-5 text-white">
-            <Link href="/" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
-              Home
-            </Link>
-            <Link href="/about-us" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
-              About Us
-            </Link>
-            <Link href="/listings/rent" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
-              Listings
-            </Link>
-            <Link href="/services/services-sales" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
-              Services
-            </Link>
-            <Link href="/contact" className="hover:text-gray-300 transition-colors text-xs sm:text-sm md:text-base">
-              Contact
-            </Link>
-          </nav> */}
+          {/* Navigation Links with Dropdowns */}
+          <nav ref={dropdownRef} className="flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-4 md:gap-5 text-white">
+            {menuItems.map((item) => {
+              const hasDropdown = dropdowns[item.key] && dropdowns[item.key].length > 0;
+
+              return (
+                <div key={item.key} className="relative">
+                  <button
+                    onClick={() =>
+                      hasDropdown
+                        ? toggleDropdown(item.key)
+                        : router.push(
+                          item.key === 'HOME'
+                            ? '/'
+                            : item.key === 'ABOUT US'
+                            ? '/aboutUs'
+                            : `/${item.key.toLowerCase().replace(' ', '-')}`
+                        )
+                    }
+                    className={`flex items-center whitespace-nowrap gap-1 px-3 py-2 rounded-lg transition-all duration-300 ${
+                      activeDropdown === item.key
+                        ? 'text-white bg-white/10'
+                        : 'hover:text-gray-300 text-white'
+                    }`}
+                    style={{
+                      fontSize: 'clamp(11px, 0.8vw, 14px)',
+                      fontWeight: '500',
+                    }}
+                  >
+                    <span>{item.label}</span>
+                    {hasDropdown && (
+                      <IoIosArrowDown
+                        className={`w-3 h-3 transition-transform duration-300 ${
+                          activeDropdown === item.key ? 'rotate-180' : ''
+                        }`}
+                      />
+                    )}
+                  </button>
+
+                  {hasDropdown && activeDropdown === item.key && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[220px] z-[999]">
+                      <div className="relative rounded-[8px] overflow-hidden border border-white/40 bg-[#001730]">
+                        <div className="relative py-2">
+                          {dropdowns[item.key].map((dropdownItem, index) => (
+                            <button
+                              key={index}
+                              onClick={() => handleDropdownItemClick(dropdownItem)}
+                              className="w-full text-left px-4 py-2 text-sm font-medium text-white hover:bg-white/10 transition-all duration-200"
+                            >
+                              {dropdownItem.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Social + Newsletter */}

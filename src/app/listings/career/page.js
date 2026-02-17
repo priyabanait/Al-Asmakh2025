@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
 import { FaMapMarkerAlt, FaBriefcase, FaClock, FaArrowRight } from 'react-icons/fa'
-
+import DreamPropertySection from '../../../components/DreamPropertySection'
 export default function CareerPage() {
   const [selectedCategory, setSelectedCategory] = useState('All')
 
@@ -154,19 +154,43 @@ export default function CareerPage() {
     <main className="min-h-screen relative bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative w-full bg-gradient-to-br from-[#001730] to-[#003366] py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Career Opportunities
-            </h1>
-            <p className="text-lg sm:text-xl text-gray-200 max-w-3xl mx-auto">
-              Join our team and build your career in Qatar's leading real estate company
-            </p>
+   
+       {/* Hero Section */}
+       <section
+        className="relative w-full bg-cover bg-center bg-no-repeat py-20 md:py-32"
+        style={{ backgroundImage: "url('/services/Faq.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-white/70" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center" >
+            <div className="lg:mt-16 lg:mb-16 mt-8 mb-8">
+              <h1
+                className="text-[#10284C] uppercase mb-2 md:mb-3 lg:mb-4 px-2 sm:px-4"
+                style={{
+                  fontSize: "clamp(18px, 3.5vw, 23px)",
+                  whiteSpace: "nowrap"
+                }}
+              >
+                Career Opportunities
+              </h1>
+
+              <div
+                className={`w-32 lg:w-40 mt-2 3xl:mt-5 4xl:mt-6 h-[0.5px] bg-gray-300 mx-auto mb-4 3xl:mb-8 4xl:mb-10 transition-all duration-1000 delay-200 opacity-100 scale-x-100'
+                }`}
+              ></div>
+
+              <p
+                style={{ fontSize: "clamp(13px, 0.8vw, 17px)", color: "#919191" }}
+                className="mb-7"
+              >
+                Join our team and build your career in Qatar's leading real estate company
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
+
 
       {/* Category Filter */}
       <section className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
@@ -267,23 +291,12 @@ export default function CareerPage() {
         )}
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-[#001730] to-[#003366] py-12 md:py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
-            Don't see a position that matches your skills?
-          </h3>
-          <p className="text-lg text-gray-200 mb-6">
-            We're always looking for talented individuals to join our team. Send us your resume and we'll keep you in mind for future opportunities.
-          </p>
-          <a
-            href="/contact"
-            className="inline-block bg-white text-[#001730] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-200"
-          >
-            Submit Your Resume
-          </a>
-        </div>
-      </section>
+<DreamPropertySection 
+        title="Don't see a position that matches your skills?"
+        description="We're always looking for talented individuals to join our team. Send us your resume and we'll keep you in mind for future opportunities."
+        btnText="Submit Your Resume"
+        btnLink="/contact"
+      />
 
       <Footer />
     </main>
