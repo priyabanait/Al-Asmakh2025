@@ -149,39 +149,95 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             if (projectId) {
                 try {
                     setProjectLoading(true);
+                    setError(null);
                     const projectData = await fetchProjectById(projectId);
                     
-                    // Response structure: { project, properties, projectAssignedAgentsList, listingsCount, area, ... }
-                    // Set project info
-                    const projectInfo = projectData.project || projectData;
+                    // Handle error in response (data might still be present even if there's an error)
+                    if (projectData.error) {
+                        console.warn("API returned error but data may still be available:", projectData.error, projectData.message);
+                    }
+                    
+                    // New response format: { project, properties, projectAssignedAgentsList, listingsCount, area, amenitiesCount, propertyAgents, ... }
+                    // Extract project info - prioritize project field, fallback to root level
+                    let projectInfo = null;
+                    if (projectData.project && typeof projectData.project === 'object') {
+                        projectInfo = projectData.project;
+                    } else if (projectData.id || projectData._id || projectData.nameEn || projectData.name) {
+                        // Fallback: use root level if it looks like project data
+                        projectInfo = projectData;
+                    }
+                    
+                    if (!projectInfo) {
+                        throw new Error("Project data not found in response");
+                    }
+                    
                     // Attach area data to project if available at top level
-                    if (projectData.area && !projectInfo.area) {
+                    if (projectData.area && typeof projectData.area === 'object') {
                         projectInfo.area = projectData.area;
                     }
+                    
+                    // Attach amenities count if available
+                    if (projectData.amenitiesCount !== undefined) {
+                        projectInfo.amenitiesCount = projectData.amenitiesCount;
+                    }
+                    
                     setProject(projectInfo);
                     
                     // Extract properties from response
                     if (projectData.properties && Array.isArray(projectData.properties)) {
                         // Handle nested structure: properties array with {property: {...}} objects
                         let propertiesList = projectData.properties;
-                        if (propertiesList.length > 0 && propertiesList[0].property) {
-                            propertiesList = propertiesList.map(item => item.property || item);
+                        if (propertiesList.length > 0) {
+                            // Check if properties are nested in property field
+                            if (propertiesList[0] && propertiesList[0].property) {
+                                propertiesList = propertiesList.map(item => item.property || item);
+                            }
+                            // Filter out any null/undefined properties
+                            propertiesList = propertiesList.filter(prop => prop !== null && prop !== undefined);
                         }
                         setProperties(propertiesList);
+                        // Use listingsCount from response, or count from properties array
                         setTotalProperties(projectData.listingsCount || propertiesList.length || 0);
                         setLoading(false);
                         setPropertiesLoadedFromProject(true);
+                    } else {
+                        // No properties in response, set empty array
+                        setProperties([]);
+                        setTotalProperties(projectData.listingsCount || 0);
+                        setLoading(false);
+                        setPropertiesLoadedFromProject(false);
                     }
                     
-                    // Extract agents from response
-                    if (projectData.projectAssignedAgentsList && Array.isArray(projectData.projectAssignedAgentsList) && projectData.projectAssignedAgentsList.length > 0) {
-                        setAgents(projectData.projectAssignedAgentsList);
-                    } else if (projectData.projectAssignedAgents && typeof projectData.projectAssignedAgents === 'object' && Object.keys(projectData.projectAssignedAgents).length > 0) {
-                        // Convert object to array
-                        setAgents(Object.values(projectData.projectAssignedAgents));
+                    // Extract agents from response - prioritize projectAssignedAgentsList
+                    let agentsList = [];
+                    if (projectData.projectAssignedAgentsList && Array.isArray(projectData.projectAssignedAgentsList)) {
+                        agentsList = projectData.projectAssignedAgentsList;
+                    } else if (projectData.projectAssignedAgents) {
+                        if (Array.isArray(projectData.projectAssignedAgents)) {
+                            agentsList = projectData.projectAssignedAgents;
+                        } else if (typeof projectData.projectAssignedAgents === 'object') {
+                            // Convert object to array
+                            agentsList = Object.values(projectData.projectAssignedAgents);
+                        }
+                    } else if (projectData.propertyAgents && typeof projectData.propertyAgents === 'object') {
+                        // Fallback to propertyAgents if available
+                        if (Array.isArray(projectData.propertyAgents)) {
+                            agentsList = projectData.propertyAgents;
+                        } else {
+                            agentsList = Object.values(projectData.propertyAgents);
+                        }
                     }
+                    
+                    // Filter out null/undefined agents
+                    agentsList = agentsList.filter(agent => agent !== null && agent !== undefined);
+                    setAgents(agentsList);
+                    
                 } catch (err) {
                     console.error("Error loading project:", err);
+                    setError(err.message || "Failed to load project data");
+                    setProject(null);
+                    setProperties([]);
+                    setAgents([]);
                 } finally {
                     setProjectLoading(false);
                 }
@@ -854,6 +910,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           <div className="text-red-500 relative z-10 text-sm">{error}</div>
         ) : properties.length > 0 ? (
           <div className="space-y-3 relative z-10">
+            {/* Show first 4 properties, then show remaining if more than 4 */}
             {properties.slice(0, 4).map((property) => {
               // Handle nested property structure - check all possible locations
               const prop = property.property || property;
@@ -1078,12 +1135,128 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           <div className="text-gray-500 relative z-10">No properties available</div>
         )}
 
-            {/* View All Button */}
+            {/* Remaining Properties Section */}
             {properties.length > 4 && (
+              <>
+                <div className="mt-6 mb-4 relative z-10">
+                  <h3 className="text-[#001730] text-lg font-semibold mb-4">
+                    Remaining Properties ({properties.length - 4})
+                  </h3>
+                </div>
+                <div className="space-y-3 relative z-10">
+                  {properties.slice(4).map((property) => {
+                    const prop = property.property || property;
+                    const locationParts = [
+                      prop.locationLevel2,
+                      prop.locationLevel3,
+                      prop.locationLevel4
+                    ].filter(Boolean);
+                    const location = locationParts.length > 0 
+                      ? locationParts.join(' – ') 
+                      : prop.locationLevel1 || 'Doha';
+
+                    let areaDisplay = 'N/A';
+                    if (prop.area) {
+                      if (typeof prop.area === 'number') {
+                        areaDisplay = `${prop.area} sqft`;
+                      } else if (typeof prop.area === 'string') {
+                        areaDisplay = `${prop.area} sqft`;
+                      } else if (typeof prop.area === 'object' && prop.area.value) {
+                        areaDisplay = `${prop.area.value} sqft`;
+                      }
+                    } else if (prop.areaSqft) {
+                      areaDisplay = typeof prop.areaSqft === 'number' 
+                        ? `${prop.areaSqft} sqft` 
+                        : `${prop.areaSqft} sqft`;
+                    }
+
+                    let mainImage = "/div.property-thumbnail-wrapper.png";
+                    if (prop.images && Array.isArray(prop.images) && prop.images.length > 0) {
+                      const validImages = prop.images.filter(img => img && (img.url || img.thumbnailUrl));
+                      if (validImages.length > 0) {
+                        mainImage = validImages[0].url || validImages[0].thumbnailUrl;
+                      }
+                    }
+                    if (mainImage === "/div.property-thumbnail-wrapper.png") {
+                      mainImage = prop.coverPicture || prop.gallery?.[0] || prop.imageUrl || "/div.property-thumbnail-wrapper.png";
+                    }
+
+                    return (
+                      <div
+                        key={prop.id || prop.propertyId || property.id || property.propertyId}
+                        className="bg-[#E9E9E9] rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
+                      >
+                        <div className="flex flex-col sm:flex-row">
+                          <div className="relative w-full sm:w-[260px] h-[200px] sm:h-auto flex-shrink-0">
+                            <Image
+                              src={mainImage}
+                              alt={prop.titleEn || prop.title || "Property"}
+                              fill
+                              className="object-cover"
+                              unoptimized={mainImage.startsWith('http')}
+                              onError={(e) => {
+                                e.target.src = "/div.property-thumbnail-wrapper.png";
+                              }}
+                            />
+                            <div className="absolute bottom-2 right-2 z-10">
+                              <ShareButton
+                                propertyTitle={prop.titleEn || prop.title || "Property"}
+                                propertyLocation={location}
+                                propertyUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                              />
+                            </div>
+                          </div>
+                          <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
+                            <div>
+                              <h3 className="text-base sm:text-lg font-bold text-[#001730] mb-2 line-clamp-2">
+                                {prop.titleEn || prop.title || "Property"}
+                              </h3>
+                              <div className="flex items-center text-[#001730] text-xs sm:text-sm mb-3">
+                                <MapPin size={12} className="mr-1.5 flex-shrink-0" />
+                                <span className="truncate">{location}</span>
+                              </div>
+                              <div className="grid grid-cols-3 gap-2 text-[#001730] text-xs sm:text-sm mb-4">
+                                <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                                  <Image src="/Icon (1).png" alt="Beds" width={14} height={14} className="w-4 h-4 flex-shrink-0" />
+                                  <span className="font-medium">{prop.bedrooms || '0'}</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                                  <Image src="/Icon.png" alt="Baths" width={14} height={14} className="w-4 h-4 flex-shrink-0" />
+                                  <span className="font-medium">{prop.bathrooms || '0'}</span>
+                                </div>
+                                <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
+                                  <Image src="/Icon (2).png" alt="Area" width={14} height={14} className="w-4 h-4 flex-shrink-0" />
+                                  <span className="font-medium truncate text-xs">{areaDisplay}</span>
+                                </div>
+                              </div>
+                              <div className="w-full h-[0.5px] bg-gray-300 my-3"></div>
+                            </div>
+                            <div className="flex items-center justify-between gap-3 mt-2">
+                              <p className="text-base sm:text-lg font-bold text-[#001730]">
+                                {prop.priceAmount ? prop.priceAmount.toLocaleString() : '0'} QAR
+                              </p>
+                              <Link href={`/propertydetails?id=${prop.id || prop.propertyId}`}>
+                                <button className="bg-[#001730] text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52] whitespace-nowrap">
+                                  <span>Details</span>
+                                  <FaArrowRight size={12} />
+                                </button>
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+            
+            {/* View All Button - Show if there are many properties */}
+            {totalProperties > properties.length && (
               <div className="mt-6 relative z-10">
                 <Link href={`/listings?projectId=${projectId}`}>
                   <button className="bg-[#001730] text-white text-sm font-medium px-6 py-3 rounded-md flex items-center justify-center gap-2 w-full shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <span>View All</span>
+                    <span>View All Properties ({totalProperties})</span>
                     <FaArrowRight size={14} />
                   </button>
                 </Link>
@@ -1103,15 +1276,31 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             {agents && agents.length > 0 ? (
               <div className="space-y-4">
                 {agents.map((agent, index) => {
-                  const agentData = agent.agent || agent;
-                  const agentName = agentData.name || agentData.fullName || agentData.firstName || `Agent ${index + 1}`;
+                  // Handle different agent data structures
+                  let agentData = agent;
+                  
+                  // Check if agent is nested in 'agent' field
+                  if (agent.agent && typeof agent.agent === 'object') {
+                    agentData = agent.agent;
+                  }
+                  
+                  // Extract agent information with fallbacks
+                  const agentName = agentData.name || 
+                                   agentData.fullName || 
+                                   `${agentData.firstName || ''} ${agentData.lastName || ''}`.trim() ||
+                                   agentData.firstName || 
+                                   `Agent ${index + 1}`;
                   const agentEmail = agentData.email || '';
-                  const agentPhone = agentData.phone || agentData.mobile || '';
-                  const agentImage = agentData.profilePicture || agentData.image || '/div.property-thumbnail-wrapper.png';
+                  const agentPhone = agentData.phone || agentData.mobile || agentData.whatsappPhone || '';
+                  const agentImage = agentData.profilePicture || 
+                                    agentData.profileImage || 
+                                    agentData.image || 
+                                    agentData.publicProfile?.imageVariants?.medium?.default ||
+                                    '/div.property-thumbnail-wrapper.png';
                   
                   return (
                     <div
-                      key={agentData.id || agentData._id || agentData.userId || index}
+                      key={agentData.id || agentData._id || agentData.userId || agent.id || agent._id || index}
                       className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4"
                     >
                       <div className="flex items-center gap-4">
@@ -1122,6 +1311,10 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                             alt={agentName}
                             fill
                             className="object-cover rounded-full"
+                            unoptimized={agentImage.startsWith('http')}
+                            onError={(e) => {
+                              e.target.src = '/div.property-thumbnail-wrapper.png';
+                            }}
                           />
                         </div>
                         
@@ -1138,6 +1331,11 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                           {agentPhone && (
                             <p className="text-sm text-gray-600">
                               {agentPhone}
+                            </p>
+                          )}
+                          {!agentEmail && !agentPhone && (
+                            <p className="text-sm text-gray-400 italic">
+                              Contact information not available
                             </p>
                           )}
                         </div>
