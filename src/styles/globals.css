@@ -914,3 +914,32 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+/* Project description HTML content styling */
+.project-description p {
+  margin-bottom: 1rem;
+}
+
+.project-description p:last-child {
+  margin-bottom: 0;
+}
+
+.project-description ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.project-description li {
+  margin-bottom: 0.5rem;
+}
+
+.project-description li p {
+  margin-bottom: 0.25rem;
+}
+
+.project-description br {
+  display: block;
+  margin: 0.5rem 0;
+  content: "";
+}

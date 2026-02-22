@@ -10,6 +10,7 @@ import PropertyListView from "@/components/PropertyListView";
 import { fetchProperties } from "../../../utils/propertyapi";
 import { searchProperties } from "../../../utils/searchApi";
 import { fetchProjectById, fetchProjects } from "../../../utils/projectapi";
+import { cleanHtmlDescriptionRegex } from "../../../utils/htmlUtils";
 import MoreFiltersModal from "../../../components/MoreFiltersModal";
 import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath,  } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
@@ -152,6 +153,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     setError(null);
                     const projectData = await fetchProjectById(projectId);
                     
+                    
                     // Handle error in response (data might still be present even if there's an error)
                     if (projectData.error) {
                         console.warn("API returned error but data may still be available:", projectData.error, projectData.message);
@@ -160,15 +162,74 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     // New response format: { project, properties, projectAssignedAgentsList, listingsCount, area, amenitiesCount, propertyAgents, ... }
                     // Extract project info - prioritize project field, fallback to root level
                     let projectInfo = null;
-                    if (projectData.project && typeof projectData.project === 'object') {
-                        projectInfo = projectData.project;
-                    } else if (projectData.id || projectData._id || projectData.nameEn || projectData.name) {
-                        // Fallback: use root level if it looks like project data
-                        projectInfo = projectData;
+                    
+                    // Check if project field exists and is a valid object
+                    // Handle both null and undefined cases
+                    if (projectData.hasOwnProperty('project')) {
+                        if (projectData.project === null) {
+                            console.warn("projectData.project is null - will use fallback");
+                        } else if (typeof projectData.project === 'object' && projectData.project !== null) {
+                            // Check if it has project-like properties (id, name, etc.)
+                            if (projectData.project.id || projectData.project._id || projectData.project.nameEn || projectData.project.name || 
+                                projectData.project.projectReference || projectData.project.locationLevel1) {
+                                projectInfo = projectData.project;
+                                console.log("Using project from projectData.project field");
+                            } else {
+                                console.warn("projectData.project exists but doesn't have expected fields:", Object.keys(projectData.project));
+                            }
+                        } else {
+                            console.warn("projectData.project is not an object:", typeof projectData.project, projectData.project);
+                        }
+                    } else {
+                        console.warn("projectData.project field is missing");
                     }
                     
+                    // Fallback: check if root level has project data
                     if (!projectInfo) {
-                        throw new Error("Project data not found in response");
+                        const rootHasProjectData = projectData.id || projectData._id || projectData.nameEn || projectData.name || 
+                                                   projectData.projectReference || projectData.locationLevel1;
+                        if (rootHasProjectData) {
+                            projectInfo = projectData;
+                            console.log("Using root level as project data");
+                        }
+                    }
+                    
+                    // If still no project info, try to construct from available data
+                    if (!projectInfo) {
+                        console.error("Could not find project data. Response structure:", {
+                            projectField: projectData.project,
+                            projectFieldType: typeof projectData.project,
+                            rootLevel: {
+                                id: projectData.id,
+                                _id: projectData._id,
+                                nameEn: projectData.nameEn,
+                                name: projectData.name,
+                                projectReference: projectData.projectReference
+                            },
+                            allKeys: Object.keys(projectData || {}),
+                            hasProperties: !!projectData.properties,
+                            hasAgents: !!projectData.projectAssignedAgentsList,
+                            hasArea: !!projectData.area
+                        });
+                        
+                        // Create a minimal project object from available data
+                        // This ensures the page doesn't crash even if project data is missing
+                        projectInfo = {
+                            id: projectData.id || projectData._id || projectId,
+                            _id: projectData._id || projectData.id || projectId,
+                            nameEn: projectData.nameEn || projectData.name || "Project",
+                            name: projectData.name || projectData.nameEn || "Project",
+                            projectReference: projectData.projectReference || projectId,
+                            // Include any other fields that might be useful
+                            ...(projectData.locationLevel1 && { locationLevel1: projectData.locationLevel1 }),
+                            ...(projectData.locationLevel2 && { locationLevel2: projectData.locationLevel2 }),
+                            ...(projectData.locationLevel3 && { locationLevel3: projectData.locationLevel3 }),
+                            ...(projectData.locationLevel4 && { locationLevel4: projectData.locationLevel4 }),
+                            ...(projectData.amenities && { amenities: projectData.amenities }),
+                            ...(projectData.gallery && { gallery: projectData.gallery }),
+                            ...(projectData.coverPicture && { coverPicture: projectData.coverPicture }),
+                        };
+                        console.log("Created minimal project object from available data");
                     }
                     
                     // Attach area data to project if available at top level
@@ -183,24 +244,69 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     
                     setProject(projectInfo);
                     
-                    // Extract properties from response
+                    // Extract properties from response (already parsed from JSON if needed by API function)
+                    console.log("📋 Extracting properties from response:", {
+                        hasProperties: !!projectData.properties,
+                        propertiesType: Array.isArray(projectData.properties) ? 'array' : typeof projectData.properties,
+                        propertiesLength: Array.isArray(projectData.properties) ? projectData.properties.length : 'N/A',
+                        firstProperty: projectData.properties?.[0],
+                        listingsCount: projectData.listingsCount
+                    });
+                    
                     if (projectData.properties && Array.isArray(projectData.properties)) {
                         // Handle nested structure: properties array with {property: {...}} objects
                         let propertiesList = projectData.properties;
+                        console.log("✅ Properties array found, length:", propertiesList.length);
+                        
                         if (propertiesList.length > 0) {
                             // Check if properties are nested in property field
-                            if (propertiesList[0] && propertiesList[0].property) {
-                                propertiesList = propertiesList.map(item => item.property || item);
-                            }
-                            // Filter out any null/undefined properties
-                            propertiesList = propertiesList.filter(prop => prop !== null && prop !== undefined);
+                            if (propertiesList[0] && typeof propertiesList[0] === 'object' && propertiesList[0].property) {
+                                console.log("🔄 Properties are nested in 'property' field, extracting...");
+                                propertiesList = propertiesList.map(item => {
+                                    // Handle both {property: {...}} and direct property objects
+                                    if (item && typeof item === 'object') {
+                                        return item.property || item;
+                                    }
+                                    return item;
+                                });
                         }
+                            
+                            // Handle JSON string properties (if API didn't parse them)
+                            propertiesList = propertiesList.map(item => {
+                                if (typeof item === 'string') {
+                                    try {
+                                        return JSON.parse(item);
+                                    } catch (e) {
+                                        return item;
+                                    }
+                                }
+                                return item;
+                            });
+                            
+                            // Filter out any null/undefined properties
+                            propertiesList = propertiesList.filter(prop => {
+                                const isValid = prop !== null && prop !== undefined;
+                                if (!isValid) {
+                                    console.warn("Filtering out invalid property:", prop);
+                                }
+                                return isValid;
+                            });
+                            
+                            console.log("✅ After processing, properties count:", propertiesList.length);
+                        }
+                        
                         setProperties(propertiesList);
                         // Use listingsCount from response, or count from properties array
                         setTotalProperties(projectData.listingsCount || propertiesList.length || 0);
                         setLoading(false);
                         setPropertiesLoadedFromProject(true);
+                        console.log("✅✅ Properties set successfully in state:", {
+                            count: propertiesList.length,
+                            sampleIds: propertiesList.slice(0, 3).map(p => p?.id || p?.propertyId || p?._id || 'no-id'),
+                            firstPropertyTitle: propertiesList[0]?.titleEn || propertiesList[0]?.title || 'no-title'
+                        });
                     } else {
+                        console.warn("⚠️ No properties array in response or properties is not an array");
                         // No properties in response, set empty array
                         setProperties([]);
                         setTotalProperties(projectData.listingsCount || 0);
@@ -208,28 +314,91 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                         setPropertiesLoadedFromProject(false);
                     }
                     
-                    // Extract agents from response - prioritize projectAssignedAgentsList
+                    // Extract agents from response - prioritize projectAssignedAgentsList (already parsed from JSON if needed by API function)
+                    console.log("👥 Extracting agents from response:", {
+                        hasProjectAssignedAgentsList: !!projectData.projectAssignedAgentsList,
+                        hasProjectAssignedAgents: !!projectData.projectAssignedAgents,
+                        hasPropertyAgents: !!projectData.propertyAgents,
+                        projectAssignedAgentsListType: Array.isArray(projectData.projectAssignedAgentsList) ? 'array' : typeof projectData.projectAssignedAgentsList,
+                        projectAssignedAgentsListLength: Array.isArray(projectData.projectAssignedAgentsList) ? projectData.projectAssignedAgentsList.length : 'N/A'
+                    });
+                    
                     let agentsList = [];
                     if (projectData.projectAssignedAgentsList && Array.isArray(projectData.projectAssignedAgentsList)) {
                         agentsList = projectData.projectAssignedAgentsList;
+                        console.log("✅ Using projectAssignedAgentsList, count:", agentsList.length);
                     } else if (projectData.projectAssignedAgents) {
                         if (Array.isArray(projectData.projectAssignedAgents)) {
                             agentsList = projectData.projectAssignedAgents;
-                        } else if (typeof projectData.projectAssignedAgents === 'object') {
-                            // Convert object to array
+                            console.log("✅ Using projectAssignedAgents (array), count:", agentsList.length);
+                        } else if (typeof projectData.projectAssignedAgents === 'string') {
+                            // Try to parse as JSON string
+                            try {
+                                agentsList = JSON.parse(projectData.projectAssignedAgents);
+                                if (!Array.isArray(agentsList)) {
+                                    agentsList = Object.values(agentsList);
+                                }
+                                console.log("✅ Parsed projectAssignedAgents from JSON string, count:", agentsList.length);
+                            } catch (e) {
+                                console.warn("⚠️ Failed to parse projectAssignedAgents JSON string");
+                                agentsList = [];
+                            }
+                        } else if (typeof projectData.projectAssignedAgents === 'object' && projectData.projectAssignedAgents !== null) {
+                        // Convert object to array
                             agentsList = Object.values(projectData.projectAssignedAgents);
+                            console.log("✅ Using projectAssignedAgents (object), converted to array, count:", agentsList.length);
                         }
-                    } else if (projectData.propertyAgents && typeof projectData.propertyAgents === 'object') {
+                    } else if (projectData.propertyAgents && typeof projectData.propertyAgents === 'object' && projectData.propertyAgents !== null) {
                         // Fallback to propertyAgents if available
                         if (Array.isArray(projectData.propertyAgents)) {
                             agentsList = projectData.propertyAgents;
+                            console.log("✅ Using propertyAgents (array), count:", agentsList.length);
+                        } else if (typeof projectData.propertyAgents === 'string') {
+                            // Try to parse as JSON string
+                            try {
+                                agentsList = JSON.parse(projectData.propertyAgents);
+                                if (!Array.isArray(agentsList)) {
+                                    agentsList = Object.values(agentsList);
+                                }
+                                console.log("✅ Parsed propertyAgents from JSON string, count:", agentsList.length);
+                            } catch (e) {
+                                console.warn("⚠️ Failed to parse propertyAgents JSON string");
+                                agentsList = [];
+                            }
                         } else {
                             agentsList = Object.values(projectData.propertyAgents);
+                            console.log("✅ Using propertyAgents (object), converted to array, count:", agentsList.length);
                         }
                     }
                     
+                    // Handle JSON string agents in the list
+                    agentsList = agentsList.map(agent => {
+                        if (typeof agent === 'string') {
+                            try {
+                                return JSON.parse(agent);
+                            } catch (e) {
+                                return agent;
+                            }
+                        }
+                        return agent;
+                    });
+                    
                     // Filter out null/undefined agents
-                    agentsList = agentsList.filter(agent => agent !== null && agent !== undefined);
+                    agentsList = agentsList.filter(agent => {
+                        const isValid = agent !== null && agent !== undefined;
+                        if (!isValid) {
+                            console.warn("Filtering out invalid agent:", agent);
+                        }
+                        return isValid;
+                    });
+                    
+                    console.log("✅✅ Agents set successfully in state:", {
+                        count: agentsList.length,
+                        sampleAgents: agentsList.slice(0, 2).map(a => ({
+                            id: a?.id || a?._id || a?.userId || 'no-id',
+                            name: a?.name || a?.fullName || a?.firstName || 'no-name'
+                        }))
+                    });
                     setAgents(agentsList);
                     
                 } catch (err) {
@@ -697,9 +866,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
   {project && (
     <>
       {activeTab === "overview" && (
-        <div className="text-gray-600 text-xs sm:text-sm mx-4 sm:mx-10 leading-relaxed mb-4">
-          {project.descriptionEn || "No description available"}
-        </div>
+        <div 
+          className="project-description text-gray-600 text-xs sm:text-sm mx-4 sm:mx-10 leading-relaxed mb-4"
+          dangerouslySetInnerHTML={{ 
+            __html: cleanHtmlDescriptionRegex(project.descriptionEn || "No description available")
+          }}
+        />
       )}
 
       {activeTab === "gallery" && (
@@ -741,9 +913,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
           <h3 className="text-sm sm:text-base font-semibold text-[#001730] mb-2">
             About {project.area?.nameEn}
           </h3>
-          <p className="text-gray-600 leading-relaxed">
-            {project.area?.descriptionEn}
-          </p>
+          <div 
+            className="project-description text-gray-600 leading-relaxed"
+            dangerouslySetInnerHTML={{ 
+              __html: cleanHtmlDescriptionRegex(project.area?.descriptionEn || "")
+            }}
+          />
         </div>
       )}
 
@@ -904,11 +1079,11 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             </h2> */}
 
         {/* 🔹 PROPERTY LIST */}
-        {loading ? (
+        {loading && !propertiesLoadedFromProject ? (
           <div className="text-gray-500 relative z-10 text-sm">Loading properties...</div>
         ) : error ? (
           <div className="text-red-500 relative z-10 text-sm">{error}</div>
-        ) : properties.length > 0 ? (
+        ) : (properties && Array.isArray(properties) && properties.length > 0) ? (
           <div className="space-y-3 relative z-10">
             {/* Show first 4 properties, then show remaining if more than 4 */}
             {properties.slice(0, 4).map((property) => {
@@ -1132,7 +1307,16 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             })}
           </div>
         ) : (
-          <div className="text-gray-500 relative z-10">No properties available</div>
+          <div className="text-center py-8 relative z-10">
+            <p className="text-gray-500 mb-2">No properties available</p>
+            <p className="text-gray-400 text-sm">
+              {!properties || properties === null || properties === undefined
+                ? "Loading properties..." 
+                : Array.isArray(properties) && properties.length === 0
+                ? "No properties found in this project"
+                : "Properties data not available"}
+            </p>
+          </div>
         )}
 
             {/* Remaining Properties Section */}
@@ -1273,15 +1457,21 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
             >
               Agents for {project?.nameEn || project?.name || "this project"}
             </h2> */}
-            {agents && agents.length > 0 ? (
+            {agents && Array.isArray(agents) && agents.length > 0 ? (
               <div className="space-y-4">
                 {agents.map((agent, index) => {
                   // Handle different agent data structures
                   let agentData = agent;
                   
                   // Check if agent is nested in 'agent' field
-                  if (agent.agent && typeof agent.agent === 'object') {
+                  if (agent && typeof agent === 'object' && agent.agent && typeof agent.agent === 'object') {
                     agentData = agent.agent;
+                  }
+                  
+                  // Skip invalid agents
+                  if (!agentData || typeof agentData !== 'object') {
+                    console.warn("Invalid agent at index", index, agent);
+                    return null;
                   }
                   
                   // Extract agent information with fallbacks
@@ -1300,7 +1490,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                   
                   return (
                     <div
-                      key={agentData.id || agentData._id || agentData.userId || agent.id || agent._id || index}
+                      key={agentData.id || agentData._id || agentData.userId || agent?.id || agent?._id || `agent-${index}`}
                       className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow p-4"
                     >
                       <div className="flex items-center gap-4">
@@ -1342,10 +1532,19 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                       </div>
                     </div>
                   );
-                })}
+                }).filter(Boolean)}
               </div>
             ) : (
-              <p className="text-gray-500">No agents assigned to this project.</p>
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-2">No agents assigned to this project.</p>
+                <p className="text-gray-400 text-sm">
+                  {!agents || agents === null || agents === undefined
+                    ? "Loading agents..." 
+                    : Array.isArray(agents) && agents.length === 0
+                    ? "No agents found in response"
+                    : "Agents data not available"}
+                </p>
+              </div>
             )}
           </div>
         )}

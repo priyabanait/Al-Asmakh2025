@@ -124,8 +124,6 @@ export const fetchProjects = async (params = {}) => {
         // Add projectType to query params (backend may support it in future, or we filter on frontend)
         if (projectType) queryParams.append("projectType", projectType);
 
-        console.log("Fetching projects with params:", { page, limit, status, projectType, areaId });
-
         // Call API
         const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);
 
@@ -133,7 +131,6 @@ export const fetchProjects = async (params = {}) => {
             let projectsData = response.data.projects || [];
 
             // Backend now filters by projectType, but we keep frontend filtering as fallback
-            // Support multiple projectType values (e.g., "Residential", "Commercial", "Mixed-Use", "Industrial")
             if (projectType) {
                 const projectTypeLower = projectType.toLowerCase();
                 projectsData = projectsData.filter(p => {
@@ -158,12 +155,10 @@ export const fetchProjects = async (params = {}) => {
             }
 
             // Format projects for component
-            console.log("fetchProjects - projectsData before formatting:", projectsData.length, projectsData);
             const formattedProjects = projectsData.map((project, index) => {
                 try {
                     return formatProject(project);
                 } catch (error) {
-                    console.error(`Error formatting project at index ${index}:`, error, project);
                     // Return a minimal formatted project if formatting fails
                     return {
                         id: project.id || `unknown-${index}`,
@@ -178,8 +173,6 @@ export const fetchProjects = async (params = {}) => {
                     };
                 }
             });
-
-            console.log("fetchProjects - formattedProjects:", formattedProjects.length, formattedProjects);
 
             return {
                 projects: formattedProjects,
@@ -204,7 +197,6 @@ export const fetchProjects = async (params = {}) => {
             };
         }
     } catch (error) {
-        console.error("Error fetching projects from API:", error);
         throw {
             message: error.response?.data?.message || error.message || "Failed to load projects",
             status: error.response?.status,
@@ -230,25 +222,16 @@ export const fetchProjectsByType = async (projectType, options = {}) => {
             status = "active",
         } = options;
 
-        console.log("Fetching projects by type:", projectType, options);
-
         // Fetch projects and filter by type
         const result = await fetchProjects({
             page,
             limit,
             status,
-            projectType, // Backend now filters by projectType
-        });
-
-        console.log("fetchProjectsByType - result:", {
             projectType,
-            projectsCount: result.projects?.length || 0,
-            sampleProject: result.projects?.[0],
         });
 
         return result.projects || [];
     } catch (error) {
-        console.error("Error fetching projects by type:", error);
         throw {
             message: error.response?.data?.message || error.message || "Failed to load projects",
             status: error.response?.status,
@@ -266,14 +249,80 @@ export const fetchProjectById = async (projectId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/${projectId}`);
 
-        if (response.data) {
-            // Return the full response data to include properties, agents, area, etc.
-            return response.data;
-        } else {
-            throw new Error("Project not found");
+        if (!response.data) {
+            throw new Error("Project not found - empty response");
         }
+
+        let data = response.data;
+        
+        // Handle case where data might be wrapped
+        if (data.data && typeof data.data === 'object') {
+            data = data.data;
+        }
+        
+        // Handle error response
+        if (data.error && !data.project && !data.properties) {
+            throw new Error(data.message || data.error || "Failed to load project");
+        }
+        
+        // Ensure properties is an array
+        if (data.properties) {
+            if (typeof data.properties === 'string') {
+                try {
+                    data.properties = JSON.parse(data.properties);
+                } catch (parseError) {
+                    data.properties = [];
+                }
+            }
+            
+            if (!Array.isArray(data.properties)) {
+                if (data.properties && typeof data.properties === 'object') {
+                    data.properties = Object.values(data.properties);
+                } else {
+                    data.properties = [];
+                }
+            }
+        } else {
+            data.properties = [];
+        }
+        
+        // Ensure projectAssignedAgentsList is an array
+        if (data.projectAssignedAgentsList) {
+            if (typeof data.projectAssignedAgentsList === 'string') {
+                try {
+                    data.projectAssignedAgentsList = JSON.parse(data.projectAssignedAgentsList);
+                } catch (parseError) {
+                    data.projectAssignedAgentsList = [];
+                }
+            }
+            
+            if (!Array.isArray(data.projectAssignedAgentsList)) {
+                if (data.projectAssignedAgentsList && typeof data.projectAssignedAgentsList === 'object') {
+                    data.projectAssignedAgentsList = Object.values(data.projectAssignedAgentsList);
+                } else {
+                    data.projectAssignedAgentsList = [];
+                }
+            }
+        } else {
+            data.projectAssignedAgentsList = [];
+        }
+        
+        // Parse JSON string fields in project object (e.g., amenities, gallery)
+        if (data.project && typeof data.project === 'object') {
+            Object.keys(data.project).forEach(key => {
+                const value = data.project[key];
+                if (typeof value === 'string' && (value.startsWith('[') || value.startsWith('{'))) {
+                    try {
+                        data.project[key] = JSON.parse(value);
+                    } catch (e) {
+                        // Not JSON, keep as is
+                    }
+                }
+            });
+        }
+        
+        return data;
     } catch (error) {
-        console.error("Error fetching project:", error);
         throw {
             message: error.response?.data?.message || error.message || "Failed to load project",
             status: error.response?.status,

@@ -11,6 +11,8 @@ import Footer from '../../../components/Footer'
 import ShareButton from '../../../components/ShareButton'
 import { useParams } from 'next/navigation'
 import { getApiUrl } from '@/config/api'
+import { fetchAreaComplete } from '../../../utils/areaapi'
+import { cleanHtmlDescriptionRegex } from '../../../utils/htmlUtils'
 
 export default function TowerDetailsPage() {
   const params = useParams()
@@ -39,25 +41,23 @@ export default function TowerDetailsPage() {
     setNearbyAreas(allNearbyAreas.slice(0, newCount))
   }
 
-  // Fetch area details and all properties for this area ID
+  // Fetch complete area data (area, projects, properties, agents) in one call
   useEffect(() => {
     const fetchAreaData = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        // Step 1: Direct call using area ID from route to get area details
-        const areaDetailsUrl = getApiUrl(`api/v1/areas/${areaIdFromRoute}/full-details?page=1&limit=50`)
-        const detailsResponse = await fetch(areaDetailsUrl)
+        // Single API call to get all area data
+        const data = await fetchAreaComplete(areaIdFromRoute, { page: 1, limit: 50 })
         
-        if (!detailsResponse.ok) {
-          throw new Error('Failed to fetch area details')
-        }
-
-        const detailsData = await detailsResponse.json()
-        const areaInfo = detailsData.area || {}
+        console.log('Complete area data:', data)
+        console.log('Properties count:', data.properties?.length || 0)
+        console.log('Projects count:', data.projects?.length || 0)
+        console.log('Agents count:', data.agents?.length || 0)
         
         // Map area data
+        const areaInfo = data.area || {}
         const mappedArea = {
           id: areaInfo.id || areaIdFromRoute,
           name: areaInfo.nameEn || areaInfo.name || '',
@@ -66,7 +66,7 @@ export default function TowerDetailsPage() {
           description: areaInfo.descriptionEn || '',
           description2: areaInfo.descriptionAr || '',
           areaId: areaInfo.id || areaIdFromRoute,
-          totalProperties: detailsData.listingsCount || detailsData.properties?.length || 0,
+          totalProperties: data.counts?.properties || 0,
           status: areaInfo.status || 'active',
           locationLevel1: areaInfo.locationLevel1 || areaInfo.nameEn || '',
           locationLevel2: areaInfo.locationLevel2,
@@ -74,55 +74,42 @@ export default function TowerDetailsPage() {
           latitude: areaInfo.latitude || areaInfo.lat,
           longitude: areaInfo.longitude || areaInfo.lng || areaInfo.lon,
           virtualTourUrl: areaInfo.virtualTourUrl || null,
-          amenities: areaInfo.amenities || [],
+          amenities: Array.isArray(areaInfo.amenities) ? areaInfo.amenities : [],
           nearestPlaces: Array.isArray(areaInfo.nearestPlaces) ? areaInfo.nearestPlaces : []
         }
 
-        // Step 2: Fetch properties for this area WITH agent details
-        const areaPropertiesUrl = getApiUrl(`api/v1/areas/${areaIdFromRoute}/properties`)
-        const areaPropertiesResponse = await fetch(areaPropertiesUrl)
-        if (!areaPropertiesResponse.ok) {
-          throw new Error('Failed to fetch properties for this area')
-        }
-        const areaPropertiesData = await areaPropertiesResponse.json()
+        // Set properties (already formatted with agent info)
+        const rawProperties = Array.isArray(data.properties) ? data.properties : []
+        setProperties(rawProperties)
 
-        const rawProperties = Array.isArray(areaPropertiesData.properties)
-          ? areaPropertiesData.properties
-          : []
+        // Set projects
+        const projectsList = Array.isArray(data.projects) ? data.projects : []
+        setProjects(projectsList)
 
-        // Derive unique agents from properties (for Agents view)
+        // Set agents (from API response)
+        const agentsList = Array.isArray(data.agents) ? data.agents : []
+        // Also collect agents from properties if not already included
         const agentsMap = new Map()
+        agentsList.forEach(agent => {
+          const agentId = agent.id || agent._id || agent.userId
+          if (agentId) {
+            agentsMap.set(agentId, agent)
+          }
+        })
         rawProperties.forEach((item) => {
           if (item.agent && typeof item.agent === 'object') {
             const agentObj = item.agent
-            const agentId = agentObj.id || agentObj._id || agentObj.userId || agentObj.email || agentObj.name
+            const agentId = agentObj.id || agentObj._id || agentObj.userId
             if (agentId && !agentsMap.has(agentId)) {
               agentsMap.set(agentId, agentObj)
             }
           }
         })
-
-        // Prefer totalProperties/count from this endpoint
-        const updatedArea = {
-          ...mappedArea,
-          totalProperties: areaPropertiesData.count ?? mappedArea.totalProperties
-        }
-
-        setArea(updatedArea)
-        setProperties(rawProperties)
         setAgents(Array.from(agentsMap.values()))
 
-        // Step 3: Fetch projects for this area
-        const areaProjectsUrl = getApiUrl(`api/v1/areas/${areaIdFromRoute}/projects`)
-        const areaProjectsResponse = await fetch(areaProjectsUrl)
-        if (areaProjectsResponse.ok) {
-          const areaProjectsData = await areaProjectsResponse.json()
-          setProjects(Array.isArray(areaProjectsData.projects) ? areaProjectsData.projects : [])
-        } else {
-          setProjects([])
-        }
+        setArea(mappedArea)
 
-        // Step 4: Fetch nearby areas list (other areas)
+        // Fetch nearby areas list (other areas) - separate call for this
         const areasListUrl = getApiUrl('api/v1/areas/list')
         const areasResponse = await fetch(areasListUrl)
         if (areasResponse.ok) {
@@ -136,17 +123,17 @@ export default function TowerDetailsPage() {
               image: a.area_image || '/images_pages/listings.png',
               description: a.descriptionEn || ''
             }))
-          // Store all nearby areas
           setAllNearbyAreas(nearby)
-          // Initially display only first 6
           setNearbyAreas(nearby.slice(0, 6))
           setDisplayedAreasCount(6)
         }
       } catch (err) {
         console.error('Error fetching area data:', err)
-        setError(err.message)
+        setError(err.message || 'Failed to load area data')
         setArea(null)
         setProperties([])
+        setProjects([])
+        setAgents([])
       } finally {
         setLoading(false)
       }
@@ -427,88 +414,16 @@ export default function TowerDetailsPage() {
                   {activeTab === "overview" && (
                     <>
                       {area.description ? (
-                        <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                          {(() => {
-                            // Function to strip HTML tags and format list items
-                            const formatDescription = (text) => {
-                              if (!text) return '';
-                              
-                              // Remove <ul> and </ul> tags
-                              let formatted = text.replace(/<\/?ul>/gi, '');
-                              
-                              // Replace <li> with bullet point and </li> with line break
-                              formatted = formatted.replace(/<li>/gi, '• ');
-                              formatted = formatted.replace(/<\/li>/gi, '\n');
-                              
-                              // Remove any remaining HTML tags
-                              formatted = formatted.replace(/<[^>]*>/g, '');
-                              
-                              // Decode HTML entities
-                              formatted = formatted
-                                .replace(/&nbsp;/g, ' ')
-                                .replace(/&amp;/g, '&')
-                                .replace(/&lt;/g, '<')
-                                .replace(/&gt;/g, '>')
-                                .replace(/&quot;/g, '"')
-                                .replace(/&#39;/g, "'");
-                              
-                              // Split by line breaks and filter empty lines
-                              const lines = formatted.split('\n').filter(line => line.trim());
-                              
-                              return lines.map((line, index) => (
-                                <p key={index} className="mb-2">
-                                  {line.trim()}
-                                </p>
-                              ));
-                            };
-                            
-                            return formatDescription(area.description);
-                          })()}
-                        </div>
+                        <div 
+                          className="project-description text-gray-600 leading-relaxed"
+                          dangerouslySetInnerHTML={{ 
+                            __html: cleanHtmlDescriptionRegex(area.description)
+                          }}
+                        />
                       ) : (
-                        <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                        <p className="text-gray-600 leading-relaxed">
                           No description available for this area.
                         </p>
-                      )}
-                      {area.description2 && (
-                        <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
-                          {(() => {
-                            // Function to strip HTML tags and format list items
-                            const formatDescription = (text) => {
-                              if (!text) return '';
-                              
-                              // Remove <ul> and </ul> tags
-                              let formatted = text.replace(/<\/?ul>/gi, '');
-                              
-                              // Replace <li> with bullet point and </li> with line break
-                              formatted = formatted.replace(/<li>/gi, '• ');
-                              formatted = formatted.replace(/<\/li>/gi, '\n');
-                              
-                              // Remove any remaining HTML tags
-                              formatted = formatted.replace(/<[^>]*>/g, '');
-                              
-                              // Decode HTML entities
-                              formatted = formatted
-                                .replace(/&nbsp;/g, ' ')
-                                .replace(/&amp;/g, '&')
-                                .replace(/&lt;/g, '<')
-                                .replace(/&gt;/g, '>')
-                                .replace(/&quot;/g, '"')
-                                .replace(/&#39;/g, "'");
-                              
-                              // Split by line breaks and filter empty lines
-                              const lines = formatted.split('\n').filter(line => line.trim());
-                              
-                              return lines.map((line, index) => (
-                                <p key={index} className="mb-2">
-                                  {line.trim()}
-                                </p>
-                              ));
-                            };
-                            
-                            return formatDescription(area.description2);
-                          })()}
-                        </div>
                       )}
                     </>
                   )}
@@ -682,7 +597,9 @@ export default function TowerDetailsPage() {
                           : prop.locationLevel1 || area.name || 'Doha'
 
                         let areaDisplay = 'N/A'
-                        if (prop.area) {
+                        if (prop.size) {
+                          areaDisplay = `${prop.size} sqft`
+                        } else if (prop.area) {
                           if (typeof prop.area === 'number' || typeof prop.area === 'string') {
                             areaDisplay = `${prop.area} sqft`
                           } else if (typeof prop.area === 'object' && (prop.area.value || prop.area.area)) {
@@ -692,8 +609,17 @@ export default function TowerDetailsPage() {
                           areaDisplay = `${prop.areaSqft} sqft`
                         }
 
-                        // Image selection logic similar to project page
-                        let mainImage = prop.coverPicture || prop.gallery?.[0] || prop.imageUrl || "/div.property-thumbnail-wrapper.png"
+                        // Image selection logic - check images array first (from API), then fallback
+                        let mainImage = "/div.property-thumbnail-wrapper.png"
+                        if (prop.images && Array.isArray(prop.images) && prop.images.length > 0) {
+                          mainImage = prop.images[0].url || prop.images[0].thumbnailUrl || mainImage
+                        } else if (prop.coverPicture) {
+                          mainImage = prop.coverPicture
+                        } else if (prop.gallery && Array.isArray(prop.gallery) && prop.gallery.length > 0) {
+                          mainImage = prop.gallery[0]
+                        } else if (prop.imageUrl) {
+                          mainImage = prop.imageUrl
+                        }
 
                         return (
                           <div
