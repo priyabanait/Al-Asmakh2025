@@ -255,6 +255,23 @@ export const fetchProjectById = async (projectId) => {
 
         let data = response.data;
         
+        // CRITICAL FIX: Handle case where response.data is a JSON string (production issue)
+        // This can happen if Content-Type is wrong or axios doesn't auto-parse
+        if (typeof data === 'string') {
+            try {
+                data = JSON.parse(data);
+            } catch (parseError) {
+                console.error("Failed to parse response.data as JSON string:", parseError);
+                throw new Error("Invalid JSON response from server");
+            }
+        }
+        
+        // Ensure data is an object before proceeding
+        if (!data || typeof data !== 'object') {
+            console.error("Invalid data structure:", typeof data, data);
+            throw new Error("Invalid response format from server");
+        }
+        
         // Handle case where data might be wrapped
         if (data.data && typeof data.data === 'object') {
             data = data.data;

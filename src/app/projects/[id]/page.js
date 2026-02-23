@@ -151,8 +151,23 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 try {
                     setProjectLoading(true);
                     setError(null);
-                    const projectData = await fetchProjectById(projectId);
+                    let projectData = await fetchProjectById(projectId);
                     
+                    // CRITICAL FIX: Ensure projectData is an object, not a string
+                    if (typeof projectData === 'string') {
+                        try {
+                            projectData = JSON.parse(projectData);
+                        } catch (parseError) {
+                            console.error("Failed to parse projectData as JSON string:", parseError);
+                            throw new Error("Invalid response format: expected object but got string");
+                        }
+                    }
+                    
+                    // Ensure projectData is an object
+                    if (!projectData || typeof projectData !== 'object') {
+                        console.error("Invalid projectData type:", typeof projectData, projectData);
+                        throw new Error("Invalid response format: expected object");
+                    }
                     
                     // Handle error in response (data might still be present even if there's an error)
                     if (projectData.error) {
@@ -245,6 +260,17 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     setProject(projectInfo);
                     
                     // Extract properties from response (already parsed from JSON if needed by API function)
+                    // CRITICAL FIX: Handle case where properties might still be a JSON string
+                    if (projectData.properties && typeof projectData.properties === 'string') {
+                        try {
+                            const parsed = JSON.parse(projectData.properties);
+                            projectData.properties = Array.isArray(parsed) ? parsed : (typeof parsed === 'object' && parsed !== null ? Object.values(parsed) : []);
+                        } catch (parseError) {
+                            console.error("Failed to parse properties JSON string:", parseError);
+                            projectData.properties = [];
+                        }
+                    }
+                    
                     console.log("📋 Extracting properties from response:", {
                         hasProperties: !!projectData.properties,
                         propertiesType: Array.isArray(projectData.properties) ? 'array' : typeof projectData.properties,
@@ -315,6 +341,17 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     }
                     
                     // Extract agents from response - prioritize projectAssignedAgentsList (already parsed from JSON if needed by API function)
+                    // CRITICAL FIX: Handle case where projectAssignedAgentsList might still be a JSON string
+                    if (projectData.projectAssignedAgentsList && typeof projectData.projectAssignedAgentsList === 'string') {
+                        try {
+                            const parsed = JSON.parse(projectData.projectAssignedAgentsList);
+                            projectData.projectAssignedAgentsList = Array.isArray(parsed) ? parsed : (typeof parsed === 'object' && parsed !== null ? Object.values(parsed) : []);
+                        } catch (parseError) {
+                            console.error("Failed to parse projectAssignedAgentsList JSON string:", parseError);
+                            projectData.projectAssignedAgentsList = [];
+                        }
+                    }
+                    
                     console.log("👥 Extracting agents from response:", {
                         hasProjectAssignedAgentsList: !!projectData.projectAssignedAgentsList,
                         hasProjectAssignedAgents: !!projectData.projectAssignedAgents,
