@@ -257,12 +257,69 @@ export const fetchProjectById = async (projectId) => {
         
         // CRITICAL FIX: Handle case where response.data is a JSON string (production issue)
         // This can happen if Content-Type is wrong or axios doesn't auto-parse
+        // Also handle case where response contains multiple JSON objects concatenated (data + error)
         if (typeof data === 'string') {
             try {
+                // First, try normal parsing
                 data = JSON.parse(data);
             } catch (parseError) {
-                console.error("Failed to parse response.data as JSON string:", parseError);
-                throw new Error("Invalid JSON response from server");
+                // If parsing fails, the response might contain multiple JSON objects concatenated
+                // (e.g., valid data + error object at the end like: {...}{"error":"..."})
+                // Extract the first complete JSON object
+                console.warn("Initial JSON parse failed, attempting to extract first JSON object:", parseError.message);
+                
+                try {
+                    // Find the first complete JSON object by finding matching braces
+                    let jsonString = data.trim();
+                    let braceCount = 0;
+                    let firstJsonEnd = -1;
+                    let inString = false;
+                    let escapeNext = false;
+                    
+                    for (let i = 0; i < jsonString.length; i++) {
+                        const char = jsonString[i];
+                        
+                        if (escapeNext) {
+                            escapeNext = false;
+                            continue;
+                        }
+                        
+                        if (char === '\\') {
+                            escapeNext = true;
+                            continue;
+                        }
+                        
+                        if (char === '"') {
+                            inString = !inString;
+                            continue;
+                        }
+                        
+                        if (!inString) {
+                            if (char === '{') {
+                                braceCount++;
+                            } else if (char === '}') {
+                                braceCount--;
+                                if (braceCount === 0 && firstJsonEnd === -1) {
+                                    firstJsonEnd = i + 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Extract first JSON object if we found it
+                    if (firstJsonEnd > 0) {
+                        jsonString = jsonString.substring(0, firstJsonEnd);
+                        data = JSON.parse(jsonString);
+                        console.log("Successfully extracted first JSON object from concatenated response");
+                    } else {
+                        throw parseError;
+                    }
+                } catch (fallbackError) {
+                    console.error("Failed to parse response.data as JSON string:", parseError);
+                    console.error("Fallback extraction also failed:", fallbackError);
+                    throw new Error("Invalid JSON response from server");
+                }
             }
         }
         
