@@ -79,10 +79,10 @@ export default function Sale() {
             {/* Transaction Type Selector - Separate Box */}
             <div className="border border-white/10 backdrop-blur-sm bg-white/20  rounded-md border-[#8C8C8C66]  p-3 shadow-md">
               <div className="flex justify-center gap-2">
-                <button className="px-8 py-1.5 rounded-md bg-[#001730] text-white font-medium shadow transition">
+                <button className="px-8 py-1.5 rounded-md bg-[#001730] text-white font-medium shadow transition" onClick={() => router.push("/listings/rent")}>
                   RENT
                 </button>
-                <button className="px-8 py-1.5 rounded-md bg-gray-400 text-white font-medium shadow transition">
+                <button className="px-8 py-1.5 rounded-md bg-gray-400 text-white font-medium shadow transition" onClick={() => router.push("/listings/sale")}>
                   BUY
                 </button>
               </div>

@@ -46,8 +46,11 @@ const getElasticsearchApiBaseUrl = () => {
         return 'http://localhost:3003';
     }
     
-    // Production URL (update with your production Elasticsearch service URL)
-    return process.env.NEXT_PUBLIC_ELASTICSEARCH_API_URL || 'http://localhost:3003';
+    // Production / staging default:
+    // Use the main API gateway domain and route traffic to the media-search-service
+    // Health:  https://api.alasmakhrealestate.com/api/media/health
+    // Search:  https://api.alasmakhrealestate.com/api/media/search
+    return 'https://api.alasmakhrealestate.com/api/media';
 };
 
 // Use environment-aware API URL

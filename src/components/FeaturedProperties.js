@@ -1,11 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
 import { Md360 } from "react-icons/md";
+import { FaBed, FaBath, FaRulerCombined } from "react-icons/fa";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { fetchProperties, fetchPropertiesByOfferingType } from "../utils/propertyapi";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  * FeaturedProperties Component
@@ -27,72 +29,52 @@ export default function FeaturedProperties({
   type = "",
   locationLevel1 = ""
 }) {
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Fetch properties from API with filters
-  useEffect(() => {
-    const loadProperties = async () => {
-      try {
-        setLoading(true);
-        
-        // If offeringType is provided, use fetchPropertiesByOfferingType (same as Services-lease.js)
-        if (offeringType) {
-          const fetchedProperties = await fetchPropertiesByOfferingType(offeringType, {
-            page: 1,
-            limit: limit,
-            type: type,
-          });
-
-          // Use API response data only
-          if (fetchedProperties && Array.isArray(fetchedProperties)) {
-            setProperties(fetchedProperties);
-          } else {
-            setProperties([]);
-          }
-        } else {
-          // Otherwise use fetchProperties with priceType
-          // Build filters object - always use "published" status if not explicitly set otherwise
-          const filters = {
-            page: 1,
-            limit: limit,
-            status: status || "published", // Default to published/active properties
-          };
-
-          // Add priceType filter if provided
-          if (priceType) {
-            filters.priceType = priceType;
-          }
-
-          // Add type filter if provided
-          if (type) {
-            filters.type = type;
-          }
-
-          // Add location filter if provided
-          if (locationLevel1) {
-            filters.locationLevel1 = locationLevel1;
-          }
-
-          // Use fetchProperties from propertyapi.js
-          const result = await fetchProperties(filters);
-          console.log(`Properties loaded (priceType: ${priceType || 'all'}):`, result.properties.length);
-          setProperties(result.properties);
-        }
-        
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching properties:", err);
-        setError(err.message || "Failed to load properties");
-        setProperties([]);
-      } finally {
-        setLoading(false);
+  // React Query: cache and manage featured properties on the frontend
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: [
+      "featuredProperties",
+      { priceType, offeringType, limit, status, type, locationLevel1 },
+    ],
+    queryFn: async () => {
+      // If offeringType is provided, use fetchPropertiesByOfferingType (same as Services-lease.js)
+      if (offeringType) {
+        const fetchedProperties = await fetchPropertiesByOfferingType(offeringType, {
+          page: 1,
+          limit,
+          type,
+        });
+        return Array.isArray(fetchedProperties) ? fetchedProperties : [];
       }
-    };
 
-    loadProperties();
-  }, [priceType, offeringType, limit, status, type, locationLevel1]);
+      // Otherwise use fetchProperties with priceType
+      const filters = {
+        page: 1,
+        limit,
+        status: status || "published",
+      };
+
+      if (priceType) {
+        filters.priceType = priceType;
+      }
+      if (type) {
+        filters.type = type;
+      }
+      if (locationLevel1) {
+        filters.locationLevel1 = locationLevel1;
+      }
+
+      const result = await fetchProperties(filters);
+      return result.properties || [];
+    },
+    keepPreviousData: true,
+  });
+
+  const properties = data || [];
 
 
   // Helper function to format property data (handles both raw and pre-formatted properties)
@@ -219,11 +201,11 @@ export default function FeaturedProperties({
           real estate goals into reality.
         </p>
 
-        {loading ? (
+        {isLoading ? (
           <div className="text-center text-gray-500 py-8">Loading properties...</div>
-        ) : error ? (
+        ) : isError ? (
           <div className="text-center text-red-500 py-8">
-            <p>Error loading properties: {error}</p>
+            <p>Error loading properties: {error?.message || "Failed to load properties"}</p>
             <p className="text-xs mt-2">Check browser console for details</p>
           </div>
         ) : !properties || properties.length === 0 ? (
@@ -323,36 +305,18 @@ export default function FeaturedProperties({
                     <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                        <Image
-                          src="/Icon (1).png"
-                          alt="Beds"
-                          width={14}
-                          height={14}
-                          className="lg:w-[18px] lg:h-[18px]"
-                        />
+                        <FaBed className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                         <span>{property.beds || property.bedrooms || 0}</span>
                       </div>
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                        <Image
-                          src="/Icon.png"
-                          alt="Baths"
-                          width={14}
-                          height={14}
-                          className="lg:w-[18px] lg:h-[18px]"
-                        />
+                        <FaBath className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                         <span>{property.baths || property.bathrooms || 0}</span>
                       </div>
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                        <Image
-                          src="/Icon (2).png"
-                          alt="Area"
-                          width={14}
-                          height={14}
-                          className="lg:w-[18px] lg:h-[18px]"
-                        />
-                        <span>{property.area}</span>
+                        <FaRulerCombined className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                        <span>{property.area.toFixed(0)} </span>
                       </div>
 
                     </div>

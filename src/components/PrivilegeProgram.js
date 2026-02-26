@@ -47,7 +47,7 @@ export default function PrivilegeProgram() {
   // Image Icon Components
   const LeasingIcon = () => (
     <Image
-      src="/1_Icons Used_Leasing.png"
+      src="/services/1.1.png"
       alt="Leasing"
       width={35}
       height={35}
@@ -57,7 +57,7 @@ export default function PrivilegeProgram() {
 
   const SalesIcon = () => (
     <Image
-      src="/2_Icons Used_Sales.png"
+      src="/services/2.png"
       alt="Sales"
       width={48}
       height={48}

@@ -399,7 +399,7 @@ export default function Profit() {
 
         {/* BACKGROUND IMAGE */}
         <Image
-          src="WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"
+          src="/mainScreen/19.png"
           alt="City Skyline"
           fill
           priority
@@ -987,7 +987,7 @@ export default function Profit() {
       <section className="relative w-full h-auto lg:min-h-screen flex items-center py-8 lg:py-12 xl:py-16 2xl:py-20 overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
+          src="/mainScreen/Contact-us.jpeg"
           alt="Background"
           fill
           className="object-cover"
@@ -1177,7 +1177,7 @@ export default function Profit() {
               {/* Map Section - Below the blur card */}
               <div className="mt-4 lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
                 <Image
-                  src="/675.png"
+                  src="./mainScreen/675.png"
                   alt="Map"
                   fill
                   className="object-cover rounded-md"

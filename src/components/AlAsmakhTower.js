@@ -104,7 +104,7 @@ export default function AlAsmakhTower() {
       subheading: "A Future-Focused Tower with Heritage at Its Core.",
       description:
         "An iconic GSAS 4-star certified office tower in West Bay that brings together ARDEC's legacy, sustainable design, and smart technology to create a long-term base for leading organisations in Qatar. Al Asmakh Tower reflects how ARDEC thinks about commercial real estate: combine architectural presence with spaces that work in real life. Positioned along Doha's business skyline, the tower offers flexible floorplates and 40 commercial units that can adapt as companies grow, restructure, or expand regional teams.",
-      img: "/407.png",
+      img: "/mainScreen/407.1.png",
     },
     {
       title: "BEVERLY HILLS TOWER",
@@ -551,7 +551,7 @@ export default function AlAsmakhTower() {
                             src={area.image}
                             alt={area.name}
                             fill
-                            className="object-cover rounded-lg"
+                            className="object-fill rounded-lg"
                           />
                           {/* City Name Overlay - Top Left Corner */}
                           <div
@@ -641,7 +641,7 @@ export default function AlAsmakhTower() {
                       src={areas[i].image}
                       alt={areas[i].name}
                       fill
-                      className="object-cover rounded-lg"
+                      className="object-fill rounded-lg"
                     />
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
@@ -694,7 +694,7 @@ export default function AlAsmakhTower() {
                       src={areas[i].image}
                       alt={areas[i].name}
                       fill
-                      className="object-cover rounded-lg"
+                      className="object-fill rounded-lg"
                     />
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>

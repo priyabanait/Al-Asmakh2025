@@ -288,14 +288,14 @@ export default function Hero() {
               <button
                 className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 2xl:px-20 py-2 sm:py-2.5 md:py-3 lg:py-4 xl:py-5 bg-[#0A2A4C] text-white text-[11px] sm:text-xs md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg rounded-[3px] font-semibold shadow-md relative overflow-hidden"
               >
-                <span className="relative z-10">
+                <span className="relative z-10" onClick={() => router.push("/listings/rent")}>
                   RENT
                 </span>
               </button>
               <button
                 className="px-6 sm:px-8 md:px-10 lg:px-12 xl:px-16 2xl:px-20 py-2 sm:py-2.5 md:py-3 lg:py-4 xl:py-5 bg-[#0A2A4C] text-white text-[11px] sm:text-xs md:text-[12px] lg:text-sm xl:text-base 2xl:text-lg rounded-[3px] font-semibold shadow-md relative overflow-hidden"
               >
-                <span className="relative z-10">
+                <span className="relative z-10" onClick={() => router.push("/listings/sale")}>
                   BUY
                 </span>
               </button>

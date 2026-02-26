@@ -644,7 +644,7 @@ export default function AboutUsPage() {
 <section className="relative w-full flex items-center py-6 lg:py-12 min-h-screen">
         {/* Background Image */}
         <Image
-          src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
+          src="/mainScreen/Contact-us.jpeg"
           alt="Background"
           fill
           className="object-cover"

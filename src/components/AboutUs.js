@@ -534,7 +534,7 @@ function AboutUs() {
       <section className="relative w-full h-auto lg:h-screen flex items-center py-6 lg:py-0">
         {/* Background Image */}
         <Image
-          src="/WhatsApp Image 2025-11-07 at 10.45.55 PM.jpeg"
+          src="/mainScreen/Contact-us.jpeg"
           alt="Background"
           fill
           className="object-cover"
@@ -650,7 +650,7 @@ function AboutUs() {
             {/* Map Section - Below the blur card */}
             <div className="mt-3 mb-4 lg:mb-0 lg:mt-6 w-full h-[15vh] lg:h-[20vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
               <Image
-                src="/675.png"
+                src="./mainScreen/675.png"
                 alt="Map"
                 fill
                 className="object-cover rounded-md"
