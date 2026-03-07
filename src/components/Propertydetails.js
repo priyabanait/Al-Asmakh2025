@@ -167,6 +167,51 @@ function PropertyDetailsContent() {
 
   const formattedProperty = formatProperty(property);
 
+  // Safely render rich description coming from backend (supports <p>, <li>, etc.)
+  const renderDescriptionHtml = (description) => {
+    if (!description) return "";
+
+    let html = description;
+
+    // Strip raw <p> wrappers coming from backend to avoid nested paragraphs / mobile spacing issues
+    html = html.replace(/<\/?p[^>]*>/gi, "");
+
+    // If backend already sends proper <li> tags, just return as-is
+    if (/<li[^>]*>/i.test(html)) {
+      // Ensure they are wrapped in a <ul> if not already
+      const hasUl = /<ul[^>]*>/i.test(html);
+      if (!hasUl) {
+        return `<ul class="list-disc pl-4 space-y-1">${html}</ul>`;
+      }
+      return html;
+    }
+
+    // If backend uses bullet characters (•), convert them into a proper list
+    if (html.includes("•")) {
+      const parts = html.split(/•+/);
+
+      const headingText = parts[0]?.trim();
+      const items = parts
+        .slice(1)
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      let result = "";
+      if (headingText) {
+        result += `<p class="font-semibold mb-2">${headingText}</p>`;
+      }
+
+      if (items.length > 0) {
+        const listItems = items.map((item) => `<li>${item}</li>`).join("");
+        result += `<ul class="list-disc pl-4 space-y-1">${listItems}</ul>`;
+      }
+
+      return result || html;
+    }
+
+    return html;
+  };
+
   const scrollRight = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
@@ -498,13 +543,16 @@ function PropertyDetailsContent() {
               {activeTab === "overview" ? (
                 <>
                   {formattedProperty.description ? (
-                    <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4 whitespace-pre-line">
-                      {formattedProperty.description}
-                    </div>
+                    <div
+                      className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4"
+                      dangerouslySetInnerHTML={{
+                        __html: renderDescriptionHtml(formattedProperty.description),
+                      }}
+                    />
                   ) : (
-                    <p className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
+                    <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
                       No description available for this property.
-                    </p>
+                    </div>
                   )}
                 </>
               ) : (

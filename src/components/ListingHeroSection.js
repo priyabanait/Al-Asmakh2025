@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Search,
   Mic,
@@ -28,6 +29,7 @@ export default function ListingHeroSection({
   onShowMoreFilters,
   initialSearchQuery = "",
 }) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [showSpeechModal, setShowSpeechModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -148,7 +150,10 @@ export default function ListingHeroSection({
             <div className="border border-white/10 backdrop-blur-sm bg-white/20 rounded-md border-[#8C8C8C66] p-3 shadow-md">
               <div className="flex justify-center gap-2">
                 <button
-                  onClick={() => onPriceTypeChange?.("rent")}
+                  onClick={() => {
+                    onPriceTypeChange?.("rent");
+                    router.push("/listings/rent");
+                  }}
                   className={`px-8 py-1.5 rounded-md font-medium shadow transition ${priceType === "rent"
                       ? "bg-[#001730] text-white"
                       : "bg-gray-400 text-white"
@@ -157,7 +162,10 @@ export default function ListingHeroSection({
                   RENT
                 </button>
                 <button
-                  onClick={() => onPriceTypeChange?.("sale")}
+                  onClick={() => {
+                    onPriceTypeChange?.("sale");
+                    router.push("/listings/listing-sale");
+                  }}
                   className={`px-8 py-1.5 rounded-md font-medium shadow transition ${priceType === "sale"
                       ? "bg-[#001730] text-white"
                       : "bg-gray-400 text-white"
@@ -237,7 +245,10 @@ export default function ListingHeroSection({
             {/* Buttons Section */}
             <div className="flex justify-center gap-4 mb-4">
               <button
-                onClick={() => onPriceTypeChange?.("rent")}
+                onClick={() => {
+                  onPriceTypeChange?.("rent");
+                  router.push("/listings/rent");
+                }}
                 className={`px-20 py-1.5 rounded-md font-medium shadow transition ${priceType === "rent"
                     ? "bg-[#001730] text-white"
                     : "bg-[#0B1F3A]/40 text-white backdrop-blur-[20px] border border-white/40"
@@ -246,7 +257,10 @@ export default function ListingHeroSection({
                 RENT
               </button>
               <button
-                onClick={() => onPriceTypeChange?.("sale")}
+                onClick={() => {
+                  onPriceTypeChange?.("sale");
+                  router.push("/listings/listing-sale");
+                }}
                 className={`px-20 py-1.5 rounded-md font-medium shadow transition ${priceType === "sale"
                     ? "bg-[#001730] text-white"
                     : "bg-[#0B1F3A]/40 text-white backdrop-blur-[20px] border border-white/40"
