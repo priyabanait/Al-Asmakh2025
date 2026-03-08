@@ -11,7 +11,8 @@ const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
 export default function InteractivePropertyMap({
   properties = [],
   selectedPropertyId = null,
-  onPropertyClick = null
+  onPropertyClick = null,
+  onMapReady = null
 }) {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -57,7 +58,6 @@ export default function InteractivePropertyMap({
       return;
     }
 
-    console.log('Loading Google Maps with API key:', apiKey.substring(0, 20) + '...');
 
     const script = document.createElement('script');
     // Use the API key directly - make sure it's properly encoded
@@ -106,6 +106,13 @@ export default function InteractivePropertyMap({
 
     mapInstanceRef.current = map;
 
+    // Notify parent when map tiles are loaded
+    map.addListener('tilesloaded', () => {
+      if (onMapReady) {
+        onMapReady();
+      }
+    });
+
     // Fit bounds to show all properties if available
     if (properties.length > 0) {
       const bounds = new window.google.maps.LatLngBounds();
@@ -129,7 +136,7 @@ export default function InteractivePropertyMap({
         }
       }
     }
-  }, [mapLoaded, properties.length]);
+  }, [mapLoaded, properties.length, onMapReady]);
 
   // Create markers for properties
   useEffect(() => {
@@ -206,7 +213,7 @@ export default function InteractivePropertyMap({
           font-family: Arial, sans-serif;
         ">
           <div style="
-            background-color: #DC2626;
+            background-color: #333333;
             color: white;
             padding: 12px;
             font-weight: bold;
@@ -257,7 +264,7 @@ export default function InteractivePropertyMap({
           </div>
           <div style="padding: 12px; background: white;">
             <div style="
-              color: #001730;
+              color: #333333;
               font-size: 12px;
               margin-bottom: 8px;
               display: flex;
@@ -268,7 +275,7 @@ export default function InteractivePropertyMap({
               <span>${propertyLocation}</span>
             </div>
             <div style="
-              color: #001730;
+              color: #333333;
               font-size: 18px;
               font-weight: bold;
               margin-bottom: 12px;
@@ -280,7 +287,7 @@ export default function InteractivePropertyMap({
               onclick="event.stopPropagation(); window.location.href='/propertydetails?id=${property.id}'"
               style="
                 display: block;
-                background-color: #DC2626;
+                background-color: #333333;
                 color: white;
                 text-align: center;
                 padding: 10px;
@@ -290,8 +297,8 @@ export default function InteractivePropertyMap({
                 font-size: 12px;
                 margin-top: 8px;
               "
-              onmouseover="this.style.backgroundColor='#B91C1C'"
-              onmouseout="this.style.backgroundColor='#DC2626'"
+              onmouseover="this.style.backgroundColor='#555555'"
+              onmouseout="this.style.backgroundColor='#333333'"
             >
               MORE DETAILS >
             </a>
@@ -420,7 +427,7 @@ export default function InteractivePropertyMap({
     return (
       <div className="w-full h-full relative bg-gray-200 flex items-center justify-center">
         <div className="text-center p-4">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#001730] mb-2"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600 mb-2"></div>
           <p className="text-gray-600 text-sm">Loading map...</p>
         </div>
       </div>

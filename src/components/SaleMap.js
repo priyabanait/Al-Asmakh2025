@@ -70,7 +70,7 @@ export default function Sale({ priceType: initialPriceType = "sale" }) {
     <div>
       {/* ---------- HERO SECTION WITH FILTERS ---------- */}
       <ListingHeroSection
-        backgroundImage="/images_pages/listings.png"
+        backgroundImage="/rep_img/sale.jpg"
         priceType={priceType}
         onPriceTypeChange={setPriceType}
         loading={loading}

@@ -11,6 +11,7 @@ import DreamPropertySection from "./DreamPropertySection";
 import PropertyListDev from "./PropertyListDev";
 import { fetchPropertiesByOfferingType } from "../utils/propertyapi";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Services({
   offeringType = "lease",
@@ -32,11 +33,22 @@ export default function Services({
   useProjects = false, // Flag to use projects instead of properties
   loading: externalLoading, // Loading state from parent
 }) {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
   const [showFilters, setShowFilters] = useState(false); // Toggle for mobile filters
   const filtersRef = useRef(null); // Ref for filter container
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter state management
+  const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
+  const [filters, setFilters] = useState({
+    projectType: null,
+    location: null,
+    status: null,
+    date: null,
+  });
+  const dropdownRefs = useRef({}); // Refs for each dropdown
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -44,27 +56,114 @@ export default function Services({
       if (showFilters && filtersRef.current && !filtersRef.current.contains(event.target)) {
         setShowFilters(false);
       }
+      
+      // Close dropdowns when clicking outside
+      Object.values(dropdownRefs.current).forEach((ref) => {
+        if (ref && !ref.contains(event.target)) {
+          setOpenDropdown(null);
+        }
+      });
     };
 
-    if (showFilters) {
+    if (showFilters || openDropdown) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showFilters]);
+  }, [showFilters, openDropdown]);
+
+  // Filter options
+  const filterOptions = {
+    projectType: ["Luxury", "Commercial", "Industrial", "Residential"],
+    location: ["West Bay", "The Pearl", "Al Sadd", "Lusail", "Doha"],
+    status: ["Completed", "Ongoing", "Upcoming"],
+    date: ["Newest", "Oldest", "Recently Updated"],
+  };
+
+  // Handle filter selection
+  const handleFilterSelect = (filterType, value) => {
+    // Navigate for specific project types
+    if (filterType === "projectType") {
+      const routeMap = {
+        "Luxury": "/listings/luxury",
+        "Commercial": "/listings/commercial",
+        "Industrial": "/listings/industrial",
+      };
+      
+      if (routeMap[value]) {
+        router.push(routeMap[value]);
+        return; // Don't set filter, just navigate
+      }
+    }
+    
+    // For other filters, set the filter value
+    setFilters((prev) => ({
+      ...prev,
+      [filterType]: prev[filterType] === value ? null : value,
+    }));
+    setOpenDropdown(null);
+  };
+
+  // Toggle dropdown
+  const toggleDropdown = (filterType) => {
+    setOpenDropdown(openDropdown === filterType ? null : filterType);
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setFilters({
+      projectType: null,
+      location: null,
+      status: null,
+      date: null,
+    });
+    setOpenDropdown(null);
+  };
+
+  // Check if any filters are active
+  const hasActiveFilters = Object.values(filters).some(value => value !== null);
+
+  // Filter properties based on selected filters
+  const filteredProperties = properties.filter((property) => {
+    // For projects, check projectType field; for properties, check type field
+    if (filters.projectType) {
+      const propType = property.projectType || property.type || '';
+      if (propType.toLowerCase() !== filters.projectType.toLowerCase()) {
+        return false;
+      }
+    }
+    
+    // Location filter - check multiple location fields
+    if (filters.location) {
+      const locationStr = (
+        property.location || 
+        property.locationLevel2 || 
+        property.locationLevel1 || 
+        ''
+      ).toLowerCase();
+      if (!locationStr.includes(filters.location.toLowerCase())) {
+        return false;
+      }
+    }
+    
+    // Status filter - check statusType or projectStatus
+    if (filters.status) {
+      const status = property.statusType || property.projectStatus || '';
+      if (status.toLowerCase() !== filters.status.toLowerCase()) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
 
   // Fetch properties from API based on offeringType (only if not using projects)
   useEffect(() => {
     // If using projects from parent, use them directly
     if (useProjects) {
-      console.log("Services component - using projects:", {
-        useProjects,
-        externalProjectsLength: externalProjects?.length,
-        externalProjects: externalProjects,
-        externalLoading,
-      });
+    
 
       // Always update when externalProjects changes (even if empty array)
       const projectsArray = Array.isArray(externalProjects) ? externalProjects : [];
@@ -131,7 +230,7 @@ export default function Services({
         <div className="absolute inset-0" />
 
         {/* 🔍 Search Bar (Half on BG, Half outside) - Dynamic Stats from props */}
-        <div className="absolute left-1/2 lg:bottom-[228px] bottom-56 shadow-md transform -translate-x-1/2 translate-y-1/2 z-20 w-[90%] lg:w-[50%] px-4 lg:px-0">
+        <div className="absolute left-1/2 lg:bottom-[228px] bottom-56 shadow-md transform -translate-x-1/2 translate-y-1/2 z-20 w-[90%] lg:w-[60%] px-4 lg:px-0">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 shadow-md lg:gap-6  mb-10 lg:mb-10">
             {stats.map((item, index) => (
               <div
@@ -157,12 +256,27 @@ export default function Services({
         <div className="hidden lg:flex absolute w-full justify-center bottom-10 lg:bottom-[-32px] z-20">
           <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md 
                   gap-4 justify-center items-center">
+            {/* Clear Filters Button - Desktop */}
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="flex items-center justify-center bg-red-600 text-white px-4 py-2 rounded-md shadow-lg hover:bg-red-700 transition text-sm font-medium whitespace-nowrap"
+              >
+                Clear Filters
+              </button>
+            )}
             {/* Filter Items */}
-            {["Property Type", "Location", "Status", "Date"].map((label, index) => {
+            {["Project Type", "Location", "Status", "Date"].map((label, index) => {
+              const filterKey = label === "Project Type" ? "projectType" : 
+                                label === "Location" ? "location" : 
+                                label === "Status" ? "status" : "date";
+              const isOpen = openDropdown === filterKey;
+              const selectedValue = filters[filterKey];
+              
               // Get appropriate icon for each label
               const getIcon = () => {
                 switch (label) {
-                  case "Property Type":
+                  case "Project Type":
                     return <Home size={16} />;
                   case "Location":
                     return <MapPin size={16} />;
@@ -178,22 +292,48 @@ export default function Services({
               return (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[250px]
-                       rounded-md shadow-lg hover:bg-[#001730] transition"
+                  ref={(el) => (dropdownRefs.current[filterKey] = el)}
+                  className="relative w-full max-w-[250px]"
                 >
-                  <div className="flex items-center gap-4">
-                    {/* Icon + Divider */}
-                    <div className="flex items-center gap-2">
-                      {getIcon()}
-                      <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                  <div
+                    onClick={() => toggleDropdown(filterKey)}
+                    className={`flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full
+                         rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer ${isOpen ? 'bg-[#001730]' : ''}`}
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Icon + Divider */}
+                      <div className="flex items-center gap-2">
+                        {getIcon()}
+                        <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                      </div>
+
+                      {/* Label */}
+                      <span className="text-[13px]">{selectedValue || label}</span>
                     </div>
 
-                    {/* Label */}
-                    <span className="text-[13px]">{label}</span>
+                    {/* Down Arrow */}
+                    <ArrowDown 
+                      size={16} 
+                      className={`opacity-80 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+                    />
                   </div>
 
-                  {/* Down Arrow */}
-                  <ArrowDown size={16} className="opacity-80" />
+                  {/* Dropdown Menu */}
+                  {isOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto">
+                      {filterOptions[filterKey]?.map((option, optIndex) => (
+                        <div
+                          key={optIndex}
+                          onClick={() => handleFilterSelect(filterKey, option)}
+                          className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                            selectedValue === option ? 'bg-[#001730] text-white hover:bg-[#002d52]' : 'text-gray-800'
+                          }`}
+                        >
+                          <span className="text-sm">{option}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -227,26 +367,85 @@ export default function Services({
             {/* Filter Items - Shown when button is clicked */}
             {showFilters && (
               <div className="flex flex-col gap-3">
-                {["Property Type", "Location", "Status", "Date"].map((label, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-3 rounded-md w-full shadow-lg hover:bg-[#001730] transition"
+                {/* Clear Filters Button - Mobile */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearAllFilters}
+                    className="flex items-center justify-center bg-red-600 text-white px-4 py-2 rounded-md w-full shadow-lg hover:bg-red-700 transition text-sm font-medium"
                   >
-                    <div className="flex items-center gap-3">
-                      {/* Icon + Divider */}
-                      <div className="flex items-center gap-2">
-                        <MapPin size={16} />
-                        <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                    Clear All Filters
+                  </button>
+                )}
+                {["Project Type", "Location", "Status", "Date"].map((label, index) => {
+                  const filterKey = label === "Project Type" ? "projectType" : 
+                                    label === "Location" ? "location" : 
+                                    label === "Status" ? "status" : "date";
+                  const isOpen = openDropdown === filterKey;
+                  const selectedValue = filters[filterKey];
+                  
+                  // Get appropriate icon for each label
+                  const getIcon = () => {
+                    switch (label) {
+                      case "Project Type":
+                        return <Home size={16} />;
+                      case "Location":
+                        return <MapPin size={16} />;
+                      case "Status":
+                        return <Check size={16} />;
+                      case "Date":
+                        return <Calendar size={16} />;
+                      default:
+                        return <MapPin size={16} />;
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={index}
+                      ref={(el) => (dropdownRefs.current[filterKey] = el)}
+                      className="relative"
+                    >
+                      <div
+                        onClick={() => toggleDropdown(filterKey)}
+                        className={`flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-3 rounded-md w-full shadow-lg hover:bg-[#001730] transition cursor-pointer ${isOpen ? 'bg-[#001730]' : ''}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          {/* Icon + Divider */}
+                          <div className="flex items-center gap-2">
+                            {getIcon()}
+                            <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                          </div>
+
+                          {/* Label */}
+                          <span className="text-sm font-medium">{selectedValue || label}</span>
+                        </div>
+
+                        {/* Down Arrow */}
+                        <ArrowDown 
+                          size={16} 
+                          className={`opacity-80 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+                        />
                       </div>
 
-                      {/* Label */}
-                      <span className="text-sm font-medium">{label}</span>
+                      {/* Dropdown Menu */}
+                      {isOpen && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto">
+                          {filterOptions[filterKey]?.map((option, optIndex) => (
+                            <div
+                              key={optIndex}
+                              onClick={() => handleFilterSelect(filterKey, option)}
+                              className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                                selectedValue === option ? 'bg-[#001730] text-white hover:bg-[#002d52]' : 'text-gray-800'
+                              }`}
+                            >
+                              <span className="text-sm">{option}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Down Arrow */}
-                    <ArrowDown size={16} className="opacity-80" />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -266,17 +465,37 @@ export default function Services({
       justify-center 
     "
         >
-          {filterButtons.map((label, index) => (
-            <div
-              key={index}
-              className="
-          flex items-center justify-center bg-[#0B1F3A] text-white
-          px-4 py-1.5 rounded-md shadow-lg hover:bg-[#001730] transition
-        "
-            >
-              <span className="text-xs lg:text-sm font-medium">{label}</span>
-            </div>
-          ))}
+          {filterButtons.map((label, index) => {
+            // Map filter button labels to routes
+            const getRoute = (buttonLabel) => {
+              const routeMap = {
+                "LUXURY": "/listings/luxury",
+                "COMMERCIAL": "/commercial",
+                "INDUSTRIAL": "/industrial",
+              };
+              return routeMap[buttonLabel] || null;
+            };
+
+            const route = getRoute(label);
+
+            return (
+              <div
+                key={index}
+                onClick={() => {
+                  if (route) {
+                    router.push(route);
+                  }
+                }}
+                className={`
+                  flex items-center justify-center bg-[#0B1F3A] text-white
+                  px-4 py-1.5 rounded-md shadow-lg hover:bg-[#001730] transition
+                  ${route ? 'cursor-pointer' : ''}
+                `}
+              >
+                <span className="text-xs lg:text-sm font-medium">{label}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -312,7 +531,7 @@ export default function Services({
             <p className="text-gray-500">Loading properties...</p>
           </div>
         ) : (
-          <PropertyListDev properties={properties} viewMode={viewMode} />
+          <PropertyListDev properties={filteredProperties} viewMode={viewMode} />
         )}
       </div>
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import { MapPin, ArrowRight } from "lucide-react";
+import { MapPin, ArrowRight, Loader2 } from "lucide-react";
 import ShareButton from "./ShareButton";
 import { FaArrowRight, FaBath } from "react-icons/fa6";
 import { Md360 } from "react-icons/md";
@@ -16,6 +16,16 @@ import InteractivePropertyMap from "./InteractivePropertyMap";
 export default function PropertyListView({ properties = [], totalProperties = 0 }) {
     const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
     const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+    const [mapLoading, setMapLoading] = useState(true);
+
+    // Reset map loading when switching to map view
+    useEffect(() => {
+        if (viewMode === "MAP") {
+            setMapLoading(true);
+        } else {
+            setMapLoading(false);
+        }
+    }, [viewMode]);
 
     return (
         <div className="hidden lg:block lg:py-4 py-4">
@@ -306,6 +316,15 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                     <div className="hidden lg:block w-1/2 relative mt-6 bg-gray-200">
                         {/* Interactive Map Container */}
                         <div className="w-full h-full relative">
+                            {/* Loading Overlay */}
+                            {mapLoading && (
+                                <div className="absolute inset-0 bg-gray-200/90 backdrop-blur-sm z-50 flex items-center justify-center">
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Loader2 className="w-8 h-8 text-[#001730] animate-spin" />
+                                        <p className="text-[#001730] text-sm font-medium">Loading map...</p>
+                                    </div>
+                                </div>
+                            )}
                             <InteractivePropertyMap
                                 properties={properties}
                                 selectedPropertyId={selectedPropertyId}
@@ -317,11 +336,9 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                     }
                                 }}
+                                onMapReady={() => setMapLoading(false)}
                             />
                         </div>
-
-
-
                     </div>
                 </div>
             )}

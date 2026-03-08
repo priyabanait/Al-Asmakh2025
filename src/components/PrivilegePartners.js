@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { Quote } from "lucide-react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MdLocationOn } from "react-icons/md";
 import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import FeaturedProperties from "./FeaturedProperties";
@@ -13,7 +14,29 @@ import useEmblaCarousel from "embla-carousel-react";
 import { API_BASE_URL, getApiUrl, getMarketingApiUrl } from "../config/api";
 import { useAlert } from "../contexts/AlertContext";
 import { useBlogs } from "../hooks/useBlogs";
+
+// Function to strip HTML tags from text (works in both client and server)
+const stripHtmlTags = (html) => {
+  if (!html) return "";
+  // Remove HTML tags using regex
+  let text = html.replace(/<[^>]*>/g, "");
+  // Decode common HTML entities
+  text = text
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x2F;/g, "/")
+    .trim();
+  return text;
+};
+
 export default function Profit() {
+  const router = useRouter();
   const [currentSlides, setCurrentSlide] = useState(0);
   const testimonials = [
     {
@@ -302,51 +325,75 @@ export default function Profit() {
   }, [blogs.length]);
   const offices = [
     {
-      title: "Head Office",
+      title: "Corporate Headquarters",
       subtitle: "Main Office",
-      address: "Floor 28, Tower 1, West Bay, Doha",
-      phone: "+974 4444 4444",
-      email: "headquaters@alasmakhrealestate.com",
+      address: "28th Floor, Al Asmakh Tower, West Bay",
+      phone: "+974 4448 5111",
+      email: "info@alasmakhrealestate.qa",
       timing: "Sun - Thu :: 8:00am - 6.00pm",
       image: "/office_location_background 1.png",
     },
     {
       title: "The Pearl Office",
       subtitle: "Main Office",
-      address: "Floor 28, Tower 1, West Bay, Doha",
-      phone: "+974 4444 4444",
-      email: "headquaters@alasmakhrealestate.com",
+      address: "Viva Bahriya 6, Street 140, Zone 66",
+      phone: "+974 7167 3879",
+      email: "info@alasmakhrealestate.qa",
       timing: "Sun - Thu :: 8:00am - 6.00pm",
       image: "/office_location_background 1.png",
     },
     {
-      title: "Ain Khalid Gate",
+      title: "Al Waab Office",
       subtitle: "Main Office",
-      address: "Floor 28, Tower 1, West Bay, Doha",
-      phone: "+974 4444 4444",
-      email: "headquaters@alasmakhrealestate.com",
+      address: "Beverly Hills Garden 1, Street 232, Zone 55",
+      phone: "+974 6600 2356",
+      email: "alwaab.leasing@alasmakhrealestate.com",
       timing: "Sun - Thu :: 8:00am - 6.00pm",
       image: "/office_location_background 1.png",
     },
     {
       title: "Al Sadd Office",
       subtitle: "Main Office",
-      address: "Floor 28, Tower 1, West Bay, Doha",
-      phone: "+974 4444 4444",
-      email: "headquaters@alasmakhrealestate.com",
+      address: "Regency Residence Al Sadd 1, Street 908, Zone 38",
+      phone: "+974 4450 5330",
+      email: "musheireb@alasmakhrealestate.com",
       timing: "Sun - Thu :: 8:00am - 6.00pm",
       image: "/office_location_background 1.png",
     },
     {
-      title: "Al Thumama Office",
+      title: "Industrial Area Office",
       subtitle: "Main Office",
-      address: "Floor 28, Tower 1, West Bay, Doha",
-      phone: "+974 4444 4444",
-      email: "headquaters@alasmakhrealestate.com",
+      address: "Al Asmakh Complex, Street 27, Industrial Area",
+      phone: "+974 4002 7659",
+      email: "alasmakhrealestate.com",
+      timing: "Sun - Thu :: 8:00am - 6.00pm",
+      image: "/office_location_background 1.png",
+    },
+    {
+      title: "Mesaimeer City Office",
+      subtitle: "Main Office",
+      address: "Building 28, Street 1177, Zone 56",
+      phone: "+974 4448 5111",
+      email: "info@alasmakhrealestate.qa",
+      timing: "Sun - Thu :: 8:00am - 6.00pm",
+      image: "/office_location_background 1.png",
+    },
+    {
+      title: "Ain Khalid Gate Office",
+      subtitle: "Main Office",
+      address: "Zone 56, Street 480, Building 165, Doha",
+      phone: "+974 4418 6878",
+      email: "secretary@ainkhalidgate.com",
       timing: "Sun - Thu :: 8:00am - 6.00pm",
       image: "/office_location_background 1.png",
     },
   ];
+
+  // Function to generate Google Maps URL from address
+  const getGoogleMapsUrl = (address) => {
+    const encodedAddress = encodeURIComponent(address);
+    return `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+  };
   const CARD_WIDTH = 360; // lg:min-w-[360px]
   const CARD_GAP = 96; // lg:gap-24 (24 * 4px = 96px)
   const MOBILE_CARD_WIDTH = 320; // min-w-[320px]
@@ -685,7 +732,7 @@ export default function Profit() {
 
                       {/* Content */}
                       <div className="text-left relative">
-                        <h3 className="text-[#001730] ml-10 lg:ml-0 font-semibold text-sm lg:text-lg mb-2
+                        {/* <h3 className="text-[#001730] ml-10 lg:ml-0 font-semibold text-sm lg:text-lg mb-2
                                      flex items-center justify-between">
                           {t.name}
                           <Image
@@ -695,7 +742,7 @@ export default function Profit() {
                             height={16}
                             className="lg:w-5 lg:h-5 object-contain"
                           />
-                        </h3>
+                        </h3> */}
 
                         <p className="text-gray-600 ml-10 lg:ml-0 text-xs lg:text-sm leading-relaxed">
                           {t.text}
@@ -849,7 +896,7 @@ export default function Profit() {
                           </h3>
                           <div className="overflow-hidden max-h-0 group-hover:max-h-[200px] transition-all duration-300 ease-in-out">
                             <p className="text-white text-sm leading-relaxed opacity-0 group-hover:opacity-90 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
-                              {blog.description}
+                              {stripHtmlTags(blog.description)}
                             </p>
                           </div>
                         </div>
@@ -941,7 +988,7 @@ export default function Profit() {
                         <div className="h-[0.3px] w-40 bg-gray-300 mb-0 group-hover:mb-3 lg:group-hover:mb-4 w-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                         <div className="overflow-hidden max-h-0 group-hover:max-h-[300px] transition-all duration-300 ease-in-out">
                           <p className="text-white text-sm lg:text-base leading-relaxed opacity-0 group-hover:opacity-90 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
-                            {blog.description}
+                            {stripHtmlTags(blog.description)}
                           </p>
                         </div>
                       </div>
@@ -1181,7 +1228,10 @@ export default function Profit() {
               </div>
 
               {/* Map Section - Below the blur card */}
-              <div className="mt-4 lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
+              <div 
+                onClick={() => window.open('https://maps.app.goo.gl/fiBji1m32xNtcdUR8', '_blank')} 
+                className="mt-4 cursor-pointer lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative hover:opacity-90 transition-opacity"
+              >
                 <Image
                   src="./mainScreen/675.png"
                   alt="Map"
@@ -1231,20 +1281,27 @@ export default function Profit() {
                     }}
                   >
                     <div
+                      onClick={() => window.open(getGoogleMapsUrl(office.address), '_blank')}
                       style={{
                         backgroundImage: 'url(/images/office_location.png)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'left center',
                         backgroundRepeat: 'no-repeat',
                       }}
-                      className="relative bg-[#EEEEEE] rounded-md p-3 shadow-md overflow-hidden"
+                      className="relative bg-[#EEEEEE] rounded-md p-3 shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300"
                     >
                       <div className="relative text-left z-10">
                         <h3 className="text-xl lg:text-2xl text-[#001730] mb-1">{office.title}</h3>
                         <p className="text-sm text-gray-500 mb-4">{office.subtitle}</p>
 
                         <div className="space-y-3 text-sm text-gray-700">
-                          <div className="flex items-start gap-2">
+                          <div 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(getGoogleMapsUrl(office.address), '_blank');
+                            }}
+                            className="flex items-start gap-2 cursor-pointer hover:text-[#001730] transition-colors"
+                          >
                             <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
                             <span className="text-[0.7rem] break-all">{office.address}</span>
                           </div>
@@ -1325,13 +1382,14 @@ export default function Profit() {
                   {visibleOffices.map((office, index) => (
                     <div
                       key={index}
+                      onClick={() => window.open(getGoogleMapsUrl(office.address), '_blank')}
                       style={{
                         backgroundImage: 'url(/images/office_location.png)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'left center',
                         backgroundRepeat: 'no-repeat',
                       }}
-                      className="bg-[#EEEEEE] rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex overflow-hidden relative"
+                      className="bg-[#EEEEEE] rounded-md shadow-md hover:shadow-lg transition-all duration-300 flex overflow-hidden relative cursor-pointer"
                     >
                       {/* Left Section - Office Information */}
                       <div className="flex-1 p-6 relative z-10">
@@ -1345,7 +1403,13 @@ export default function Profit() {
 
                         {/* Contact Details */}
                         <div className="space-y-2">
-                          <div className="flex items-center gap-2 text-gray-700 text-sm">
+                          <div 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(getGoogleMapsUrl(office.address), '_blank');
+                            }}
+                            className="flex items-center gap-2 text-gray-700 text-sm cursor-pointer hover:text-[#001730] transition-colors"
+                          >
                             <MapPin className="w-4 h-4 text-gray-700" />
                             {office.address}
                           </div>

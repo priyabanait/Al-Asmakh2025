@@ -12,13 +12,14 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
     // Static description text
     const staticDescription = "Luxury residential towers offering stunning sea views and premium residential, commercial, and leisure facilities.";
 
-    // Static tags
-    const staticTags = [
-        "Smart City",
-        "Private Beach Access",
-        "Concierge Service",
-        "+1"
-    ];
+    // Format amenity name from kebab-case to readable text
+    const formatAmenityName = (amenity) => {
+        if (!amenity) return "";
+        return amenity
+            .split("-")
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
+    };
 
     // Static status labels
     const getStatusLabel = (statusType) => {
@@ -104,7 +105,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                 properties.map((property) => (
                     <div
                         key={property.id}
-                        className="bg-gray-100 rounded-md shadow-md"
+                        className="bg-gray-100 rounded-md shadow-md group"
                     >
                         {/* Image */}
                         <div className="relative">
@@ -125,26 +126,27 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                             </div>
 
                             {/* Title + Location Overlay - Dynamic from API */}
-                            <div className="absolute backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-md bottom-0 left-0 right-0 p-3 lg:p-4">
+                            <div className="absolute backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 shadow-md bottom-0 left-0 right-0 p-3 lg:p-4 transition-all duration-300 ease-in-out">
                                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2">
-                                    <h3 className="text-base lg:text-xl font-semibold text-[#001730] truncate w-full lg:w-auto">
+                                    <h3 className="text-base lg:text-xl font-semibold text-[#001730] truncate w-full lg:w-auto mb-0 group-hover:mb-2 transition-all duration-300">
                                         {property.title || "Untitled Property"}
                                     </h3>
-
-
                                 </div>
 
-                                <div className="flex items-center text-[#001730] text-xs lg:text-sm flex-shrink-0">
+                                <div className="flex items-center text-[#001730] text-xs lg:text-sm flex-shrink-0 mb-0 group-hover:mb-2 transition-all duration-300">
                                     <MapPin size={12} className="mr-1" />
                                     <span className="truncate">{property.location || "Location not specified"}</span>
                                 </div>
 
-                                <div className="w-[60%] h-[1px] bg-gray-500 my-2"></div>
+                                {/* Divider - shows on hover */}
+                                <div className="w-[60%] h-[1px] bg-gray-500 my-0 group-hover:my-2 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
 
-                                {/* Static Description */}
-                                <p className="text-xs lg:text-sm text-[#001730] leading-snug">
-                                    {staticDescription}
-                                </p>
+                                {/* Description - shows on hover */}
+                                <div className="overflow-hidden max-h-0 group-hover:max-h-[200px] transition-all duration-300 ease-in-out">
+                                    <p className="text-xs lg:text-sm text-[#001730] leading-snug opacity-0 group-hover:opacity-100 transform translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300 ease-in-out pt-0 group-hover:pt-2">
+                                        {staticDescription}
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -211,15 +213,36 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
                             </div>
 
-                            {/* TAGS — GRID RESPONSIVE - Static */}
+                            {/* AMENITIES — GRID RESPONSIVE - Dynamic from API */}
 
-                            <div className="p-2 shadow-md bg-gray-50 rounded-md mt-2">
-                                <div className="grid grid-cols-[1fr_1fr_1fr_60px] gap-1">
+                            {property.amenities && property.amenities.length > 0 && (
+                                <div className="p-2 shadow-md bg-gray-50 rounded-md mt-2">
+                                    <div className="grid grid-cols-[1fr_1fr_1fr_60px] gap-1">
 
-                                    {staticTags.map((tag, index) => (
-                                        <div
-                                            key={index}
-                                            className="
+                                        {property.amenities.slice(0, 3).map((amenity, index) => (
+                                            <div
+                                                key={index}
+                                                className="
+          bg-gray-300 text-white
+          flex items-center justify-center
+          text-center
+          border border-gray-200
+          shadow-sm
+          rounded-md
+          h-10
+          text-[0.6rem]
+          font-semibold
+          whitespace-nowrap
+          px-1
+        "
+                                            >
+                                                {formatAmenityName(amenity)}
+                                            </div>
+                                        ))}
+
+                                        {property.amenities.length > 4 && (
+                                            <div
+                                                className="
           bg-gray-300 text-white
           flex items-center justify-center
           text-center
@@ -231,13 +254,14 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
           font-semibold
           whitespace-nowrap
         "
-                                        >
-                                            {tag}
-                                        </div>
-                                    ))}
+                                            >
+                                                +{property.amenities.length - 4}
+                                            </div>
+                                        )}
 
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
 
 

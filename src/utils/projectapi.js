@@ -109,6 +109,7 @@ export const fetchProjects = async (params = {}) => {
             limit = 50,
             status = "active",
             projectType,
+            projectStatus,
             areaId,
         } = params;
 
@@ -123,6 +124,8 @@ export const fetchProjects = async (params = {}) => {
         if (areaId) queryParams.append("areaId", areaId);
         // Add projectType to query params (backend may support it in future, or we filter on frontend)
         if (projectType) queryParams.append("projectType", projectType);
+        // Add projectStatus to query params (for filtering by off-plan, under-construction, under-maintenance)
+        if (projectStatus) queryParams.append("projectStatus", projectStatus);
 
         // Call API
         const response = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`);
@@ -130,25 +133,27 @@ export const fetchProjects = async (params = {}) => {
         if (response.data && response.data.projects) {
             let projectsData = response.data.projects || [];
 
-            // Backend now filters by projectType, but we keep frontend filtering as fallback
+            // Backend now filters by projectType (including special handling for "Luxury" and "Industrial")
+            // Keep frontend filtering as fallback for other cases
             if (projectType) {
                 const projectTypeLower = projectType.toLowerCase();
                 projectsData = projectsData.filter(p => {
+                    // Special handling: "Luxury" filters by luxury field
+                    if (projectTypeLower === "luxury") {
+                        return p.luxury === true;
+                    }
+
+                    // Special handling: "Industrial" filters by industrial field
+                    if (projectTypeLower === "industrial") {
+                        return p.industrial === true;
+                    }
+
+                    // Standard projectType matching
                     if (!p.projectType) return false;
                     const pType = p.projectType.toLowerCase();
 
                     // Exact match
                     if (pType === projectTypeLower) return true;
-
-                    // Support "Luxury Residences" -> "Residential" mapping
-                    if (projectTypeLower === "luxury residences" || projectTypeLower === "luxury") {
-                        return pType === "residential";
-                    }
-
-                    // Support "Industrial"
-                    if (projectTypeLower === "industrial") {
-                        return pType === "industrial";
-                    }
 
                     return false;
                 });
@@ -228,6 +233,46 @@ export const fetchProjectsByType = async (projectType, options = {}) => {
             limit,
             status,
             projectType,
+        });
+
+        return result.projects || [];
+    } catch (error) {
+        throw {
+            message: error.response?.data?.message || error.message || "Failed to load projects",
+            status: error.response?.status,
+            data: error.response?.data,
+        };
+    }
+};
+
+/**
+ * Fetch projects by projectStatus (for upcoming page: off-plan, under-construction, under-maintenance)
+ * @param {string|Array<string>} projectStatuses - Project status(es): "off-plan", "under-construction", "under-maintenance"
+ * @param {Object} options - Additional options
+ * @param {number} options.page - Page number (default: 1)
+ * @param {number} options.limit - Items per page (default: 50)
+ * @param {string} options.status - Project status (default: "active")
+ * @returns {Promise<Array>} Array of formatted project objects
+ */
+export const fetchProjectsByStatus = async (projectStatuses, options = {}) => {
+    try {
+        const {
+            page = 1,
+            limit = 50,
+            status = "active",
+        } = options;
+
+        // Convert array to comma-separated string if needed
+        const projectStatusParam = Array.isArray(projectStatuses) 
+            ? projectStatuses.join(",") 
+            : projectStatuses;
+
+        // Fetch projects and filter by projectStatus
+        const result = await fetchProjects({
+            page,
+            limit,
+            status,
+            projectStatus: projectStatusParam,
         });
 
         return result.projects || [];

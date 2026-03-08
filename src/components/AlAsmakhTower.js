@@ -15,6 +15,8 @@ export default function AlAsmakhTower() {
   const [touchEnd, setTouchEnd] = useState(null);
   const [areas, setAreas] = useState([]);
   const [loadingAreas, setLoadingAreas] = useState(true);
+  const [projects, setProjects] = useState([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
   const areaCarouselRef = useRef(null);
   const autoSlideIntervalRef = useRef(null);
 
@@ -48,6 +50,29 @@ export default function AlAsmakhTower() {
     const areaName = typeof area === "object" ? area.name : area;
     const slug = getAreaSlug(areaName);
     router.push(`/towerdetails/${slug}`);
+  };
+
+  // Function to handle project click - navigate to project details page
+  const handleProjectClick = (project) => {
+    // Check if project exists
+    if (!project) {
+      console.warn("Project is undefined or null");
+      return;
+    }
+
+    // If project is an object with id, navigate to project details page
+    if (typeof project === "object" && project.id) {
+      router.push(`/projects/${project.id}`);
+      return;
+    }
+
+    // Fallback: if project is just an ID string
+    if (typeof project === "string") {
+      router.push(`/projects/${project}`);
+      return;
+    }
+
+    console.warn("Project object missing id:", project);
   };
 
   // Fetch areas from API
@@ -96,42 +121,51 @@ export default function AlAsmakhTower() {
     fetchAreas();
   }, []);
 
+  // Fetch projects from API
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoadingProjects(true);
+        const apiUrl = getApiUrl("api/v1/projects/list");
+        const response = await fetch(apiUrl);
 
-  const projects = [
-    {
-      title: "AL ASMAKH TOWER",
-      location: "West Bay",
-      subheading: "A Future-Focused Tower with Heritage at Its Core.",
-      description:
-        "An iconic GSAS 4-star certified office tower in West Bay that brings together ARDEC's legacy, sustainable design, and smart technology to create a long-term base for leading organisations in Qatar. Al Asmakh Tower reflects how ARDEC thinks about commercial real estate: combine architectural presence with spaces that work in real life. Positioned along Doha's business skyline, the tower offers flexible floorplates and 40 commercial units that can adapt as companies grow, restructure, or expand regional teams.",
-      img: "/mainScreen/407.1.png",
-    },
-    {
-      title: "BEVERLY HILLS TOWER",
-      location: "West Bay",
-      subheading: "Serviced City Living, with Hotel-Style Comfort Every Day.",
-      description:
-        "A 30-storey residential tower in West Bay offering 318 fully furnished apartments, premium wellness facilities, and 24-hour concierge services in one centrally connected address. Beverly Hills Tower is designed for those who want hotel-style ease without losing the feeling of home. From the moment you arrive, a staffed lobby, round-the-clock concierge, and secure access create a sense of being looked after, whether you are staying for a year or a longer assignment in Doha.",
-      img: "/images_pages/BEVALIHILLS_TOWER.jpg",
-    },
-    {
-      title: "FLORESTA TOWER, THE PEARL",
-      location: "The Pearl",
-      subheading: "Sea Views, Smart Living, and a Private Beach Below.",
-      description:
-        "A waterfront tower on The Pearl offering 102 luxury apartments, panoramic sea views, smart home technology, and private beach access in one of Qatar's most recognisable island settings. Floresta Tower is designed for those who crave the calm of a private shoreline with the convenience of tower living. Residences open out to sweeping views of the sea and marina, creating a daily connection to the water that is rare even on The Pearl. At ground level, residents enjoy direct access to a private beach area, turning early morning swims and sunset walks into a natural part of life at home.",
-      img: "/images_pages/THEPEARL.jpg"
-    },
-    {
-      title: "LES MAISONS BLANCHES",
-      location: "Lusail",
-      subheading: "A Neighbourhood Feel, with City Life on Your Doorstep.",
-      description:
-        "An exclusive compound of villas and apartments, thoughtfully planned around a central clubhouse, with everyday services, and easy access to Lusail's key destinations. Les Maisons Blanches is for residents who want the feel of a neighbourhood, without losing the benefits of a central Lusail location. Inside the gates, the focus is on quiet streets, defined entrances, and homes that feel spacious and private. Outside, the city's newest retail and entertainment districts are only a short drive away.",
-      img: "/images_pages/LUSIL.jpg",
+        if (!response.ok) {
+          throw new Error(`Failed to fetch projects: ${response.status}`);
+        }
 
-    }
-  ];
+        const data = await response.json();
+
+        // Map API response to component data structure
+        // API returns: { projects: [{ project_id, project_name, project_title, project_image, location, subheading, description }], count }
+        if (data.projects && Array.isArray(data.projects)) {
+          const mappedProjects = data.projects.map((project) => ({
+            id: project.project_id,
+            title: project.project_name || "",
+            location: project.location || "",
+            subheading: project.subheading || "",
+            description: project.description || "",
+            img: project.project_image || "/mainScreen/407.1.png", // Fallback image
+          }));
+          setProjects(mappedProjects);
+          // Reset active slide when projects are loaded
+          setActiveSlide(0);
+        } else {
+          // Fallback to empty array if no projects
+          setProjects([]);
+          setActiveSlide(0);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        // Fallback to empty array on error
+        setProjects([]);
+        setActiveSlide(0);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   // Function to reset auto-slide interval
   const resetAutoSlide = () => {
@@ -145,8 +179,10 @@ export default function AlAsmakhTower() {
 
   // Auto-advance slides every 5 seconds
   useEffect(() => {
-    // Set up initial interval
-    resetAutoSlide();
+    // Only set up interval if we have projects
+    if (projects.length > 0) {
+      resetAutoSlide();
+    }
 
     // Cleanup on unmount
     return () => {
@@ -154,7 +190,7 @@ export default function AlAsmakhTower() {
         clearInterval(autoSlideIntervalRef.current);
       }
     };
-  }, []); // Run only once on mount
+  }, [projects]); // Re-run when projects change
 
   // Function to handle manual slide change (resets the auto-slide timer)
   const handleSlideChange = (index) => {
@@ -200,6 +236,27 @@ export default function AlAsmakhTower() {
     setCurrentAreaIndex((prev) => (prev === areas.length - 1 ? 0 : prev + 1));
   };
 
+  // Show loading or empty state if no projects
+  if (loadingProjects) {
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Loading projects...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <section className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">No projects available</p>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="min-h-screen">
       {/* === PROJECT SECTION === */}
@@ -213,8 +270,8 @@ export default function AlAsmakhTower() {
           className="relative w-full h-screen"
         >
           <Image
-            src={projects[activeSlide].img || "/407.png"}
-            alt={projects[activeSlide].title}
+            src={projects[activeSlide]?.img || "/407.png"}
+            alt={projects[activeSlide]?.title || "Project"}
             fill
             className="object-cover"
             priority
@@ -244,13 +301,13 @@ export default function AlAsmakhTower() {
               mb-2
             "
                 >
-                  {projects[activeSlide].title}
+                  {projects[activeSlide]?.title || ""}
                 </h2>
 
                 {/* SUBHEADING */}
-                {projects[activeSlide].subheading && (
+                {projects[activeSlide]?.subheading && (
                   <p className="text-[#001730] text-xs mb-2">
-                    {projects[activeSlide].subheading}
+                    {projects[activeSlide]?.subheading}
                   </p>
                 )}
 
@@ -260,17 +317,19 @@ export default function AlAsmakhTower() {
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <MapPin size={14} className="text-[#001730]" />
                   <span className="text-[#001730] text-sm">
-                    {projects[activeSlide].location}
+                    {projects[activeSlide]?.location || ""}
                   </span>
                 </div>
 
                 {/* DESCRIPTION */}
                 <p className="text-[#001730] text-sm leading-relaxed mb-4">
-                  {projects[activeSlide].description}
+                  {projects[activeSlide]?.description.slice(0, 400) + "..." || ""}
                 </p>
 
                 {/* BUTTON */}
                 <button
+                  onClick={() => handleProjectClick(projects[activeSlide])}
+                  disabled={!projects[activeSlide] || !projects[activeSlide]?.id}
                   className="
               mx-auto
               flex items-center gap-2
@@ -284,6 +343,8 @@ export default function AlAsmakhTower() {
               shadow-md
               hover:bg-[#002d52]
               transition
+              disabled:opacity-50
+              disabled:cursor-not-allowed
             "
                 >
                   <span>Details</span>
@@ -330,8 +391,8 @@ export default function AlAsmakhTower() {
           className="relative w-full h-full min-h-[500px]"
         >
           <Image
-            src={projects[activeSlide].img || "/407.png"}
-            alt={projects[activeSlide].title}
+            src={projects[activeSlide]?.img || "/407.png"}
+            alt={projects[activeSlide]?.title || "Project"}
             fill
             className="object-cover"
             priority
@@ -354,18 +415,18 @@ export default function AlAsmakhTower() {
               fontSize: "clamp(20px, 2.5vw, 28px)",
             }}
           >
-            {projects[activeSlide].title}
+            {projects[activeSlide]?.title || ""}
           </h2>
 
           {/* SUBHEADING */}
-          {projects[activeSlide].subheading && (
+          {projects[activeSlide]?.subheading && (
             <p
               className="text-gray font-light mb-3"
               style={{
-                fontSize: "clamp(12px, 0.8vw, 18px)",
+                fontSize: "clamp(10px, 0.8vw, 15px)",
               }}
             >
-              {projects[activeSlide].subheading}
+              {projects[activeSlide]?.subheading}
             </p>
           )}
 
@@ -387,7 +448,7 @@ export default function AlAsmakhTower() {
                 fontSize: "clamp(14px, 1vw, 20px)",
               }}
             >
-              {projects[activeSlide].location}
+              {projects[activeSlide]?.location || ""}
             </span>
           </div>
 
@@ -396,17 +457,19 @@ export default function AlAsmakhTower() {
             className="mb-6 mr-60 lg:mb-16 leading-relaxed"
             style={{
               color: "#919191",
-              fontSize: "clamp(14px, 0.9vw, 18px)",
+              fontSize: "clamp(12px, 0.9vw, 18px)",
               lineHeight: "1.65",
             }}
           >
-            {projects[activeSlide].description}
+            {projects[activeSlide]?.description.slice(0, 700) + "..." || ""}
           </p>
 
           {/* BUTTON */}
           <div className="flex justify-center md:justify-start">
             <button
-              className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md hover:bg-[#002d52] transition-colors"
+              onClick={() => handleProjectClick(projects[activeSlide])}
+              disabled={!projects[activeSlide] || !projects[activeSlide]?.id}
+              className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md hover:bg-[#002d52] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 fontSize: "clamp(12px, 0.75vw, 16px)",
               }}

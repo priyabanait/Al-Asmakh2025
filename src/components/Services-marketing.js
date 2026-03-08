@@ -53,23 +53,27 @@ export default function Rent() {
     },
   ];
   const blogs = [
-    {
-      title: "Award for Best Sales",
-      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
-      image: "/Image (5).png",
-    },
-    {
-      title: "Award for Best Sales",
-      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
-      image: "/Image (5).png",
-    },
-    {
-      title: "Award for Best Sales",
-      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
-      image: "/Image (5).png",
-    },
 
 
+
+
+    {
+      title: "Most influential marketing department in Qatari Real Estate",
+      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
+      image: "/rep_img/Award.png",
+    },
+    {
+      title: "Most leads’ generating marketing department in Qatari Real Estate",
+      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
+      image: "/rep_img/Award.png",
+
+    },
+    {
+      title: "13th Annual Luxury Lifestyle Awards 2021",
+      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
+      image: "/rep_img/Award.png",
+
+    },
   ];
 
   const scrollRef = useRef(null);
@@ -101,10 +105,11 @@ export default function Rent() {
       <section className="relative w-full bg-gray-200 min-h-screen flex items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
-          src="/Image (15).png"
+                           src="/rep_img/Marketing.jpeg"
+
           alt="City Skyline"
           fill
-          className="object-fill block lg:hidden"
+          className="object-fill "
           priority
         />
 
@@ -164,15 +169,16 @@ export default function Rent() {
           </div>
         </div>
 
-        <div className="absolute right-0 bottom-0 h-full w-[40%] hidden md:block">
+        {/* <div className="absolute right-0 bottom-0 h-full w-[40%] hidden md:block">
           <Image
-            src="/Image (15).png"
+                                       src="/rep_img/Marketing.jpeg"
+
             alt="Building"
             fill
             className="object-contain object-bottom"
             style={{ objectPosition: 'bottom' }}
           />
-        </div>
+        </div> */}
 
         {/* 🔍 Search Bar (Half on BG, Half outside if needed) */}
 

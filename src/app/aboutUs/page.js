@@ -61,7 +61,7 @@ const HeroSection = ({ isActive }) => {
     <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
       {/* Background Image */}
       <Image
-                  src="/images_pages/aboutus.jpg"
+               src="/rep_img/About.png"
         alt="City Skyline"
         fill
         className="object-cover"
@@ -644,21 +644,15 @@ export default function AboutUsPage() {
 <section className="relative w-full flex items-center py-6 lg:py-12 min-h-screen">
         {/* Background Image */}
         <Image
-          src="/mainScreen/Contact-us.jpeg"
-          alt="Background"
+                  src="/images_pages/aboutus.jpg"
+                  alt="Background"
           fill
           className="object-cover"
         />
 
         {/* Content Container */}
-        <div className="relative z-10 flex flex-col lg:flex-row w-full h-full px-4 lg:px-14 items-center justify-between py-6 lg:py-0">
-          {/* Left Side Title - Overlaid on background */}
-          <div className="text-white lg:w-1/2 flex flex-col mt-6 lg:mt-40 mb-4 lg:mb-0 h-full">
-            <h2 className="text-base lg:text-2xl text-center lg:text-left mb-2 lg:mb-3">
-              How Can We Help You Today?
-            </h2>
-            <div className="h-[0.5px] w-[50%] bg-gray-300 mx-auto lg:mx-0 mb-3 lg:mb-4"></div>
-          </div>
+        <div className="relative z-10 flex flex-col lg:flex-row w-full h-full px-4 lg:px-14 items-center justify-center py-6 lg:py-0">
+        
 
           {/* Right Side - Form Panel and Map */}
           <div className="lg:w-1/2 max-w-2xl w-full flex flex-col">

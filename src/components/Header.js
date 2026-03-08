@@ -90,6 +90,9 @@ export default function Header() {
       { label: 'Marketing', path: '/services/marketing' },
       { label: 'Facilities Management', path: '/services/facilities-management' },
       // { label: 'Become an Agent', path: '/services/become-an-agent' },
+
+      { label:'Transaction Advisory', path: 'https://www.aredcadvisory.com', external: true },
+
       { label: 'Other Services', path: '/other-services' },
     ],
     LISTINGS: [
@@ -101,8 +104,8 @@ export default function Header() {
       { label: 'Luxury Residences', path: '/listings/luxury' },
       { label: 'Commercial', path: '/commercial' },
       { label: 'Industrial', path: '/industrial' },
-      { label: 'Mixed-Use', path: '/development/mixed-use' },
-      { label: 'Upcoming', path: '/development/upcoming' },
+      { label: 'Mixed-Use', path: '/listings/mixed-use' },
+      { label: 'Upcoming', path: '/listings/upcoming' },
     ],
     CONTACT: [
       { label: 'Our Agents', path: '/contact' },

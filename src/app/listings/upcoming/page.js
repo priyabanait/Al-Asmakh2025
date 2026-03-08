@@ -4,29 +4,31 @@ import { useState, useEffect } from 'react'
 import Header from '../../../components/Header'
 import Services from '../../../components/Services-lease'
 import Footer from '../../../components/Footer'
-import { fetchProjectsByType } from '../../../utils/projectapi'
+import { fetchProjectsByStatus } from '../../../utils/projectapi'
 
-export default function LuxuryPage() {
+export default function UpcomingPage() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState([
     { value: "0", label: "Total Projects" },
     { value: "0", label: "Completed" },
+    { value: "0", label: "Ongoing" },
     { value: "0", label: "Upcoming" },
-    { value: "0", label: "Owned" },
-
   ])
 
   useEffect(() => {
     const loadProjects = async () => {
       try {
         setLoading(true)
-        // Fetch projects with projectType "Luxury" for the luxury listings page
-        const fetchedProjects = await fetchProjectsByType("Luxury", {
-          page: 1,
-          limit: 100, // Get more projects to filter properly
-          status: "active",
-        })
+        // Fetch projects with projectStatus: off-plan, under-construction, under-maintenance
+        const fetchedProjects = await fetchProjectsByStatus(
+          ["off-plan", "under-construction", "under-maintenance"],
+          {
+            page: 1,
+            limit: 100, // Get more projects to filter properly
+            status: "active",
+          }
+        )
 
         setProjects(fetchedProjects)
 
@@ -35,13 +37,12 @@ export default function LuxuryPage() {
         const completed = fetchedProjects.filter(p => p.statusType === "completed").length
         const ongoing = fetchedProjects.filter(p => p.statusType === "ongoing").length
         const upcoming = fetchedProjects.filter(p => p.statusType === "upcoming" || (!p.statusType || p.statusType === "")).length
-        const owned = fetchedProjects.filter(p => p.projectOwnership && p.projectOwnership.toLowerCase() === "owned").length
 
         setStats([
           { value: total.toString().padStart(2, "0"), label: "Total Projects" },
           { value: completed.toString().padStart(2, "0"), label: "Completed" },
+          { value: ongoing.toString().padStart(2, "0"), label: "Ongoing" },
           { value: upcoming.toString().padStart(2, "0"), label: "Upcoming" },
-          { value: owned.toString().padStart(2, "0"), label: "Owned" },
         ])
       } catch (error) {
         console.error("Error fetching projects:", error)
@@ -62,8 +63,7 @@ export default function LuxuryPage() {
         backgroundImage="/images_pages/services lease.png"
         stats={stats}
         filterButtons={["LUXURY", "COMMERCIAL", "INDUSTRIAL"]}
-        category="luxury"
-        luxury="true"
+        category="upcoming"
         projects={projects}
         loading={loading}
         useProjects={true}
