@@ -106,7 +106,7 @@ export default function ContactHeadOffice({ isActive }) {
       <section className="relative w-full min-h-screen lg:min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"
+          src="/images_pages/ContactBg.jpeg"
           alt="City Skyline"
           fill
           className="object-cover"

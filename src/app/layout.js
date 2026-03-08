@@ -6,6 +6,7 @@ import { AuthProvider } from '../contexts/AuthContext'
 import { CompareProvider } from '../contexts/CompareContext'
 import { AlertProvider } from '../contexts/AlertContext'
 import QueryProvider from '../providers/QueryProvider'
+import VideoOverlay from '../components/VideoOverlay'
 import { useEffect } from 'react'
 
 export default function RootLayout({ children }) {
@@ -31,6 +32,8 @@ export default function RootLayout({ children }) {
             <AuthProvider>
               <CompareProvider>
                 <AlertProvider>
+                  {/* ✅ Video Overlay - Shows on page load */}
+                  <VideoOverlay />
                   {/* ✅ UNIVERSAL CONTAINER */}
                   <main className="mx-auto w-full max-w-auto px-0 md:px-0">
                     {children}

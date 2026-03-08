@@ -15,11 +15,14 @@ import MoreFiltersModal from "../../../components/MoreFiltersModal";
 import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath,  } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
 
-import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch } from "react-icons/fa";
+import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch, FaRulerCombined } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 import Header from "../../../components/Header";
 import LoadingOverlay from "@/components/LoadingOverlay";
+
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
 export default function Sale({ priceType: initialPriceType = "rent" }) {
     const params = useParams();
     const projectId = params?.id;
@@ -1051,8 +1054,8 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                 ? encodeURIComponent(locationParts.join(', ') + ', Qatar')
                 : encodeURIComponent('Doha, Qatar');
               
-              // Use Google Maps embed with search query (standard format, no API key needed)
-              return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en`;
+              // Use Google Maps embed with search query
+              return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&key=${GOOGLE_MAPS_API_KEY}`;
             })()}
             width="100%"
             height="100%"
@@ -1288,37 +1291,19 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                         <div className="grid grid-cols-3 gap-2 text-[#001730] text-xs sm:text-sm mb-4">
                           {/* Beds */}
                           <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
-                            <Image
-                              src="/Icon (1).png"
-                              alt="Beds"
-                              width={14}
-                              height={14}
-                              className="w-4 h-4 flex-shrink-0"
-                            />
+                            <FaBed className="w-4 h-4 flex-shrink-0 text-[#001730]" />
                             <span className="font-medium">{prop.bedrooms || '0'}</span>
                           </div>
 
                           {/* Baths */}
                           <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
-                            <Image
-                              src="/Icon.png"
-                              alt="Baths"
-                              width={14}
-                              height={14}
-                              className="w-4 h-4 flex-shrink-0"
-                            />
+                            <FaBath className="w-4 h-4 flex-shrink-0 text-[#001730]" />
                             <span className="font-medium">{prop.bathrooms || '0'}</span>
                           </div>
 
                           {/* Area */}
                           <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
-                            <Image
-                              src="/Icon (2).png"
-                              alt="Area"
-                              width={14}
-                              height={14}
-                              className="w-4 h-4 flex-shrink-0"
-                            />
+                            <FaRulerCombined className="w-4 h-4 flex-shrink-0 text-[#001730]" />
                             <span className="font-medium truncate text-xs">{areaDisplay}</span>
                           </div>
                         </div>

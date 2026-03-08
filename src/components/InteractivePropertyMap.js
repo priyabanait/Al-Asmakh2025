@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaArrowRight } from "react-icons/fa6";
 
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
+
 export default function InteractivePropertyMap({
   properties = [],
   selectedPropertyId = null,
@@ -27,15 +30,46 @@ export default function InteractivePropertyMap({
       return;
     }
 
+    // Check if script already exists
+    const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
+    if (existingScript) {
+      // If script exists, check if Google Maps is loaded
+      if (window.google && window.google.maps) {
+        setMapLoaded(true);
+        return;
+      }
+      // If script exists but not loaded yet, wait for it
+      const checkGoogle = setInterval(() => {
+        if (window.google && window.google.maps) {
+          setMapLoaded(true);
+          clearInterval(checkGoogle);
+        }
+      }, 100);
+      return () => clearInterval(checkGoogle);
+    }
+
+    // Use the hardcoded API key directly (ensure it's always used)
+    const apiKey = GOOGLE_MAPS_API_KEY;
+    
+    if (!apiKey) {
+      console.error('Google Maps API key is missing');
+      setMapLoaded(true);
+      return;
+    }
+
+    console.log('Loading Google Maps with API key:', apiKey.substring(0, 20) + '...');
+
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || 'AIzaSyCugF4__EgYsrONbUdCxsM82BdJi1FfxUM'}&libraries=places`;
+    // Use the API key directly - make sure it's properly encoded
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(apiKey)}&libraries=places`;
     script.async = true;
     script.defer = true;
     script.onload = () => {
+      console.log('Google Maps script loaded successfully');
       setMapLoaded(true);
     };
-    script.onerror = () => {
-      console.error('Failed to load Google Maps');
+    script.onerror = (error) => {
+      console.error('Failed to load Google Maps:', error);
       setMapLoaded(true); // Still try to initialize with fallback
     };
     document.head.appendChild(script);
@@ -111,18 +145,8 @@ export default function InteractivePropertyMap({
     markersRef.current = [];
     infoWindowsRef.current = [];
 
-    // Create markers for each property
-    properties.forEach((property) => {
-      const lat = property.latitude || property.lat;
-      const lng = property.longitude || property.lng || property.lon;
-
-      // Skip if no coordinates
-      if (!lat || !lng) return;
-
-      const position = {
-        lat: parseFloat(lat),
-        lng: parseFloat(lng)
-      };
+    // Helper function to create marker for a property
+    const createMarkerForProperty = (property, position) => {
 
       // Create custom marker with price
       const price = property.price || property.priceAmount || 'N/A';
@@ -156,7 +180,20 @@ export default function InteractivePropertyMap({
       // Create info window content
       const imageUrl = property.image || (property.images && property.images[0]) || "/placeholder-property.jpg";
       const propertyTitle = property.title || property.titleEn || 'Property';
-      const propertyLocation = property.location || property.locationLevel1 || '';
+      
+      // Build address from locationLevel1 and locationLevel2
+      const locationParts = [];
+      if (property.locationLevel1) locationParts.push(property.locationLevel1);
+      if (property.locationLevel2 && property.locationLevel2 !== property.locationLevel1) {
+        locationParts.push(property.locationLevel2);
+      }
+      if (property.locationLevel3 && !locationParts.includes(property.locationLevel3)) {
+        locationParts.push(property.locationLevel3);
+      }
+      const propertyLocation = locationParts.length > 0 
+        ? locationParts.join(', ') 
+        : (property.location || 'Location not specified');
+      
       const propertyPrice = property.price || property.priceAmount || 'N/A';
       const formattedPrice = typeof propertyPrice === 'number'
         ? propertyPrice.toLocaleString()
@@ -291,7 +328,7 @@ export default function InteractivePropertyMap({
         }
       });
 
-      // Show info window on hover (with delay)
+      // Show info window on hover (with delay) - shows price and address
       let hoverTimeout;
       marker.addListener('mouseover', () => {
         hoverTimeout = setTimeout(() => {
@@ -302,12 +339,63 @@ export default function InteractivePropertyMap({
 
       marker.addListener('mouseout', () => {
         clearTimeout(hoverTimeout);
-        // Don't close on mouseout, only on click elsewhere
+        // Close info window on mouseout for better UX
+        infoWindow.close();
         setHoveredPropertyId(null);
       });
 
       markersRef.current.push(marker);
       infoWindowsRef.current.push(infoWindow);
+    }; // End of createMarkerForProperty function
+
+    // Create markers for each property
+    properties.forEach((property) => {
+      let lat = property.latitude || property.lat;
+      let lng = property.longitude || property.lng || property.lon;
+
+      // If no coordinates, try to geocode using locationLevel1 and locationLevel2
+      if (!lat || !lng) {
+        // Build address string from location levels
+        const locationParts = [];
+        if (property.locationLevel1) locationParts.push(property.locationLevel1);
+        if (property.locationLevel2 && property.locationLevel2 !== property.locationLevel1) {
+          locationParts.push(property.locationLevel2);
+        }
+        if (property.locationLevel3 && !locationParts.includes(property.locationLevel3)) {
+          locationParts.push(property.locationLevel3);
+        }
+        
+        if (locationParts.length > 0) {
+          const address = locationParts.join(', ') + ', Qatar';
+          // Use Google Geocoding API to get coordinates
+          const geocoder = new window.google.maps.Geocoder();
+          geocoder.geocode({ address: address }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              const location = results[0].geometry.location;
+              const position = {
+                lat: location.lat(),
+                lng: location.lng()
+              };
+              createMarkerForProperty(property, position);
+            } else {
+              console.warn(`Geocoding failed for property ${property.id}: ${status}`);
+            }
+          });
+          // Skip this iteration, will create marker in geocoding callback
+          return;
+        } else {
+          // No location data available, skip this property
+          console.warn(`Property ${property.id} has no coordinates or location data`);
+          return;
+        }
+      }
+
+      const position = {
+        lat: parseFloat(lat),
+        lng: parseFloat(lng)
+      };
+
+      createMarkerForProperty(property, position);
     });
 
     // Center on selected property

@@ -3,8 +3,8 @@
 import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
 import { MapPin } from 'lucide-react'
-import { FaArrowRight, FaChevronUp, FaChevronDown } from 'react-icons/fa6'
-import { FaHome, FaBuilding, FaRegSquare, FaDollarSign, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp } from 'react-icons/fa'
+import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath } from 'react-icons/fa6'
+import { FaHome, FaBuilding, FaRegSquare, FaDollarSign, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBed, FaRulerCombined } from 'react-icons/fa'
 import Link from 'next/link'
 import Header from '../../../components/Header'
 import Footer from '../../../components/Footer'
@@ -13,6 +13,9 @@ import { useParams } from 'next/navigation'
 import { getApiUrl } from '@/config/api'
 import { fetchAreaComplete } from '../../../utils/areaapi'
 import { cleanHtmlDescriptionRegex } from '../../../utils/htmlUtils'
+
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
 
 export default function TowerDetailsPage() {
   const params = useParams()
@@ -542,7 +545,7 @@ export default function TowerDetailsPage() {
                     // Priority: Use lat/long if available, then location levels, then area name
                     if (area.latitude && area.longitude) {
                       // Use coordinates for precise location
-                      return `https://www.google.com/maps?q=${area.latitude},${area.longitude}&output=embed&hl=en&z=15`;
+                      return `https://www.google.com/maps?q=${area.latitude},${area.longitude}&output=embed&hl=en&z=15&key=${GOOGLE_MAPS_API_KEY}`;
                     }
                     
                     // Fallback to location string
@@ -556,7 +559,7 @@ export default function TowerDetailsPage() {
                       ? encodeURIComponent(locationParts.join(', ') + ', Qatar')
                       : encodeURIComponent((area.name || 'Doha') + ', Qatar');
                     
-                    return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en`;
+                    return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&key=${GOOGLE_MAPS_API_KEY}`;
                   })()}
                   width="100%"
                   height="100%"
@@ -660,37 +663,19 @@ export default function TowerDetailsPage() {
                                   <div className="grid grid-cols-3 gap-2 text-[#001730] text-xs sm:text-sm mb-4">
                                     {/* Beds */}
                                     <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
-                                      <Image
-                                        src="/Icon (1).png"
-                                        alt="Beds"
-                                        width={14}
-                                        height={14}
-                                        className="w-4 h-4 flex-shrink-0"
-                                      />
+                                      <FaBed className="w-4 h-4 flex-shrink-0 text-[#001730]" />
                                       <span className="font-medium">{prop.bedrooms || '0'}</span>
                                     </div>
 
                                     {/* Baths */}
                                     <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
-                                      <Image
-                                        src="/Icon.png"
-                                        alt="Baths"
-                                        width={14}
-                                        height={14}
-                                        className="w-4 h-4 flex-shrink-0"
-                                      />
+                                      <FaBath className="w-4 h-4 flex-shrink-0 text-[#001730]" />
                                       <span className="font-medium">{prop.bathrooms || '0'}</span>
                                     </div>
 
                                     {/* Area */}
                                     <div className="flex items-center justify-center gap-1.5 bg-gray-50 shadow-sm p-2 rounded-md">
-                                      <Image
-                                        src="/Icon (2).png"
-                                        alt="Area"
-                                        width={14}
-                                        height={14}
-                                        className="w-4 h-4 flex-shrink-0"
-                                      />
+                                      <FaRulerCombined className="w-4 h-4 flex-shrink-0 text-[#001730]" />
                                       <span className="font-medium truncate text-xs">{areaDisplay}</span>
                                     </div>
                                   </div>
@@ -698,7 +683,7 @@ export default function TowerDetailsPage() {
                                   <div className="w-full h-[0.5px] bg-gray-300 my-3"></div>
                                 </div>
 
-                                <div className="flex items-center justify-between gap-3 mt-2">
+                                <div className="flex items-justify-between gap-3 mt-2">
                                   <p className="text-base sm:text-lg font-bold text-[#001730]">
                                     {prop.priceAmount ? prop.priceAmount.toLocaleString() : '0'} QAR
                                   </p>
@@ -952,9 +937,12 @@ export default function TowerDetailsPage() {
                       {nearbyArea.name}
                     </h3>
                     {nearbyArea.description && (
-                      <p className="text-gray-600 text-sm line-clamp-2">
-                        {nearbyArea.description}
-                      </p>
+                      <span 
+                        className="text-gray-600 text-sm line-clamp-2 block"
+                        dangerouslySetInnerHTML={{ 
+                          __html: nearbyArea.description.replace(/<p[^>]*>/gi, '').replace(/<\/p>/gi, '') 
+                        }}
+                      />
                     )}
                   </div>
                 </Link>

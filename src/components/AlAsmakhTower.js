@@ -570,9 +570,12 @@ export default function AlAsmakhTower() {
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
                             <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[85%]">
                               {area.descriptionEn ? (
-                                <p className="text-white font-medium text-xs md:text-sm text-center block leading-relaxed line-clamp-4">
-                                  {area.descriptionEn}
-                                </p>
+                                <span 
+                                  className="text-white font-medium text-xs md:text-sm text-center block leading-relaxed line-clamp-4"
+                                  dangerouslySetInnerHTML={{ 
+                                    __html: area.descriptionEn.replace(/<p[^>]*>/gi, '').replace(/<\/p>/gi, '') 
+                                  }}
+                                />
                               ) : (
                                 <span className="text-white font-semibold text-sm md:text-base text-center block">
                                   {area.subheading && area.subheading !== area.name ? area.subheading : `Explore ${area.name}`}
@@ -657,9 +660,12 @@ export default function AlAsmakhTower() {
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 px-4">
                       <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[90%]">
                         {areas[i].descriptionEn ? (
-                          <p className="text-white font-medium text-sm lg:text-base text-center leading-relaxed line-clamp-4">
-                            {areas[i].descriptionEn}
-                          </p>
+                          <span 
+                            className="text-white font-medium text-sm lg:text-base text-center leading-relaxed line-clamp-4"
+                            dangerouslySetInnerHTML={{ 
+                              __html: areas[i].descriptionEn.replace(/<p[^>]*>/gi, '').replace(/<\/p>/gi, '') 
+                            }}
+                          />
                         ) : (
                           <div className="flex items-center gap-2">
                             <span className="text-white text-base lg:text-lg font-semibold">View More</span>
@@ -710,9 +716,12 @@ export default function AlAsmakhTower() {
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 px-4">
                       <div className="bg-white/20 backdrop-blur-md rounded-lg px-4 py-3 border border-white/30 shadow-lg max-w-[90%]">
                         {areas[i].descriptionEn ? (
-                          <p className="text-white font-medium text-sm lg:text-base text-center leading-relaxed line-clamp-4">
-                            {areas[i].descriptionEn}
-                          </p>
+                          <span 
+                            className="text-white font-medium text-sm lg:text-base text-center leading-relaxed line-clamp-4"
+                            dangerouslySetInnerHTML={{ 
+                              __html: areas[i].descriptionEn.replace(/<p[^>]*>/gi, '').replace(/<\/p>/gi, '') 
+                            }}
+                          />
                         ) : (
                           <div className="flex items-center gap-2">
                             <span className="text-white text-base lg:text-lg font-semibold">View More</span>

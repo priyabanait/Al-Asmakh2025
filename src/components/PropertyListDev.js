@@ -2,7 +2,11 @@
 
 import { MapPin, Check } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa6";
+import { FaCalendar, FaBuilding } from "react-icons/fa";
 import Link from "next/link";
+
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
 
 export default function PropertyListDev({ properties = [], viewMode = "LIST" }) {
     // Static description text
@@ -26,14 +30,16 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
     // Generate Google Maps embed URL based on property location
     const getMapUrl = (property) => {
+        const apiKeyParam = `&key=${GOOGLE_MAPS_API_KEY}`;
+        
         // Priority 1: Use exact coordinates if available
         if (property.latitude && property.longitude) {
-            return `https://www.google.com/maps?q=${property.latitude},${property.longitude}&output=embed&hl=en&z=15`;
+            return `https://www.google.com/maps?q=${property.latitude},${property.longitude}&output=embed&hl=en&z=15${apiKeyParam}`;
         }
 
         // Priority 2: Use area coordinates if available (for projects)
         if (property.area?.latitude && property.area?.longitude) {
-            return `https://www.google.com/maps?q=${property.area.latitude},${property.area.longitude}&output=embed&hl=en&z=15`;
+            return `https://www.google.com/maps?q=${property.area.latitude},${property.area.longitude}&output=embed&hl=en&z=15${apiKeyParam}`;
         }
 
         // Priority 3: Build location string from location levels
@@ -46,17 +52,17 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
 
         if (locationParts.length > 0) {
             const locationQuery = encodeURIComponent(locationParts.join(', ') + ', Qatar');
-            return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&z=15`;
+            return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&z=15${apiKeyParam}`;
         }
 
         // Priority 4: Use location string if available
         if (property.location) {
             const locationQuery = encodeURIComponent(property.location + ', Qatar');
-            return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&z=15`;
+            return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&z=15${apiKeyParam}`;
         }
 
         // Fallback: Default to Doha, Qatar
-        return `https://www.google.com/maps?q=Doha,Qatar&output=embed&hl=en&z=15`;
+        return `https://www.google.com/maps?q=Doha,Qatar&output=embed&hl=en&z=15${apiKeyParam}`;
     };
 
     if (viewMode === "MAP") {
@@ -65,7 +71,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
             <div className="hidden lg:block w-full mt-6 relative" style={{ height: "calc(100vh - 200px)", minHeight: "60vh" }}>
                 {/* Los Angeles Map */}
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
+                    src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s&key=${GOOGLE_MAPS_API_KEY}`}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -156,10 +162,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
     rounded-md px-2 py-2
   "
                                 >
-                                    <img
-                                        src="/Time.png"
-                                        className="w-4 h-4 lg:w-4 lg:h-4 xl:w-5 xl:h-5 object-contain"
-                                    />
+                                    <FaCalendar className="w-4 h-4 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-[#001730]" />
                                     <span className="lg:text-xs xl:text-sm font-semibold text-[#001730]">
                                         {property.year || new Date().getFullYear().toString()}
                                     </span>
@@ -173,10 +176,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
     rounded-md px-2 py-2
   "
                                 >
-                                    <img
-                                        src="/3_Icons Used_Project Dvt 1 (1).png"
-                                        className="w-4 h-4 lg:w-4 lg:h-4 xl:w-5 xl:h-5 object-contain"
-                                    />
+                                    <FaBuilding className="w-4 h-4 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-[#001730]" />
                                     <span className="lg:text-xs xl:text-sm font-semibold text-[#001730]">
                                         {property.units || "N/A"} <span className='text-xs text-gray-500'>Units</span>
                                     </span>

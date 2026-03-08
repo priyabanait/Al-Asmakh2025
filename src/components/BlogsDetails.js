@@ -18,7 +18,8 @@ export default function BlogHero() {
   const { data: allBlogsData, isLoading: allBlogsLoading } = useBlogs({
     page: 1,
     limit: 50,
-    publishStatus: 'Published',
+    // Removed publishStatus filter to get all blogs from API
+    // The hook will filter for Blog/Article content types and handle publishStatus internally
   });
 
   const allBlogs = allBlogsData?.blogs || [];
@@ -111,20 +112,32 @@ export default function BlogHero() {
 
       {/* BLOG CONTENT */}
       <div className="lg:px-20 px-4 py-8">
-        <h1 className="text-lg font-semibold mt-8 mb-4">
+        <h1 className="text-2xl lg:text-3xl font-semibold mt-8 mb-4 text-[#001730]">
           {blog.title}
         </h1>
+
+        {/* Category and Date Info */}
+        <div className="flex items-center gap-4 mb-6 text-sm text-gray-600">
+          {blog.category && (
+            <span className="bg-gray-100 px-3 py-1 rounded-md">{blog.category}</span>
+          )}
+          {blog.createdAt && (
+            <span>{formatDate(blog.createdAt)}</span>
+          )}
+        </div>
 
         {blog.body && (
           <div 
             className="mt-10 prose prose-lg max-w-none text-gray-700 leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: blog.body }}
+            dangerouslySetInnerHTML={{ 
+              __html: blog.body.replace(/<p[^>]*>/gi, '<div>').replace(/<\/p>/gi, '</div>') 
+            }}
           />
         )}
 
         {!blog.body && blog.description && (
           <div className="mt-10 text-gray-700 leading-relaxed space-y-4">
-            <p>{blog.description}</p>
+            <div>{blog.description}</div>
           </div>
         )}
       </div>

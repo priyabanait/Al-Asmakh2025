@@ -61,7 +61,7 @@ const HeroSection = ({ isActive }) => {
     <div className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
       {/* Background Image */}
       <Image
-        src="/64f1105774e6cfad5b7a1de490c1415c3d850ec4.jpg"
+                  src="/images_pages/aboutus.jpg"
         alt="City Skyline"
         fill
         className="object-cover"

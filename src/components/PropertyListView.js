@@ -4,11 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { MapPin, ArrowRight } from "lucide-react";
 import ShareButton from "./ShareButton";
-import { FaArrowRight } from "react-icons/fa6";
+import { FaArrowRight, FaBath } from "react-icons/fa6";
 import { Md360 } from "react-icons/md";
 import { FaMapLocationDot } from "react-icons/fa6";
 import Link from "next/link";
-import { FaList } from "react-icons/fa";
+import { FaList, FaBed, FaRulerCombined } from "react-icons/fa";
 import CompareButton from "./CompareButton";
 import CompareModal from "./CompareModal";
 import InteractivePropertyMap from "./InteractivePropertyMap";
@@ -165,37 +165,19 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                 <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
                                     {/* Beds */}
                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                        <Image
-                                            src="/Icon (1).png"
-                                            alt="Beds"
-                                            width={16}
-                                            height={16}
-                                            className="w-[18px] h-[18px]"
-                                        />
+                                        <FaBed className="w-[18px] h-[18px] text-[#001730]" />
                                         <span className="text-xs lg:text-sm">{property.bedrooms}</span>
                                     </div>
 
                                     {/* Baths */}
                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                        <Image
-                                            src="/Icon.png"
-                                            alt="Baths"
-                                            width={16}
-                                            height={16}
-                                            className="w-[18px] h-[18px]"
-                                        />
+                                        <FaBath className="w-[18px] h-[18px] text-[#001730]" />
                                         <span className="text-xs lg:text-sm">{property.bathrooms}</span>
                                     </div>
 
                                     {/* Area */}
                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                        <Image
-                                            src="/Icon (2).png"
-                                            alt="Area"
-                                            width={16}
-                                            height={16}
-                                            className="w-[18px] h-[18px]"
-                                        />
+                                        <FaRulerCombined className="w-[18px] h-[18px] text-[#001730]" />
                                         <span className="text-xs lg:text-sm">{property.area}</span>
                                     </div>
                                 </div>
@@ -270,37 +252,19 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                 <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
                                                     {/* Beds */}
                                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                                        <Image
-                                                            src="/Icon (1).png"
-                                                            alt="Beds"
-                                                            width={16}
-                                                            height={16}
-                                                            className="w-[18px] h-[18px]"
-                                                        />
+                                                        <FaBed className="w-[18px] h-[18px] text-[#001730]" />
                                                         <span className="text-xs lg:text-sm">{property.bedrooms}</span>
                                                     </div>
 
                                                     {/* Baths */}
                                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                                        <Image
-                                                            src="/Icon.png"
-                                                            alt="Baths"
-                                                            width={16}
-                                                            height={16}
-                                                            className="w-[18px] h-[18px]"
-                                                        />
+                                                        <FaBath className="w-[18px] h-[18px] text-[#001730]" />
                                                         <span className="text-xs lg:text-sm">{property.bathrooms}</span>
                                                     </div>
 
                                                     {/* Area */}
                                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                                        <Image
-                                                            src="/Icon (2).png"
-                                                            alt="Area"
-                                                            width={16}
-                                                            height={16}
-                                                            className="w-[18px] h-[18px]"
-                                                        />
+                                                        <FaRulerCombined className="w-[18px] h-[18px] text-[#001730]" />
                                                         <span className="text-xs lg:text-sm">{property.area}</span>
                                                     </div>
                                                 </div>
@@ -355,6 +319,9 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                 }}
                             />
                         </div>
+
+
+
                     </div>
                 </div>
             )}

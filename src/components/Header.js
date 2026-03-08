@@ -112,7 +112,7 @@ export default function Header() {
       { label: 'Blogs', path: '/listings/blogs' },
       { label: 'Articles', path: '/listings/blogs' },
       { label: 'FAQ', path: '/listings/faq' },
-      {label:'Career', path: '/listings/career'}
+      // {label:'Career', path: '/listings/career'}
 
     ],
   }

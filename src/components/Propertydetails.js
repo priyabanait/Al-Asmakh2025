@@ -9,6 +9,9 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../utils/propertyapi";
 
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
+
 function PropertyDetailsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -709,8 +712,8 @@ function PropertyDetailsContent() {
                     ? encodeURIComponent(locationParts.join(', ') + ', Qatar')
                     : encodeURIComponent('Doha, Qatar');
                   
-                  // Use Google Maps embed with search query (standard format, no API key needed)
-                  return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en`;
+                  // Use Google Maps embed with search query
+                  return `https://www.google.com/maps?q=${locationQuery}&output=embed&hl=en&key=${GOOGLE_MAPS_API_KEY}`;
                 })()}
                 width="100%"
                 height="100%"
@@ -1045,35 +1048,17 @@ function PropertyDetailsContent() {
                       <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
 
                         <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                          <Image
-                            src="/Icon (1).png"
-                            alt="Beds"
-                            width={14}
-                            height={14}
-                            className="lg:w-[18px] lg:h-[18px]"
-                          />
+                          <FaBed className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
                           <span>{formatted.beds}</span>
                         </div>
 
                         <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                          <Image
-                            src="/Icon.png"
-                            alt="Baths"
-                            width={14}
-                            height={14}
-                            className="lg:w-[18px] lg:h-[18px]"
-                          />
+                          <FaBath className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
                           <span>{formatted.baths}</span>
                         </div>
 
                         <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                          <Image
-                            src="/Icon (2).png"
-                            alt="Area"
-                            width={14}
-                            height={14}
-                            className="lg:w-[18px] lg:h-[18px]"
-                          />
+                          <FaRulerCombined className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
                           <span>{formatted.area}</span>
                         </div>
 

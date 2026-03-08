@@ -230,14 +230,16 @@ export default function Profit() {
   // Use React Query hook for blogs - automatically cached and fast!
   // React Query checks cache → IF data exists & fresh → return instantly (0ms)
   // IF stale → call API → API checks Redis → Redis hit → return in <10ms
+  // Fetching from: https://api.alasmakhrealestate.com/marketing?page=1&limit=20
   const { data: blogsData, isLoading: blogsLoading, error: blogsError } = useBlogs({
     page: 1,
     limit: 20,
-    publishStatus: 'Published',
+    // Removed publishStatus filter to get all blogs from API
+    // The hook will filter for Blog/Article content types and handle publishStatus internally
   });
 
-  // Extract blogs and limit to 3 for display
-  const blogs = (blogsData?.blogs || []).slice(0, 3);
+  // Extract blogs - show all fetched blogs (not limited to 3)
+  const blogs = blogsData?.blogs || [];
 
   const [blogStartIndex, setBlogStartIndex] = useState(0);
   const [showAllBlogs, setShowAllBlogs] = useState(false);
@@ -246,9 +248,13 @@ export default function Profit() {
 
   // Get visible blogs for current slide (desktop)
   const visibleBlogs = [];
-  for (let i = 0; i < blogsPerSlide; i++) {
-    const index = (blogStartIndex + i) % blogs.length;
-    visibleBlogs.push(blogs[index]);
+  if (blogs.length > 0) {
+    for (let i = 0; i < Math.min(blogsPerSlide, blogs.length); i++) {
+      const index = (blogStartIndex + i) % blogs.length;
+      if (blogs[index]) {
+        visibleBlogs.push(blogs[index]);
+      }
+    }
   }
 
   // Get current blog slide index for dots

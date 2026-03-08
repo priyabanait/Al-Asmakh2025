@@ -9,6 +9,9 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../../utils/propertyapi";
 
+// Google Maps API Key
+const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
+
 function PropertyDetailsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -596,7 +599,7 @@ function PropertyDetailsContent() {
                         {/* Map Box */}
                         <div className="mt-4 sm:mt-6 bg-white rounded-[5px] shadow p-0 h-[250px] sm:h-[300px] overflow-hidden">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.1161406535!2d72.74109735859375!3d19.082197839287853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63f497d4a63%3A0xdeb6b3fbbf7c9f1!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000"
+                                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.1161406535!2d72.74109735859375!3d19.082197839287853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63f497d4a63%3A0xdeb6b3fbbf7c9f1!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1700000000000&key=${GOOGLE_MAPS_API_KEY}`}
                                 width="100%"
                                 height="100%"
                                 style={{ border: 0 }}
@@ -872,35 +875,17 @@ function PropertyDetailsContent() {
                                             <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
 
                                                 <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                                                    <Image
-                                                        src="/Icon (1).png"
-                                                        alt="Beds"
-                                                        width={14}
-                                                        height={14}
-                                                        className="lg:w-[18px] lg:h-[18px]"
-                                                    />
+                                                    <FaBed className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
                                                     <span>{formatted.beds}</span>
                                                 </div>
 
                                                 <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                                                    <Image
-                                                        src="/Icon.png"
-                                                        alt="Baths"
-                                                        width={14}
-                                                        height={14}
-                                                        className="lg:w-[18px] lg:h-[18px]"
-                                                    />
+                                                    <FaBath className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
                                                     <span>{formatted.baths}</span>
                                                 </div>
 
                                                 <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                                                    <Image
-                                                        src="/Icon (2).png"
-                                                        alt="Area"
-                                                        width={14}
-                                                        height={14}
-                                                        className="lg:w-[18px] lg:h-[18px]"
-                                                    />
+                                                    <FaRulerCombined className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
                                                     <span>{formatted.area}</span>
                                                 </div>
 

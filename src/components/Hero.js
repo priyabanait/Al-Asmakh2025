@@ -158,7 +158,7 @@ export default function Hero() {
             </button>
 
             <button
-              onClick={() => router.push("/listings/sell")}
+              onClick={() => router.push("/listings/listing-sale")}
               style={{ backgroundColor: "#001730", borderRadius: "3px", height: "35px" }}
               className="w-[120px] sm:w-[130px] md:w-[140px] lg:w-[160px] flex items-center justify-center 
                      px-2 py-2 text-white text-[11px] md:text-[12px] lg:text-[13px]

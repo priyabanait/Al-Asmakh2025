@@ -67,7 +67,7 @@ export default function MeetOurAgents() {
       <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
         {/* Background Image */}
         <Image
-          src="/WhatsApp Image 2025-11-08 at 10.47.12 PM.jpeg"
+          src="/images_pages/ContactBg.jpeg"
           alt="City Skyline"
           fill
           className="object-cover"
