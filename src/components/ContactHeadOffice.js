@@ -120,11 +120,11 @@ export default function ContactHeadOffice({ isActive }) {
         <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 md:px-8">
           <div className="glass-effect rounded-md px-6 md:px-10 py-8 md:py-20 shadow-lg max-w-[900px] mx-auto text-center">
             <h1 className="text-[26px] text-white  mb-2">
-              CONTACT OUR HEAD OFFICE
+              Get in Touch with Our Head Office
             </h1>
             <div className="w-[40%] mt-5  lg:w-[40%] h-[0.5px]  bg-gray-300 mb-3 md:mb-4 mx-auto"></div>
             <p className="subheading text-white/80 font-medium">
-              Get in touch with our head office team for corporate inquiries, partnerships, and general information.
+            For corporate enquiries, partnerships, leasing questions, or general information, our head office team is here to help and point you to the right contact.
             </p>
           </div>
         </div>
@@ -148,7 +148,7 @@ export default function ContactHeadOffice({ isActive }) {
       </section>
 
       {/* Contact Cards Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-2 px-2 sm:px-6 mt-4 lg:px-8 bg-white">
         <div className="mx-auto">
           {/* Mobile Version - Two Cards Stacked (Email and Phone) */}
           <div className="block lg:hidden space-y-4 mb-8">
@@ -269,7 +269,7 @@ export default function ContactHeadOffice({ isActive }) {
           </div>
 
           {/* Desktop Version - Four Cards Grid */}
-          <div className="hidden lg:grid grid-cols-4 gap-2 mb-8">
+          <div className="hidden lg:grid grid-cols-4 gap-2 ">
             {/* Card 1: Email Contact */}
             {/* Card 1: Email Contact */}
             <div className="bg-[#001730] rounded-lg p-6 text-center text-white shadow-lg">
@@ -396,8 +396,159 @@ export default function ContactHeadOffice({ isActive }) {
             </p>
           </div>
 
+        
+        </div>
+      </section>
+
+
+      <section className="py-0 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="mx-auto">
+          {/* Mobile Version - Two Cards Stacked (Email and Phone) */}
+          <div className="block lg:hidden space-y-4 mb-8">
+            {/* Card 1: Email Contact */}
+            <div className="bg-[#001730] rounded-lg p-6 text-white shadow-lg">
+              <div className="flex items-start gap-4">
+                {/* Icon Image */}
+               
+                {/* Content */}
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-sm font-light mb-3 items-end text-right text-white">Send us an email anytime</h3>
+                  <div className="h-[1px] bg-gray-600 mb-4"></div>
+                 
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: Phone Contact */}
+            <div className="bg-[#001730] rounded-lg p-6 text-white shadow-lg">
+              <div className="flex items-start gap-4">
+                {/* Icon Image */}
+              
+                {/* Content */}
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-sm font-light mb-3 text-white items-end text-right">Call us during business hours</h3>
+                  <div className="h-[1px] bg-gray-600 mb-4"></div>
+                  <div className="flex flex-col items-end gap-2 text-right">
+                    <span className="text-xs font-light text-white cursor-pointer" href={`tel:+974 4444 5555`} >+974 4444 5555</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`tel:+974 4444 5556`} >+974 4444 5556</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Head Office Address */}
+            <div className="bg-[#001730] rounded-lg p-6 text-white shadow-lg">
+              <div className="flex items-start gap-4">
+                {/* Icon Image */}
+              
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-sm font-light mb-3 text-white items-end text-right">Visit our head office</h3>
+                  <div className="h-[1px] bg-gray-600 mb-4"></div>
+                  <div className="flex flex-col items-end gap-1 text-right">
+                    <span className="text-xs font-light text-white cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >Tower 1, Floor 15</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >West Bay Business District</span>
+                    <span className="text-xs font-light text-white cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >Doha, Qatar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: Office Hours */}
+            <div className="bg-[#001730] rounded-lg p-6 text-white shadow-lg">
+              <div className="flex items-start gap-4">
+           
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col">
+                  <h3 className="text-sm font-light mb-3 text-white items-end text-right">Our Office Hours</h3>
+                  <div className="h-[1px] bg-gray-600 mb-4"></div>
+                  <div className="flex flex-col items-end gap-2 text-right">
+                    <div className="flex flex-col items-end">
+                      <span className="text-xs font-light text-white" href={`https://maps.app.goo.gl/1234567890`} >Friday</span>
+                      <span className="text-xs font-light text-white/70 cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >7:00 AM - 4:00 PM</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-xs font-light text-white">Sunday - Thursday</span>
+                      <span className="text-xs font-light text-white/70 cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >8:00 AM - 5:00 PM</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-xs font-light text-white">Saturday</span>
+                      <span className="text-xs font-light text-white/70 cursor-pointer" href={`https://maps.app.goo.gl/1234567890`} >Closed</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Version - Four Cards Grid */}
+          <div className="hidden lg:grid grid-cols-4 gap-2 mb-8">
+            {/* Card 1: Email Contact */}
+            <div className="bg-[#001730] rounded-lg p-6 text-center  shadow-lg">
+              <p className="text-xs font-light text-gray-300 mb-4 leading-relaxed">
+                Share your enquiry and any supporting details by email. A member of our team will review it and get back to you with the next steps.
+              </p>
+             
+            </div>
+
+            {/* Card 2: Phone Contact */}
+            <div className="bg-[#001730] rounded-lg p-6 text-center text-white shadow-lg">
+              <p className="text-xs font-light text-gray-300 mb-4 leading-relaxed">
+                Prefer to speak to someone directly? Call our head office lines during working hours, and we'll connect you with the right department.
+              </p>
+           
+            </div>
+
+            {/* Card 3: Head Office Address */}
+            <div className="bg-[#001730] rounded-lg p-6 text-white shadow-lg">
+        
+              
+              {/* Description */}
+              <p className="text-xs font-light text-gray-300 mb-4 leading-relaxed text-center">
+                Meet our team in person at our West Bay head office. We recommend calling ahead so we can make sure the right colleague is available.
+              </p>
+
+             
+            </div>
+
+            {/* Card 4: Office Hours */}
+            <div className="bg-[#001730] rounded-lg p-6 text-center text-white shadow-lg">
+            
+              {/* Description */}
+              <p className="text-xs font-light text-gray-300 mb-4 leading-relaxed">
+                We're available Sunday to Thursday during standard business hours. Weekend and public holiday hours may vary.
+              </p>
+              
+           
+            </div>
+          </div>
+
+          
+          <div
+            className="lg:hidden mb-
+    bg-[#FFE0E0] rounded-lg p-6 shadow-md
+    text-center md:text-left   /* laptop left if you want OR keep center */
+    flex flex-col md:block     /* center on mobile */
+    items-center md:items-start
+  "
+          >
+            <p className="text-sm md:text-base font-light text-center md:text-left leading-relaxed">
+              <span className="text-[#FF0000] ">Emergency Contact</span><br></br>
+              <span className="text-[#FF0000] ">
+                For urgent property-related emergencies outside business hours{" "}</span>
+              <span className="text-[#FF0000]  ml-0 md:ml-4 block md:inline">
+                +974 5555 0000
+              </span>
+              <span className="text-[#FF0000]  ml-0 md:ml-4 block md:inline">
+                24/7 Emergency Line
+              </span>
+            </p>
+          </div>
+
           {/* Emergency Contact Banner */}
-          <div className=" hidden md:block bg-[#FFE0E0] rounded-lg p-6 text-center shadow-md">
+          <div className=" hidden md:block mb-8 bg-[#FFE0E0] rounded-lg p-6 text-center shadow-md">
             <p className="text-sm md:text-base font-light">
               <span className="text-[#FF0000] ">Emergency Contact</span>
               {" - "}
@@ -410,12 +561,13 @@ export default function ContactHeadOffice({ isActive }) {
           </div>
         </div>
       </section>
+      
 
       {/* LET'S CONNECT Form Section */}
       <section className="relative py-16 px-4 sm:px-6 lg:px-8 min-h-screen overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/Abstract Design.png"
+          src="/images_pages/contact-about.jpeg"
           alt="City Skyline Background"
           fill
           className="object-fill"
@@ -452,7 +604,8 @@ export default function ContactHeadOffice({ isActive }) {
 
             {/* Introduction Paragraph */}
             <p className="subheading text-gray-600 text-center mb-8 mx-auto">
-              We're excited to connect with you and learn more about your real estate goals. Use the form below to get in touch with us.. Whether you're a prospective client, partner, or simply curious about our services, we're here to answer your questions and provide the assistance you need.
+          
+             We're excited to connect with you and learn more about your real estate goals. Use the form below to get in touch with us.. Whether you're a prospective client, partner, or simply curious about our services, we're here to answer your questions and provide the assistance you need.
             </p>
 
             {/* Contact Form */}

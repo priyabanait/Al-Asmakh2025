@@ -95,15 +95,9 @@ export default function Rent() {
       </section>
 
 
-      {/* Featured Properties Section - Using FeaturedProperties component with sales filter */}
-      <section className="w-full bg-gray-50 py-8 px-6 md:px-10">
-        <div className="text-center mb-8">
-          <p className="subheading text-gray-600 max-w-3xl mx-auto">
-            Explore a selection of homes and investment-ready properties currently available for sale. Compare key details, shortlist your favourites, and book a viewing when you're ready.
-          </p>
-        </div>
-      </section>
+   
       <FeaturedProperties 
+      title="Explore a selection of homes and investment-ready properties currently available for sale. Compare key details, shortlist your favourites, and book a viewing when you’re ready."
         priceType="sale"
         limit={4}
         status="published"

@@ -5,7 +5,7 @@ import Header from '../../../components/Header'
 import Services from '../../../components/Services-lease'
 import Footer from '../../../components/Footer'
 import { fetchProjectsByType } from '../../../utils/projectapi'
-
+import DreamPropertySection from '../../../components/DreamPropertySection'
 export default function LuxuryPage() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
@@ -68,6 +68,11 @@ export default function LuxuryPage() {
         loading={loading}
         useProjects={true}
       />
+
+<DreamPropertySection title="Let’s find the perfect property for you…" 
+  
+description="Connect with our experienced advisors for tailored guidance on locations, unit types, and opportunities within our luxury projects. No obligation. Just clear, informed support." />
+
       <Footer />
     </main>
   )

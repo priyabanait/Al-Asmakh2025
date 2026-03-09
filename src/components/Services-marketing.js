@@ -56,21 +56,20 @@ export default function Rent() {
 
 
 
-
     {
-      title: "Most influential marketing department in Qatari Real Estate",
-      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
+      title: "Award For Marketing",
+      description: "Most influential marketing department in Qatari Real Estate",
       image: "/rep_img/Award.png",
     },
     {
-      title: "Most leads’ generating marketing department in Qatari Real Estate",
-      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
+      title: "Award For Leads",
+      description: "Most leads’ generating marketing department in Qatari Real Estate",
       image: "/rep_img/Award.png",
 
     },
     {
-      title: "13th Annual Luxury Lifestyle Awards 2021",
-      description: "Recognized for exceptional lead generation and conversion rates in the premium property sector.",
+      title: "Award For Luxury",
+      description: "Most leads’ generating marketing department in Qatari Real Estate",
       image: "/rep_img/Award.png",
 
     },
@@ -203,13 +202,13 @@ export default function Rent() {
           {/* Card 1 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
+              {/* <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
                   src="/Icon Container.png"   // 🔹 replace with your image path
                   alt="icon"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </div> */}
 
               <h3 className="text-[#001730] font-semibold text-lg">
                 Strategic Analysis
@@ -224,13 +223,13 @@ export default function Rent() {
           {/* Card 2 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
+              {/* <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
                   src="/Icon Container.png"   // 🔹 replace with your image path
                   alt="icon"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </div> */}
 
               <h3 className="text-[#001730] font-semibold text-lg">
                 Premium Content Creation
@@ -244,13 +243,13 @@ export default function Rent() {
           {/* Card 3 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
+              {/* <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
                   src="/Icon Container.png"   // 🔹 replace with your image path
                   alt="icon"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </div> */}
               <h3 className="text-[#001730] font-semibold text-lg">Multi-Channel Campaign</h3>
             </div>
             <p className="list-disc list-inside text-gray-600 subheading space-y-1">
@@ -261,13 +260,13 @@ export default function Rent() {
           {/* Card 4 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
+              {/* <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
                 <img
                   src="/Icon Container.png"   // 🔹 replace with your image path
                   alt="icon"
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </div> */}
 
               <h3 className="text-[#001730] font-semibold text-lg">
                 Performance Optimization

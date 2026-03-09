@@ -27,7 +27,8 @@ export default function FeaturedProperties({
   status = "published",
   viewAllLink = "/listings/rent",
   type = "",
-  locationLevel1 = ""
+  locationLevel1 = "",
+  title =""
 }) {
   // React Query: cache and manage featured properties on the frontend
   const {
@@ -195,10 +196,10 @@ export default function FeaturedProperties({
  
   " style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
         >
-          From luxury residences to commercial developments, we deliver trusted
-          services that turn your
-
-          real estate goals into reality.
+        
+        
+       {title ? title :" From luxury residences to commercial developments, we deliver trusted services that turn your real estate goals into reality. "}
+         
         </p>
 
         {isLoading ? (

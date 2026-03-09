@@ -537,7 +537,6 @@ export default function Services({
 
 
 
-      <DreamPropertySection />
     </div>
   );
 }

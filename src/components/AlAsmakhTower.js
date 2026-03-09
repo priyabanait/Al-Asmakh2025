@@ -419,7 +419,7 @@ export default function AlAsmakhTower() {
           </h2>
 
           {/* SUBHEADING */}
-          {projects[activeSlide]?.subheading && (
+          {/* {projects[activeSlide]?.subheading && (
             <p
               className="text-gray font-light mb-3"
               style={{
@@ -428,7 +428,7 @@ export default function AlAsmakhTower() {
             >
               {projects[activeSlide]?.subheading}
             </p>
-          )}
+          )} */}
 
           {/* DIVIDER */}
           <div className="w-[30%] h-[1px] bg-gray-300 my-4"></div>
@@ -707,7 +707,7 @@ export default function AlAsmakhTower() {
                       src={areas[i].image}
                       alt={areas[i].name}
                       fill
-                      className="object-fill rounded-lg"
+                      className=" object-cover rounded-lg"
                     />
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
@@ -763,7 +763,7 @@ export default function AlAsmakhTower() {
                       src={areas[i].image}
                       alt={areas[i].name}
                       fill
-                      className="object-fill rounded-lg"
+                      className="object-cover rounded-lg"
                     />
                     {/* Light Black Overlay on Hover */}
                     <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity  rounded-lg"></div>
