@@ -342,7 +342,14 @@ export default function Rent() {
         </div>
       </div>
 
-      <DreamPropertySection />
+      <DreamPropertySection 
+
+      title="Ready to present your property at its best?"
+      description="Connect with our team for a tailored marketing plan, including recommended content, channels, and a clear campaign timeline."
+      btnText="Contact Us Now "
+      btnLink="/contact"
+      
+      />
     </div>
   );
 }

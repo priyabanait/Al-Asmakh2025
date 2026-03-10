@@ -6,6 +6,7 @@ import Services from '../../../components/Services-lease'
 import Footer from '../../../components/Footer'
 import DreamPropertySection from '../../../components/DreamPropertySection'
 import { fetchProjects } from '../../../utils/projectapi'
+
 export default function AllProjectsPage() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)

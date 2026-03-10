@@ -101,6 +101,7 @@ export default function Header() {
       // { label: 'All Listings', path: '/listings/all' },
     ],
     DEVELOPMENT: [
+      { label: 'All Projects', path: '/listings/all-projects'},
       { label: 'Luxury Residences', path: '/listings/luxury' },
       { label: 'Commercial', path: '/commercial' },
       { label: 'Industrial', path: '/industrial' },

@@ -69,7 +69,7 @@ const HeroSection = ({ isActive }) => {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center w-full px-4 md:px-8">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center w-full px-4 md:px-4">
         {/* Transparent Box for Heading */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
@@ -83,7 +83,7 @@ const HeroSection = ({ isActive }) => {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.43, 0.13, 0.23, 0.96] }}
             className="heading text-[#10284C] font-semibold mb-2"
           >
-            BUILDING LEGACY THAT LASTS
+         REAL ESTATE WITH A CENTURY OF TRUST.
           </motion.h1>
           <motion.div 
             initial={{ opacity: 0, scaleX: 0 }}
@@ -97,7 +97,7 @@ const HeroSection = ({ isActive }) => {
             transition={{ duration: 0.6, delay: 0.3, ease: [0.43, 0.13, 0.23, 0.96] }}
             className="subheading text-[#10284C] font-medium"
           >
-            Our enduring commitment to quality and service ensures that every property we offer stands as a testament to trust, innovation, and excellence.
+          Built on legacy, driven by innovation, committed to sustainability and partnership.
           </motion.p>
         </motion.div>
 
@@ -109,7 +109,7 @@ const HeroSection = ({ isActive }) => {
           className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-6 mt-4 md:mt-10 mb-6 md:mb-10 px-2 md:px-0"
         >
           {[
-            { value: "90+", label: "Years of Excellence" },
+            { value: "96+", label: "Years of Excellence" },
             { value: "$12B+", label: "In Rental Volume" },
             { value: "98%", label: "Client Satisfaction" },
             { value: "5000+", label: "Homes Sold" },
@@ -640,6 +640,9 @@ export default function AboutUsPage() {
         ))}
 
 {/* Form Section - Slide 7 */}
+
+
+
 <div className="w-full flex flex-col min-h-screen">
 <section className="relative w-full flex items-center py-6 lg:py-12 min-h-screen">
         {/* Background Image */}
@@ -656,12 +659,15 @@ export default function AboutUsPage() {
 
           {/* Right Side - Form Panel and Map */}
           <div className="lg:w-1/2 max-w-2xl w-full flex flex-col">
+
+
+          <h1 className="heading text-[#001730] text-center font-medium mb-2 lg:mb-4 lg:mt-4">How can we help you today?</h1>
             {/* Form Panel - Translucent */}
             <div className="bg-blue-50/10 backdrop-blur-sm p-4 lg:p-6 lg:px-16 rounded-md shadow-xl relative overflow-visible">
               {/* Form Header */}
-              <h3 className="text-[#001730] lg:px-10 text-xs lg:text-sm xl:text-base text-center font-medium mb-2 lg:mb-3">
-                Fill out the form below and our experts will get back to you within 24 hour
-            </h3>
+              <h3 className="text-[#001730] px-2 lg:px-3 text-[8px] lg:text-[6px] xl:text-sm text-center font-medium mb-2">
+  Complete the form so we can better understand your needs. Whether you’re looking to rent, buy, or learn more about our developments. Our team will contact you shortly to guide you through the options.
+</h3>
               <div className="h-[0.5px] w-40 lg:w-60 bg-gray-300 mb-3 lg:mb-4 mx-auto"></div>
 
 

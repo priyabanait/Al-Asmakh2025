@@ -273,7 +273,7 @@ export default function Buy() {
             <div className="relative filter-dropdown-container">
               <div
                 onClick={() => setShowTypeDropdown(!showTypeDropdown)}
-                className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[250px] rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
+                className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[320px] rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export default function Buy() {
                 <ArrowDown size={16} className={`opacity-80 transition-transform ${showTypeDropdown ? 'rotate-180' : ''}`} />
               </div>
               {showTypeDropdown && (
-                <div className="absolute top-full mt-2 w-full max-w-[250px] bg-[#0B1F3A] rounded-md shadow-lg overflow-hidden z-50">
+                <div className="absolute top-full mt-2 w-full max-w-[320px] bg-[#0B1F3A] rounded-md shadow-lg overflow-hidden z-50">
                   {[null, 'Blog', 'Article'].map((type) => (
                     <div
                       key={type || 'all'}
@@ -306,7 +306,7 @@ export default function Buy() {
             <div className="relative filter-dropdown-container">
               <div
                 onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[250px] rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
+                className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full w-[310px] rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -318,7 +318,7 @@ export default function Buy() {
                 <ArrowDown size={16} className={`opacity-80 transition-transform ${showCategoryDropdown ? 'rotate-180' : ''}`} />
               </div>
               {showCategoryDropdown && (
-                <div className="absolute top-full mt-2 w-full max-w-[250px] bg-[#0B1F3A] rounded-md shadow-lg overflow-hidden max-h-48 overflow-y-auto z-50">
+                <div className="absolute top-full mt-2 w-full max-w-[320px] bg-[#0B1F3A] rounded-md shadow-lg overflow-hidden max-h-48 overflow-y-auto z-50">
                   <div
                     onClick={() => {
                       setSelectedCategory(null);
@@ -348,7 +348,7 @@ export default function Buy() {
             <div className="relative filter-dropdown-container">
               <div
                 onClick={() => setShowDateDropdown(!showDateDropdown)}
-                className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[250px] rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
+                className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[320px] rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
@@ -362,7 +362,7 @@ export default function Buy() {
                 <ArrowDown size={16} className={`opacity-80 transition-transform ${showDateDropdown ? 'rotate-180' : ''}`} />
               </div>
               {showDateDropdown && (
-                <div className="absolute top-full mt-2 w-full max-w-[250px] bg-[#0B1F3A] rounded-md shadow-lg overflow-hidden z-50">
+                <div className="absolute top-full mt-2 w-full max-w-[320px] bg-[#0B1F3A] rounded-md shadow-lg overflow-hidden z-50">
                   {[null, 'week', 'month', 'year'].map((date) => (
                     <div
                       key={date || 'all'}

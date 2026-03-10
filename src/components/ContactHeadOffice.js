@@ -604,8 +604,7 @@ export default function ContactHeadOffice({ isActive }) {
 
             {/* Introduction Paragraph */}
             <p className="subheading text-gray-600 text-center mb-8 mx-auto">
-          
-             We're excited to connect with you and learn more about your real estate goals. Use the form below to get in touch with us.. Whether you're a prospective client, partner, or simply curious about our services, we're here to answer your questions and provide the assistance you need.
+            Tell us a bit about your enquiry and how we can reach you. Whether you’re a resident, a prospective client, or a partner, our team will review your message and respond with clear next steps.
             </p>
 
             {/* Contact Form */}
@@ -732,10 +731,11 @@ export default function ContactHeadOffice({ isActive }) {
           {/* Section Header */}
           <div className="mb-12">
             <h1 className="text-xl lg:text-2xl   mb-2  lg:mb-4 ">
-              Discover Our Office Locations
+            Discover Our Office Locations
+
             </h1>
             <p className="subheading text-gray-600">
-              We are here to serve you across multiple locations. Whether you're looking to meet our team, discuss real estate opportunities, or simply drop by for a chat, we have offices conveniently located to serve your needs. Explore the areas below to find Our office nearest to you.
+            From West Bay to key residential districts, our offices are positioned to support residents, clients, and partners across the city. Browse the locations below to find the nearest office and its contact details.
             </p>
           </div>
 

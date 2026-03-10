@@ -20,7 +20,7 @@ import ShareButton from "@/components/ShareButton";
 import Link from "next/link";
 import Header from "../../../components/Header";
 import LoadingOverlay from "@/components/LoadingOverlay";
-
+import PropertyListDev from "@/components/PropertyListDev";
 // Google Maps API Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
 export default function Sale({ priceType: initialPriceType = "rent" }) {
@@ -1599,146 +1599,9 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         <p className="text-gray-500">Loading related projects...</p>
       </div>
     ) : relatedProjects.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {relatedProjects.map((relatedProject) => {
-          const formattedProject = {
-            id: relatedProject.id || relatedProject._id,
-            title: relatedProject.nameEn || relatedProject.name || "Untitled Project",
-            location: [
-              relatedProject.locationLevel1,
-              relatedProject.locationLevel2,
-              relatedProject.locationLevel3,
-              relatedProject.locationLevel4
-            ].filter(Boolean).join(', '),
-            year: relatedProject.projectCompletionDate 
-              ? new Date(relatedProject.projectCompletionDate).getFullYear().toString()
-              : (relatedProject.projectDate ? new Date(relatedProject.projectDate).getFullYear().toString() : new Date().getFullYear().toString()),
-            units: relatedProject.listingsCount || relatedProject.propertiesCount || "N/A",
-            status: relatedProject.projectCompletionDate 
-              ? (new Date(relatedProject.projectCompletionDate) > new Date() ? "30% Ongoing" : "100% Completed")
-              : "100% Completed",
-            statusType: relatedProject.projectCompletionDate && new Date(relatedProject.projectCompletionDate) > new Date() ? "ongoing" : "completed",
-            price: "Price on request",
-            image: relatedProject.coverPicture || (relatedProject.gallery && relatedProject.gallery[0]) || "/div.property-thumbnail-wrapper.png",
-          };
+      <div className="">
+                  <PropertyListDev properties={relatedProjects} viewMode="LIST" />
 
-          return (
-            <div
-              key={formattedProject.id}
-              className="bg-gray-100 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-            >
-              {/* Image */}
-              <div className="relative">
-                <Image
-                  src={formattedProject.image}
-                  alt={formattedProject.title}
-                  width={800}
-                  height={320}
-                  className="w-full h-80 object-cover"
-                />
-                
-                {/* Status Badge */}
-                <div className="absolute top-3 right-3">
-                  <span className="bg-[#8C8C8C66] text-white text-xs px-2 py-1 rounded-md backdrop-blur-sm">
-                    {formattedProject.statusType === "completed" ? "Completed" : "Ongoing"}
-                  </span>
-                </div>
-
-                {/* Title + Location Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 backdrop-blur-md bg-gradient-to-b from-gray-100/20 to-gray-100 p-4">
-                  <h3 className="text-lg font-semibold text-[#001730] mb-2 truncate">
-                    {formattedProject.title}
-                  </h3>
-                  <div className="flex items-center text-[#001730] text-sm mb-2">
-                    <MapPin size={12} className="mr-1" />
-                    <span className="truncate">{formattedProject.location || "Location not specified"}</span>
-                  </div>
-                  <div className="w-[60%] h-[1px] bg-gray-500 my-2"></div>
-                  <p className="text-xs text-[#001730] leading-snug line-clamp-2">
-                    {relatedProject.descriptionEn || "Luxury residential towers offering stunning sea views and premium residential, commercial, and leisure facilities."}
-                  </p>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-3">
-                {/* Info Row */}
-                <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-3">
-                  {/* Year */}
-                  <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 shadow-sm rounded-md px-2 py-2">
-                    <Image src="/Time.png" width={16} height={16} alt="Year" className="object-contain" />
-                    <span className="text-xs font-semibold text-[#001730]">{formattedProject.year}</span>
-                  </div>
-
-                  {/* Units */}
-                  <div className="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-md px-2 py-2">
-                    <Image src="/3_Icons Used_Project Dvt 1 (1).png" width={16} height={16} alt="Units" className="object-contain" />
-                    <span className="text-xs font-semibold text-[#001730]">
-                      {formattedProject.units} <span className="text-xs text-gray-500">Units</span>
-                    </span>
-                  </div>
-
-                  {/* Status */}
-                  <div className="flex flex-col justify-center bg-white border border-gray-200 shadow-sm rounded-md px-3 py-2 w-fit">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-4 h-4 rounded-full ${formattedProject.statusType === "completed" ? "bg-green-500" : "bg-yellow-500"} flex items-center justify-center`}>
-                        <Check size={12} className="text-white" />
-                      </div>
-                      <span className="text-xs font-semibold">{formattedProject.status}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                {relatedProject.amenities && relatedProject.amenities.length > 0 && (
-                  <div className="p-2 shadow-md bg-gray-50 rounded-md mb-3">
-                    <div className="grid grid-cols-3 gap-1">
-                      {relatedProject.amenities.slice(0, 3).map((amenity, idx) => {
-                        const amenityName = amenity.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-                        return (
-                          <div
-                            key={idx}
-                            className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md h-10 text-[0.6rem] font-semibold whitespace-nowrap px-1"
-                          >
-                            {amenityName}
-                          </div>
-                        );
-                      })}
-                      {relatedProject.amenities.length > 3 && (
-                        <div className="bg-gray-300 text-white flex items-center justify-center text-center border border-gray-200 shadow-sm rounded-md h-10 text-[0.6rem] font-semibold whitespace-nowrap">
-                          +{relatedProject.amenities.length - 3}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Map */}
-                <Image
-                  src="/div.property-thumbnail-wrapper (2).png"
-                  width={800}
-                  height={80}
-                  className="w-full h-20 object-cover rounded-md"
-                  alt="Project map"
-                />
-              </div>
-
-              {/* Footer */}
-              <div className="bg-gray-100 border-t border-gray-200 px-4 py-3 flex justify-between items-center">
-                <div>
-                  <p className="text-xs text-gray-500">Starting at</p>
-                  <p className="text-lg font-semibold text-[#001730]">{formattedProject.price}</p>
-                </div>
-                <Link href={`/projects/${formattedProject.id}`}>
-                  <button className="bg-[#001730] text-white text-xs font-medium px-4 py-2 rounded-md flex items-center gap-2 shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                    <span>Details</span>
-                    <FaArrowRight size={12} />
-                  </button>
-                </Link>
-              </div>
-            </div>
-          );
-        })}
       </div>
     ) : (
       <div className="text-center py-10">

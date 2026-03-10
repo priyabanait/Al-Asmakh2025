@@ -685,6 +685,8 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
                 statusType: statusType,
                 price: price,
                 image: image,
+                // Preserve exposure type so listing pages can filter (e.g. "premium")
+                exposureType: prop.exposureType,
             };
         });
 
@@ -823,6 +825,8 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
                     locationLevel1: prop.locationLevel1,
                     locationLevel2: prop.locationLevel2,
                     locationLevel3: prop.locationLevel3,
+                    // Preserve exposure type so listing pages can filter (e.g. "premium")
+                    exposureType: prop.exposureType,
                 };
             });
 
