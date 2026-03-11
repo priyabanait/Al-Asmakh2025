@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import MotionCarousel from "./MotionCarousel";
 
 export default function PrivilegeProgram() {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -121,38 +123,57 @@ export default function PrivilegeProgram() {
       icon: <LeasingIcon />,
       title: "Leasing",
       description: "Premium solutions for residential and commercial properties",
+      path: "/listings/lease-services", // matches Header SERVICES: Leasing Services
     },
     {
       icon: <SalesIcon />,
       title: "Sales",
       description: "Expert property sales with market-leading results",
+      path: "/services/services-sales", // matches Header SERVICES: Sales Services
     },
     {
       icon: <LuxuryMarketingIcon />,
       title: "Luxury Marketing",
       description: "Sophisticated marketing for high-end properties",
+      path: "/services/marketing", // matches Header SERVICES: Marketing
     },
     {
       icon: <ProjectDevelopmentIcon />,
       title: "Project Development",
       description: "Redefining luxury in residential, commercial, and mixed-use.",
+      path: "/other-services", // closest match: Header SERVICES: Other Services
     },
     {
       icon: <PropertyManagementIcon />,
       title: "Property Management",
       description: "Comprehensive property management solutions",
+      path: "/services/propertyManagement", // matches Header SERVICES: Property Management
     },
     {
       icon: <FacilitiesManagementIcon />,
       title: "Facilities Management",
       description: "Professional management and maintenance services",
+      path: "/services/facilities-management", // matches Header SERVICES: Facilities Management
     },
     {
       icon: <TransactionAdvisoryIcon />,
       title: "Transaction Advisory",
       description: "Strategic advisory services for complex real estate transactions",
+      path: "https://www.aredcadvisory.com",
+      external: true,
     },
   ];
+
+  const handleServiceClick = (item) => {
+    if (!item?.path) return;
+    if (item.external) {
+      if (typeof window !== "undefined") {
+        window.open(item.path, "_blank", "noopener,noreferrer");
+      }
+    } else {
+      router.push(item.path);
+    }
+  };
 
 
   return (
@@ -215,7 +236,8 @@ export default function PrivilegeProgram() {
                     flexDirection: "column",
                     justifyContent: "flex-start",
                   }}
-                  className="bg-white shadow-lg p-6 text-center"
+                  className="bg-white shadow-lg p-6 text-center cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-transform duration-200"
+                  onClick={() => handleServiceClick(item)}
                 >
                   <div className="flex justify-center items-center h-[60px] mb-4">
                     {item.icon}
@@ -265,7 +287,10 @@ export default function PrivilegeProgram() {
                     justifyContent: "flex-start",
                   }}
                 >
-                  <div className="bg-white shadow-lg p-6 text-center h-full">
+                  <div
+                    className="bg-white shadow-lg p-6 text-center h-full cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-transform duration-200"
+                    onClick={() => handleServiceClick(item)}
+                  >
                     <div className="flex justify-center items-center h-[60px] mb-4">
                       {item.icon}
                     </div>
@@ -316,13 +341,14 @@ export default function PrivilegeProgram() {
                 }}
                 className={`
                   bg-white shadow-sm p-6 3xl:p-8 4xl:p-10
-                  hover:shadow-lg hover:scale-105 hover:-translate-y-2
+                  cursor-pointer hover:shadow-lg hover:scale-105 hover:-translate-y-2
                   transition-all duration-200 text-center
                   ${isVisible
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-12'
                   }
                 `}
+                onClick={() => handleServiceClick(item)}
               >
                 <div className="flex justify-center items-center h-[70px] mb-4 3xl:mb-5 4xl:mb-6 transform transition-transform duration-200 hover:scale-110">
                   {item.icon}
@@ -362,13 +388,14 @@ export default function PrivilegeProgram() {
                 }}
                 className={`
                   bg-white shadow-sm p-6 3xl:p-8 4xl:p-10
-                  hover:shadow-lg hover:scale-105 hover:-translate-y-2
+                  cursor-pointer hover:shadow-lg hover:scale-105 hover:-translate-y-2
                   transition-all duration-200 text-center
                   ${isVisible
                     ? 'opacity-100 translate-y-0'
                     : 'opacity-0 translate-y-12'
                   }
                 `}
+                onClick={() => handleServiceClick(item)}
               >
                 <div className="flex justify-center items-center h-[70px] mb-4 3xl:mb-5 4xl:mb-6 transform transition-transform duration-200 hover:scale-110">
                   {item.icon}
