@@ -50,29 +50,35 @@ export default function Services({
   });
   const dropdownRefs = useRef({}); // Refs for each dropdown
 
-  // Close filters when clicking outside
+  // Close filters / dropdowns when clicking outside (mobile + desktop)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showFilters && filtersRef.current && !filtersRef.current.contains(event.target)) {
+      // Mobile filters close
+      if (
+        showFilters &&
+        filtersRef.current &&
+        !filtersRef.current.contains(event.target)
+      ) {
         setShowFilters(false);
       }
-      
-      // Close dropdowns when clicking outside
-      Object.values(dropdownRefs.current).forEach((ref) => {
-        if (ref && !ref.contains(event.target)) {
-          setOpenDropdown(null);
-        }
-      });
+
+      // Check if click is inside ANY dropdown
+      const clickedInsideDropdown = Object.values(dropdownRefs.current).some(
+        (ref) => ref && ref.contains(event.target)
+      );
+
+      // Close dropdown only if click is outside
+      if (!clickedInsideDropdown) {
+        setOpenDropdown(null);
+      }
     };
 
-    if (showFilters || openDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showFilters, openDropdown]);
+  }, [showFilters]);
 
   // Filter options
   const filterOptions = {
@@ -82,23 +88,9 @@ export default function Services({
     date: ["Newest", "Oldest", "Recently Updated"],
   };
 
-  // Handle filter selection
+  // Handle filter selection (desktop + mobile)
   const handleFilterSelect = (filterType, value) => {
-    // Navigate for specific project types
-    if (filterType === "projectType") {
-      const routeMap = {
-        "Luxury": "/listings/luxury",
-        "Commercial": "/listings/commercial",
-        "Industrial": "/listings/industrial",
-      };
-      
-      if (routeMap[value]) {
-        router.push(routeMap[value]);
-        return; // Don't set filter, just navigate
-      }
-    }
-    
-    // For other filters, set the filter value
+    // Just toggle filter value locally so it behaves like /listings/rent
     setFilters((prev) => ({
       ...prev,
       [filterType]: prev[filterType] === value ? null : value,
@@ -177,6 +169,37 @@ export default function Services({
       return;
     }
 
+    // Map UI filters → API filters
+    const apiFilterOverrides = {};
+
+    if (filters.projectType) {
+      const v = filters.projectType.toLowerCase();
+      // Map to backend "type" / "category" style keys without breaking existing props
+      if (["luxury"].includes(v)) {
+        apiFilterOverrides.category = "luxury";
+      } else if (["commercial", "industrial", "residential"].includes(v)) {
+        apiFilterOverrides.type = v;
+      }
+    }
+
+    if (filters.location) {
+      apiFilterOverrides.locationLevel1 = filters.location;
+    }
+
+    if (filters.status) {
+      apiFilterOverrides.projectStatus = filters.status;
+    }
+
+    if (filters.date) {
+      // Simple sort mapping; adjust if backend expects something else
+      apiFilterOverrides.sortBy =
+        filters.date === "Newest"
+          ? "newest"
+          : filters.date === "Oldest"
+          ? "oldest"
+          : "recent";
+    }
+
     // Otherwise, fetch properties from API
     const loadProperties = async () => {
       try {
@@ -190,6 +213,7 @@ export default function Services({
           category: category,
           luxury: luxury,
           development: development,
+          ...apiFilterOverrides,
         });
 
         // Use API response data only
@@ -209,7 +233,20 @@ export default function Services({
     };
 
     loadProperties();
-  }, [offeringType, propertyType, category, luxury, development, useProjects, externalProjects, externalLoading]);
+  }, [
+    offeringType,
+    propertyType,
+    category,
+    luxury,
+    development,
+    useProjects,
+    externalProjects,
+    externalLoading,
+    filters.projectType,
+    filters.location,
+    filters.status,
+    filters.date,
+  ]);
 
 
 
