@@ -67,27 +67,33 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
     };
 
     if (viewMode === "MAP") {
+        // MAP View – now responsive on mobile and desktop
+        const firstProperty = properties[0];
+        const mapUrl = firstProperty ? getMapUrl(firstProperty) : getMapUrl({});
+
         return (
-            /* MAP View */
-            <div className="hidden lg:block w-full mt-6 relative" style={{ height: "calc(100vh - 200px)", minHeight: "60vh" }}>
-                {/* Los Angeles Map */}
+            <div
+                className="w-full mt-4 lg:mt-6 relative rounded-md overflow-hidden"
+                style={{ height: "calc(100vh - 260px)", minHeight: "55vh" }}
+            >
                 <iframe
-                    src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s&key=${GOOGLE_MAPS_API_KEY}`}
+                    src={mapUrl}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    className="absolute inset-0"
+                    className="absolute inset-0 w-full h-full"
+                    title="Projects map"
                 ></iframe>
 
                 {/* Zoom Controls - Bottom Right */}
-                <div className="absolute bottom-4 right-4 bg-white rounded-md shadow-lg flex flex-col z-10">
-                    <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
+                <div className="absolute bottom-4 right-4 bg-white/95 rounded-md shadow-lg flex flex-col z-10">
+                    <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50 active:bg-gray-100">
                         <span className="text-lg font-semibold">+</span>
                     </button>
-                    <button className="px-3 py-2 hover:bg-gray-50">
+                    <button className="px-3 py-2 hover:bg-gray-50 active:bg-gray-100">
                         <span className="text-lg font-semibold">-</span>
                     </button>
                 </div>
@@ -96,7 +102,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
     }
 
     return (
-        <div className="grid grid-cols-1 mt-5 lg:mt-5 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 px-4 lg:px-10 xl:px-20">
+        <div className="grid grid-cols-1 mt-4 lg:mt-5 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 px-4 sm:px-5 lg:px-10 xl:px-20">
             {properties.length === 0 ? (
                 <div className="col-span-full text-center py-10">
                     <p className="text-gray-500">No properties found.</p>

@@ -17,6 +17,7 @@ import { FaCheckCircle } from "react-icons/fa";
 
 import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch, FaRulerCombined } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
+import { FALLBACK_PROPERTY_IMAGE, getSafeImage, handleImageErrorOnce } from "@/utils/imageUtils";
 import Link from "next/link";
 import Header from "../../../components/Header";
 import LoadingOverlay from "@/components/LoadingOverlay";
@@ -1169,7 +1170,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
               }
               
               // Get main image - prioritize images array, then coverPicture, then gallery, then fallback
-              let mainImage = "/div.property-thumbnail-wrapper.png";
+              let mainImage = FALLBACK_PROPERTY_IMAGE;
               
               if (imagesArray && imagesArray.length > 0) {
                 // Filter out invalid images and sort by order field
@@ -1190,17 +1191,18 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                   }) || sortedImages[0];
                   
                   if (firstImage && (firstImage.url || firstImage.thumbnailUrl)) {
-                    mainImage = firstImage.url || firstImage.thumbnailUrl;
+                    mainImage = getSafeImage(firstImage.url || firstImage.thumbnailUrl);
                   }
                 }
               }
               
               // Fallback to coverPicture, gallery, or imageUrl if images array didn't work
-              if (mainImage === "/div.property-thumbnail-wrapper.png") {
-                mainImage = prop.coverPicture || property.coverPicture || 
-                           prop.gallery?.[0] || property.gallery?.[0] || 
-                           prop.imageUrl || property.imageUrl || 
-                           "/div.property-thumbnail-wrapper.png";
+              if (mainImage === FALLBACK_PROPERTY_IMAGE) {
+                mainImage = getSafeImage(
+                  prop.coverPicture || property.coverPicture || 
+                  prop.gallery?.[0] || property.gallery?.[0] || 
+                  prop.imageUrl || property.imageUrl
+                );
               }
               
               // Get additional images (order > 0) for thumbnails
@@ -1230,14 +1232,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                     {/* Image Section */}
                     <div className="relative w-full sm:w-[260px] h-[200px] sm:h-auto flex-shrink-0">
                       <Image
-                        src={mainImage}
+                        src={getSafeImage(mainImage)}
                         alt={prop.titleEn || prop.title || "Property"}
                         fill
                         className="object-cover"
-                        unoptimized={mainImage.startsWith('http')}
-                        onError={(e) => {
-                          e.target.src = "/div.property-thumbnail-wrapper.png";
-                        }}
+                        unoptimized={getSafeImage(mainImage).startsWith('http')}
+                        onError={handleImageErrorOnce}
                       />
                       {/* Share Button Overlay */}
                       <div className="absolute bottom-2 right-2 z-10">
@@ -1251,7 +1251,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                       {additionalImages.length > 0 && (
                         <div className="absolute top-2 right-2 flex gap-1 z-10 flex-wrap max-w-[140px]">
                           {additionalImages.map((img, idx) => {
-                            const imgUrl = img.url || img.thumbnailUrl || "/div.property-thumbnail-wrapper.png";
+                            const imgUrl = getSafeImage(img.url || img.thumbnailUrl);
                             return (
                               <div key={img.id || idx} className="relative w-12 h-12 rounded-md overflow-hidden border-2 border-white shadow-md">
                                 <Image
@@ -1260,9 +1260,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                                   fill
                                   className="object-cover"
                                   unoptimized={imgUrl.startsWith('http')}
-                                  onError={(e) => {
-                                    e.target.src = "/div.property-thumbnail-wrapper.png";
-                                  }}
+                                  onError={handleImageErrorOnce}
                                 />
                               </div>
                             );
@@ -1376,15 +1374,17 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                         : `${prop.areaSqft} sqft`;
                     }
 
-                    let mainImage = "/div.property-thumbnail-wrapper.png";
+                    let mainImage = FALLBACK_PROPERTY_IMAGE;
                     if (prop.images && Array.isArray(prop.images) && prop.images.length > 0) {
                       const validImages = prop.images.filter(img => img && (img.url || img.thumbnailUrl));
                       if (validImages.length > 0) {
-                        mainImage = validImages[0].url || validImages[0].thumbnailUrl;
+                        mainImage = getSafeImage(validImages[0].url || validImages[0].thumbnailUrl);
                       }
                     }
-                    if (mainImage === "/div.property-thumbnail-wrapper.png") {
-                      mainImage = prop.coverPicture || prop.gallery?.[0] || prop.imageUrl || "/div.property-thumbnail-wrapper.png";
+                    if (mainImage === FALLBACK_PROPERTY_IMAGE) {
+                      mainImage = getSafeImage(
+                        prop.coverPicture || prop.gallery?.[0] || prop.imageUrl
+                      );
                     }
 
                     return (
@@ -1395,14 +1395,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                         <div className="flex flex-col sm:flex-row">
                           <div className="relative w-full sm:w-[260px] h-[200px] sm:h-auto flex-shrink-0">
                             <Image
-                              src={mainImage}
+                              src={getSafeImage(mainImage)}
                               alt={prop.titleEn || prop.title || "Property"}
                               fill
                               className="object-cover"
-                              unoptimized={mainImage.startsWith('http')}
-                              onError={(e) => {
-                                e.target.src = "/div.property-thumbnail-wrapper.png";
-                              }}
+                              unoptimized={getSafeImage(mainImage).startsWith('http')}
+                              onError={handleImageErrorOnce}
                             />
                             <div className="absolute bottom-2 right-2 z-10">
                               <ShareButton
@@ -1504,11 +1502,12 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                                    `Agent ${index + 1}`;
                   const agentEmail = agentData.email || '';
                   const agentPhone = agentData.phone || agentData.mobile || agentData.whatsappPhone || '';
-                  const agentImage = agentData.profilePicture || 
-                                    agentData.profileImage || 
-                                    agentData.image || 
-                                    agentData.publicProfile?.imageVariants?.medium?.default ||
-                                    '/div.property-thumbnail-wrapper.png';
+                  const agentImage = getSafeImage(
+                    agentData.profilePicture || 
+                    agentData.profileImage || 
+                    agentData.image || 
+                    agentData.publicProfile?.imageVariants?.medium?.default
+                  );
                   
                   return (
                     <div
@@ -1524,9 +1523,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                             fill
                             className="object-cover rounded-full"
                             unoptimized={agentImage.startsWith('http')}
-                            onError={(e) => {
-                              e.target.src = '/div.property-thumbnail-wrapper.png';
-                            }}
+                            onError={handleImageErrorOnce}
                           />
                         </div>
                         

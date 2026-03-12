@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FaArrowRight } from "react-icons/fa6";
 import { useAlert } from '../../contexts/AlertContext'
 import { getApiUrl } from '../../config/api'
+import { validateLeadForm, hasLeadFormErrors, initialLeadFormData } from "../../utils/leadFormValidation";
 
 // Timeline data
 const timelineData = [
@@ -370,25 +371,22 @@ export default function AboutUsPage() {
   const countryDropdownRef = useRef(null);
   
   // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    propertyType: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState(initialLeadFormData);
+  const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.name || !formData.email) {
-      showError('Please fill in your name and email');
+    const errors = validateLeadForm(formData);
+    if (hasLeadFormErrors(errors)) {
+      setFormErrors(errors);
+      showError('Please fix the highlighted fields before submitting.');
       return;
     }
 
+    setFormErrors({});
     setIsSubmitting(true);
 
     try {
@@ -445,13 +443,7 @@ export default function AboutUsPage() {
       if (response.ok && (data.success || data.id || data.data)) {
         showSuccess('Thank you for your inquiry! We will get back to you within 24 hours.');
         // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          propertyType: '',
-          message: ''
-        });
+        setFormData(initialLeadFormData);
         setCountryCode('+974'); // Reset to default
       } else {
         const errorMessage = data.message || data.error || 'Failed to submit your inquiry. Please try again.';
@@ -675,33 +667,67 @@ export default function AboutUsPage() {
                 {/* First Row: Name and Email */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                   <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">
+                      Name <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="text"
                       placeholder="John Carter"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormData({ ...formData, name: value });
+                        if (formErrors.name) {
+                          setFormErrors((prev) => {
+                            const { name, ...rest } = prev;
+                            return rest;
+                          });
+                        }
+                      }}
                       required
-                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                      className={`w-full bg-white border rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none h-[42px] lg:h-[45px] ${
+                        formErrors.name ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-[#001730]"
+                      }`}
                     />
+                    {formErrors.name && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.name}</p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">
+                      Email <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="email"
                       placeholder="example@email.com"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setFormData({ ...formData, email: value });
+                        if (formErrors.email) {
+                          setFormErrors((prev) => {
+                            const { email, ...rest } = prev;
+                            return rest;
+                          });
+                        }
+                      }}
                       required
-                      className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                      className={`w-full bg-white border rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none h-[42px] lg:h-[45px] ${
+                        formErrors.email ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-[#001730]"
+                      }`}
                     />
+                    {formErrors.email && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.email}</p>
+                    )}
                   </div>
                 </div>
 
                 {/* Second Row: Phone and Property Type */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                   <div>
-                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
+                    <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">
+                      Phone <span className="text-red-500">*</span>
+                    </label>
                     {/* Combined Phone Input with Country Code */}
                     <div className="flex relative h-[42px] lg:h-[45px]" ref={countryDropdownRef}>
                       {/* Country Code Dropdown - Left Side */}
@@ -787,10 +813,24 @@ export default function AboutUsPage() {
                         type="text"
                         placeholder="(123) 456 - 789"
                         value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-full"
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({ ...formData, phone: value });
+                          if (formErrors.phone) {
+                            setFormErrors((prev) => {
+                              const { phone, ...rest } = prev;
+                              return rest;
+                            });
+                          }
+                        }}
+                        className={`flex-1 bg-white border border-l-0 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none h-full ${
+                          formErrors.phone ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-[#001730]"
+                        }`}
                       />
                     </div>
+                    {formErrors.phone && (
+                      <p className="mt-1 text-xs text-red-500">{formErrors.phone}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>

@@ -253,7 +253,7 @@ export default function Services({
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
-      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible">
+      <section className="relative w-full min-h-[85vh] lg:min-h-[85vh] flex flex-col items-center justify-center overflow-visible pb-32 lg:pb-0">
         {/* Background Image - Dynamic from props */}
         <Image
           src={backgroundImage}
@@ -490,9 +490,7 @@ export default function Services({
       </section>
 
       {/* Filter Buttons Box - Dynamic from props */}
-      <div className="w-full 
-      
-       flex justify-center px-4 lg:px-40 lg:pt-0 pt-0 lg:-mt-[145px] lg:mb-8 relative z-50">
+      <div className="w-full flex justify-center px-4 lg:px-40 pt-4 lg:pt-0 lg:-mt-[145px] lg:mb-8 relative z-50">
         <div
           className="
       grid w-full overflow-x-auto lg:overflow-visible
@@ -542,30 +540,37 @@ export default function Services({
 
 
       {/* ---------- LIST AND MAP VIEW SECTION ---------- */}
-      <div className="hidden lg:block lg:py-28 py-4">
+      <div className="w-full pt-6 pb-10 lg:pt-28 lg:pb-10">
         {/* Header Bar */}
-        <div className=" border-gray-200 px-2 lg:px-6">
-          <div className="hidden lg:flex max-w-full mb-6  mx-auto items-center gap-4">
-            {/* Showing Count (Left) */}
-            <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
-              Showing {properties.length} of {properties.length}
+        <div className="border-gray-200 px-4 lg:px-6">
+          <div className="flex max-w-full mb-4 lg:mb-6 mx-auto items-center gap-4">
+            {/* Showing Count */}
+            <div className="text-gray-400 text-xs lg:text-sm font-medium whitespace-nowrap">
+              Showing {filteredProperties.length} of {properties.length}
             </div>
 
             {/* CENTER LINE */}
             <div className="flex-1 h-[0.5px] bg-gray-300"></div>
-
-            {/* LIST / MAP Buttons (Right) */}
-            <div className="flex items-center gap-2">
-              {/* Divider */}
-              {/* <div className="h-4 w-[1px] bg-gray-300 mx-0.5"></div> */}
-            </div>
           </div>
         </div>
 
         {/* Main Content: List and Map - Using PropertyListDev Component */}
         {loading ? (
-          <div className="text-center py-10">
-            <p className="text-gray-500">Loading properties...</p>
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <div className="w-8 h-8 border-4 border-[#001730] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-500 text-sm">Loading properties…</p>
+          </div>
+        ) : filteredProperties.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3 px-4">
+            <p className="text-gray-500 text-base font-medium text-center">No properties found.</p>
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="mt-2 bg-[#001730] text-white text-sm px-5 py-2 rounded-md hover:bg-[#002d52] transition"
+              >
+                Clear Filters
+              </button>
+            )}
           </div>
         ) : (
           <PropertyListDev properties={filteredProperties} viewMode={viewMode} />

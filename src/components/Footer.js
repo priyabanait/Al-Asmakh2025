@@ -363,7 +363,29 @@ export default function Footer() {
           </p>
         </div>
       </div>
-
+      {/* Toast Popup for newsletter subscribe */}
+      {toastMessage && (
+        <div className="fixed bottom-4 right-4 z-[9999]">
+          <div
+            className={`px-4 py-3 rounded-md shadow-lg text-sm ${
+              toastType === "success"
+                ? "bg-green-600 text-white"
+                : "bg-red-600 text-white"
+            }`}
+          >
+            <div className="flex items-start gap-2">
+              <span className="flex-1">{toastMessage}</span>
+              <button
+                type="button"
+                className="ml-2 text-xs opacity-80 hover:opacity-100"
+                onClick={() => setToastMessage("")}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

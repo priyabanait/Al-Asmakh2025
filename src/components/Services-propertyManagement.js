@@ -60,7 +60,7 @@ export default function Rent() {
       beds: 4,
       baths: 2,
       area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
     {
       title: "Floresta Tower Floresta Tower Les Maisons Blanches",
@@ -69,7 +69,7 @@ export default function Rent() {
       beds: 4,
       baths: 2,
       area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
     {
       title: "Floresta Tower Floresta Tower Les Maisons Blanches",
@@ -78,7 +78,7 @@ export default function Rent() {
       beds: 4,
       baths: 2,
       area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
     {
       title: "Floresta Tower Floresta Tower Les Maisons Blanches",
@@ -87,7 +87,7 @@ export default function Rent() {
       beds: 4,
       baths: 2,
       area: 450,
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
   ];
 
@@ -190,7 +190,10 @@ export default function Rent() {
           {/* Contact Team Button - Below the box */}
           <div className="mt-4 lg:mt-6">
             <div className="flex-shrink-0 lg:mr-40">
-              <button className="btn-details text-[12px]">
+              <button
+                className="btn-details text-[12px]"
+                onClick={() => (window.location.href = '/listings/rent')}
+              >
                 <span>View Premium Portfolio</span>
                 <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
               </button>
@@ -412,12 +415,12 @@ export default function Rent() {
 
 
 
-      <DreamPropertySection  title=" Ready for a smarter, easier way to manage your property?" 
+      <DreamPropertySection
+        title=" Ready for a smarter, easier way to manage your property?" 
       description="            Let our team handle day-to-day operations with consistent standards and clear reporting, so you can stay informed, stay compliant, and enjoy peace of mind.
 Share your property details and preferred service level, and we'll recommend the best next steps."
       btnText="Contact Us Now"
-      btnLink="/contact"
-      
+        btnLink="/contactheadoffice"
       />
     </div>
   );

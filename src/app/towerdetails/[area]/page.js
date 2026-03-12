@@ -54,10 +54,7 @@ export default function TowerDetailsPage() {
         // Single API call to get all area data
         const data = await fetchAreaComplete(areaIdFromRoute, { page: 1, limit: 50 })
         
-        console.log('Complete area data:', data)
-        console.log('Properties count:', data.properties?.length || 0)
-        console.log('Projects count:', data.projects?.length || 0)
-        console.log('Agents count:', data.agents?.length || 0)
+     
         
         // Map area data
         const areaInfo = data.area || {}
@@ -89,16 +86,30 @@ export default function TowerDetailsPage() {
         const projectsList = Array.isArray(data.projects) ? data.projects : []
         setProjects(projectsList)
 
-        // Set agents (from API response)
+        // Set agents (from API response, area assignedAgents and properties)
         const agentsList = Array.isArray(data.agents) ? data.agents : []
+        const assignedAgents = Array.isArray(areaInfo.assignedAgents) ? areaInfo.assignedAgents : []
+
         // Also collect agents from properties if not already included
         const agentsMap = new Map()
+
+        // 1) Agents returned explicitly from API (data.agents)
         agentsList.forEach(agent => {
           const agentId = agent.id || agent._id || agent.userId
           if (agentId) {
             agentsMap.set(agentId, agent)
           }
         })
+
+        // 2) Agents assigned directly to the area (area.assignedAgents)
+        assignedAgents.forEach(agent => {
+          const agentId = agent.id || agent._id || agent.userId
+          if (agentId && !agentsMap.has(agentId)) {
+            agentsMap.set(agentId, agent)
+          }
+        })
+
+        // 3) Agents attached to individual properties
         rawProperties.forEach((item) => {
           if (item.agent && typeof item.agent === 'object') {
             const agentObj = item.agent
@@ -797,9 +808,9 @@ export default function TowerDetailsPage() {
                             key={projectId}
                             className="bg-[#E9E9E9] rounded-md shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                           >
-                            <div className="flex p-4 rounded-md">
-                              {/* Image Section - Left */}
-                              <div className="relative w-[260px] h-[192px] flex-shrink-0">
+                            <div className="flex flex-col md:flex-row p-4 rounded-md gap-4 md:gap-0">
+                              {/* Image Section */}
+                              <div className="relative w-full h-[200px] md:w-[260px] md:h-[192px] flex-shrink-0">
                                 <Image
                                   src={image}
                                   alt={title}
@@ -817,21 +828,21 @@ export default function TowerDetailsPage() {
                                 </div>
                               </div>
 
-                              {/* Details Section - Right */}
-                              <div className="flex-1 p-4 flex flex-col justify-between">
+                              {/* Details Section */}
+                              <div className="flex-1 p-0 md:p-4 flex flex-col justify-between mt-4 md:mt-0">
                                 <div>
-                                  <h3 className="text-lg font-bold text-[#001730] mb-1">
+                                  <h3 className="text-base sm:text-lg font-bold text-[#001730] mb-1">
                                     {title}
                                   </h3>
 
-                                  <div className="flex items-center text-[#001730] text-sm mb-3">
+                                  <div className="flex items-center text-[#001730] text-xs sm:text-sm mb-3">
                                     <MapPin size={12} className="mr-2" />
-                                    <span>{location || "Location not specified"}</span>
+                                    <span className="line-clamp-1">{location || "Location not specified"}</span>
                                   </div>
 
-                                  <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
+                                  <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-xs sm:text-sm mb-4">
                                     {/* Year */}
-                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
+                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-3 lg:px-4 rounded-md justify-center">
                                       <Image
                                         src="/Time.png"
                                         alt="Year"
@@ -839,11 +850,11 @@ export default function TowerDetailsPage() {
                                         height={16}
                                         className="w-[18px] h-[18px]"
                                       />
-                                      <span className="text-xs lg:text-sm">{year || "N/A"}</span>
+                                      <span className="text-[11px] sm:text-xs lg:text-sm">{year || "N/A"}</span>
                                     </div>
 
                                     {/* Units */}
-                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
+                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-3 lg:px-4 rounded-md justify-center">
                                       <Image
                                         src="/3_Icons Used_Project Dvt 1 (1).png"
                                         alt="Units"
@@ -851,12 +862,12 @@ export default function TowerDetailsPage() {
                                         height={16}
                                         className="w-[18px] h-[18px]"
                                       />
-                                      <span className="text-xs lg:text-sm">{units}</span>
+                                      <span className="text-[11px] sm:text-xs lg:text-sm">{units}</span>
                                     </div>
 
                                     {/* Status (simple) */}
-                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                      <span className="text-xs lg:text-sm">
+                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-3 lg:px-4 rounded-md justify-center">
+                                      <span className="text-[11px] sm:text-xs lg:text-sm text-center">
                                         {proj.projectStatus || proj.status || "Active"}
                                       </span>
                                     </div>
@@ -865,19 +876,19 @@ export default function TowerDetailsPage() {
                                   <div className="w-[100%] h-[0.5px] bg-gray-300 my-3"></div>
                                 </div>
 
-                                <div className="flex items-center justify-between gap-2">
-                                  <p className="text-lg font-bold text-[#001730] m-0">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                                  <p className="text-base sm:text-lg font-bold text-[#001730] m-0">
                                     Price on request
                                   </p>
-                                  <button className="bg-[#001730] text-white text-[12px] font-medium px-4 py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                                  <button className="bg-[#001730] text-white text-[12px] font-medium px-4 py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52] w-full sm:w-auto">
                                     <Link
                                       href={`/projects/${projectId}`}
-                                      className="flex items-center gap-2 w-full"
+                                      className="flex items-center justify-between gap-2 w-full"
                                     >
                                       <span>Details</span>
                                       <FaArrowRight
                                         size={12}
-                                        className="w-3 h-3 lg:w-[16px] ml-10"
+                                        className="w-3 h-3 lg:w-[16px] ml-4 sm:ml-10"
                                       />
                                     </Link>
                                   </button>

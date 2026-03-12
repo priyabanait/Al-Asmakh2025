@@ -12,6 +12,7 @@ import { Phone, Mail, Clock, MapPin } from "lucide-react";
 import FeaturedProperties from "./FeaturedProperties";
 import useEmblaCarousel from "embla-carousel-react";
 import { API_BASE_URL, getApiUrl, getMarketingApiUrl } from "../config/api";
+import { validateLeadForm, hasLeadFormErrors, initialLeadFormData } from "../utils/leadFormValidation";
 import { useAlert } from "../contexts/AlertContext";
 import { useBlogs } from "../hooks/useBlogs";
 
@@ -74,25 +75,23 @@ export default function Profit() {
   const { showSuccess, showError } = useAlert();
   
   // Form state
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    propertyType: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState(initialLeadFormData);
+  const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.name || !formData.email) {
-      showError('Please fill in your name and email');
+    // Client-side validation
+    const errors = validateLeadForm(formData);
+    if (hasLeadFormErrors(errors)) {
+      setFormErrors(errors);
+      showError('Please fix the highlighted fields before submitting.');
       return;
     }
 
+    setFormErrors({});
     setIsSubmitting(true);
 
     try {
@@ -149,13 +148,7 @@ export default function Profit() {
       if (response.ok && (data.success || data.id || data.data)) {
         showSuccess('Thank you for your inquiry! We will get back to you within 24 hours.');
         // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          propertyType: '',
-          message: ''
-        });
+        setFormData(initialLeadFormData);
         setSelectedCountryCode('+974'); // Reset to default
       } else {
         const errorMessage = data.message || data.error || 'Failed to submit your inquiry. Please try again.';
@@ -248,6 +241,15 @@ export default function Profit() {
     emblaTestimonialApi.on("select", onSelectTestimonial);
     emblaTestimonialApi.on("reInit", onSelectTestimonial);
   }, [emblaTestimonialApi, onSelectTestimonial]);
+
+  // Auto-scroll mobile testimonials
+  useEffect(() => {
+    if (!emblaTestimonialApi) return;
+    const id = setInterval(() => {
+      emblaTestimonialApi.scrollNext();
+    }, 6000);
+    return () => clearInterval(id);
+  }, [emblaTestimonialApi]);
 
   // Blog data - fetched from API
   // Use React Query hook for blogs - automatically cached and fast!
@@ -406,8 +408,10 @@ export default function Profit() {
   // Mobile office state - show one at a time
   const [mobileOfficeIndex, setMobileOfficeIndex] = useState(0);
 
-  // Auto Slide for offices (desktop only)
+  // Auto Slide for offices (desktop only), pause when hovered
+  const [isOfficeHovered, setIsOfficeHovered] = useState(false);
   useEffect(() => {
+    if (isOfficeHovered) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => {
         // Continue through all offices, then loop back to start
@@ -415,7 +419,7 @@ export default function Profit() {
       });
     }, 4000);
     return () => clearInterval(interval);
-  }, [offices.length]);
+  }, [offices.length, isOfficeHovered]);
 
   // Auto Slide for mobile offices - one at a time
   useEffect(() => {
@@ -1037,7 +1041,7 @@ export default function Profit() {
         </div>
         )}
       </section>
-      <section className="relative w-full h-auto lg:min-h-screen flex items-center py-8 lg:py-12 xl:py-16 2xl:py-20 overflow-hidden">
+      <section className="relative w-full h-auto lg:min-h-screen flex items-center py-6 lg:py-10 xl:py-12 2xl:py-16 overflow-hidden">
         {/* Background Image */}
         <Image
           src="/mainScreen/Contact-us.jpeg"
@@ -1072,33 +1076,67 @@ export default function Profit() {
                   {/* First Row: Name and Email */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-2">
                     <div>
-                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Name</label>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">
+                        Name <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="text"
                         placeholder="Enter Your Name"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({ ...formData, name: value });
+                          if (formErrors.name) {
+                            setFormErrors((prev) => {
+                              const { name, ...rest } = prev;
+                              return rest;
+                            });
+                          }
+                        }}
                         required
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                        className={`w-full bg-white border rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none h-[42px] lg:h-[45px] ${
+                          formErrors.name ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-[#001730]"
+                        }`}
                       />
+                      {formErrors.name && (
+                        <p className="mt-1 text-xs text-red-500">{formErrors.name}</p>
+                      )}
                     </div>
                     <div>
-                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Email</label>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">
+                        Email <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="email"
                         placeholder="Enter Your Email"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData({ ...formData, email: value });
+                          if (formErrors.email) {
+                            setFormErrors((prev) => {
+                              const { email, ...rest } = prev;
+                              return rest;
+                            });
+                          }
+                        }}
                         required
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-[42px] lg:h-[45px]"
+                        className={`w-full bg-white border rounded-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none h-[42px] lg:h-[45px] ${
+                          formErrors.email ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-[#001730]"
+                        }`}
                       />
+                      {formErrors.email && (
+                        <p className="mt-1 text-xs text-red-500">{formErrors.email}</p>
+                      )}
                     </div>
                   </div>
 
                   {/* Second Row: Phone and Property Type */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
                     <div className="flex flex-col">
-                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Phone</label>
+                      <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">
+                        Phone <span className="text-red-500">*</span>
+                      </label>
                       <div className="flex relative h-[42px] lg:h-[45px]" ref={countryDropdownRef}>
                         {/* Country Code Dropdown - Left Side */}
                         <div className="relative flex-shrink-0">
@@ -1183,10 +1221,24 @@ export default function Profit() {
                           type="text"
                           placeholder="(123) 456 - 789"
                           value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="flex-1 bg-white border border-l-0 border-gray-300 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none focus:border-[#001730] h-full"
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setFormData({ ...formData, phone: value });
+                            if (formErrors.phone) {
+                              setFormErrors((prev) => {
+                                const { phone, ...rest } = prev;
+                                return rest;
+                              });
+                            }
+                          }}
+                          className={`flex-1 bg-white border border-l-0 rounded-r-md px-3 lg:px-4 py-2 lg:py-2.5 text-sm focus:outline-none h-full ${
+                            formErrors.phone ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-[#001730]"
+                          }`}
                         />
                       </div>
+                      {formErrors.phone && (
+                        <p className="mt-1 text-xs text-red-500">{formErrors.phone}</p>
+                      )}
                     </div>
                     <div className="flex flex-col">
                       <label className="block text-[#001730] text-xs lg:text-sm font-medium mb-1.5 lg:mb-2">Property Type</label>
@@ -1228,16 +1280,15 @@ export default function Profit() {
               </div>
 
               {/* Map Section - Below the blur card */}
-              <div 
-                onClick={() => window.open('https://maps.app.goo.gl/fiBji1m32xNtcdUR8', '_blank')} 
-                className="mt-4 cursor-pointer lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative hover:opacity-90 transition-opacity"
-              >
-                <Image
-                  src="./mainScreen/675.png"
-                  alt="Map"
-                  fill
-                  className="object-cover rounded-md"
-                />
+              <div className="mt-4 lg:mt-6 xl:mt-8 w-full h-[15vh] lg:h-[20vh] xl:h-[22vh] rounded-md overflow-hidden bg-gray-200 border border-gray-300 relative">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3606.5522647497164!2d51.521048!3d25.3192428!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6f99d9b35b5b0075%3A0x6c2ea09434508205!2sAl%20Asmakh%20Tower!5e0!3m2!1sen!2sin!4v1773355331769!5m2!1sen!2sin"
+                  className="w-full h-full border-0"
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Al Asmakh Tower Location"
+                ></iframe>
               </div>
             </div>
           </div>
@@ -1368,7 +1419,11 @@ export default function Profit() {
             </div>
           </div>
           {/* Desktop Version */}
-          <div className="hidden lg:block">
+          <div
+            className="hidden lg:block"
+            onMouseEnter={() => setIsOfficeHovered(true)}
+            onMouseLeave={() => setIsOfficeHovered(false)}
+          >
             <div className="overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div

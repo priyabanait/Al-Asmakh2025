@@ -40,14 +40,30 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    // Control video playback based on screen size
+    // Control video playback based on screen size, but pause/mute when voice modal is open
+    if (showSpeechModal) {
+      // Mute and pause both videos while voice search is active
+      if (desktopVideoRef.current) {
+        desktopVideoRef.current.muted = true;
+        desktopVideoRef.current.pause();
+      }
+      if (mobileVideoRef.current) {
+        mobileVideoRef.current.muted = true;
+        mobileVideoRef.current.pause();
+      }
+      return;
+    }
+
     if (isDesktop) {
       // Desktop: play desktop video, pause mobile video
       if (desktopVideoRef.current) {
-        desktopVideoRef.current.play().then(() => {
-          // Unmute after video starts playing
-          desktopVideoRef.current.muted = false;
-        }).catch(console.error);
+        desktopVideoRef.current
+          .play()
+          .then(() => {
+            // Unmute after video starts playing
+            desktopVideoRef.current.muted = false;
+          })
+          .catch(console.error);
       }
       if (mobileVideoRef.current) {
         mobileVideoRef.current.pause();
@@ -56,28 +72,56 @@ export default function Hero() {
     } else {
       // Mobile: play mobile video, pause desktop video
       if (mobileVideoRef.current) {
-        mobileVideoRef.current.play().then(() => {
-          // Unmute after video starts playing
-          mobileVideoRef.current.muted = false;
-        }).catch(console.error);
+        mobileVideoRef.current
+          .play()
+          .then(() => {
+            // Unmute after video starts playing
+            mobileVideoRef.current.muted = false;
+          })
+          .catch(console.error);
       }
       if (desktopVideoRef.current) {
         desktopVideoRef.current.pause();
         desktopVideoRef.current.currentTime = 0;
       }
     }
-  }, [isDesktop]);
+  }, [isDesktop, showSpeechModal]);
 
   // Handle search functionality
-  const handleSearch = () => {
-    const query = searchQuery.trim() || locationSearch.trim();
-    if (query) {
-      // Navigate to search page with search query
-      router.push(`/listings/search?query=${encodeURIComponent(query)}`);
-    } else {
-      // If no query, just navigate to search page
-      router.push("/listings/search");
+  const handleSearch = (overrideQuery) => {
+    const rawQuery = (overrideQuery !== undefined ? overrideQuery : searchQuery) || "";
+    const query = rawQuery.trim() || locationSearch.trim();
+
+    // Minimum 4 characters (excluding spaces) to prevent empty/too-short searches
+    const normalized = query.replace(/\s+/g, "");
+    if (!normalized || normalized.length < 4) {
+      return;
     }
+
+    // Detect intent: sale vs rent from query text
+    const lowered = query.toLowerCase();
+    const hasSaleWord =
+      /\bsale\b/.test(lowered) ||
+      /\bsales\b/.test(lowered) ||
+      /\bfor sale\b/.test(lowered) ||
+      /\bbuy\b/.test(lowered) ||
+      /\bpurchase\b/.test(lowered);
+    const hasRentWord =
+      /\brent\b/.test(lowered) ||
+      /\brental\b/.test(lowered) ||
+      /\bfor rent\b/.test(lowered) ||
+      /\blease\b/.test(lowered);
+
+    let url = `/listings/search?query=${encodeURIComponent(query)}`;
+
+    // Only append priceType when intent is clear, so backend + page both see it
+    if (hasSaleWord && !hasRentWord) {
+      url += `&priceType=sale`;
+    } else if (hasRentWord && !hasSaleWord) {
+      url += `&priceType=rent`;
+    }
+
+    router.push(url);
   };
 
   return (
@@ -241,7 +285,7 @@ export default function Hero() {
         </motion.div>
 
       </section>
-      <section className="lg:hidden relative w-full min-h-screen  items-center justify-center" style={{ overflow: 'visible' }}>
+      <section className="lg:hidden relative w-full min-h-screen items-center justify-center" style={{ overflow: 'visible' }}>
 
         {/* BACKGROUND VIDEO OR IMAGE */}
         {!isDesktop && (
@@ -307,26 +351,40 @@ export default function Hero() {
           {/* SEARCH BAR WITH FILTER - SAME LINE */}
           <div className="bg-white/20 rounded-[3px] mt-2 p-2 sm:p-3 md:p-4 lg:p-5 xl:p-6 2xl:p-8 3xl:p-10 4xl:p-12 5xl:p-14 6xl:p-16 shadow-lg border border-white/10 backdrop-blur-sm w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-3xl 3xl:max-w-[1400px] 4xl:max-w-[1800px] 5xl:max-w-[2400px] 6xl:max-w-[3200px]">
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Search Input Section with Location Autocomplete */}
-              <div className="flex-1">
-                <LocationAutocomplete
-                  value={locationSearch}
-                  onChange={(value) => setLocationSearch(value)}
-                  onSelect={(value) => {
-                    setLocationSearch(value);
-                    // Trigger search or navigate to results
+              {/* Full-text Search Input (matches desktop behavior) */}
+              <div className="flex-1 flex items-center bg-white/90 backdrop-blur-md rounded-[3px] border border-white/30 px-2 h-[45px]">
+                <div className="p-2 bg-[#001730] rounded-[3px] mr-2 flex items-center justify-center h-[28px] w-[28px]">
+                  <Search className="text-white h-4 w-4" />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by location, landmark or property..."
+                  className="flex-1 bg-transparent outline-none text-[10px] sm:text-xs text-[#001730] placeholder:text-gray-500"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch();
+                    }
                   }}
-                  placeholder="Search location..."
-                  className="w-full"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowSpeechModal(true)}
+                  className="text-[#001730] h-5 w-5 ml-2 hover:opacity-70 transition-opacity cursor-pointer"
+                  aria-label="Voice search"
+                >
+                  <Mic className="h-5 w-5" />
+                </button>
               </div>
 
               {/* Filter Button */}
               <button
                 onClick={() => setShowMoreFilters(true)}
-                className="bg-white rounded-[3px] shadow-md p-2 sm:p-2.5 md:p-3 lg:p-4 flex items-center justify-center h-[45px] sm:h-[50px] md:h-[55px] lg:h-[60px] w-[45px] sm:w-[50px] md:w-[55px] lg:w-[60px] flex-shrink-0"
+                className="bg-white rounded-[3px] shadow-md p-2 sm:p-2.5 md:p-3 flex items-center justify-center h-[45px] sm:h-[50px] md:h-[55px] w-[45px] sm:w-[50px] md:w-[55px] flex-shrink-0"
+                aria-label="Advanced filters"
               >
-                <VscSettings className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:w-7 lg:w-8 lg:h-8 text-gray-600" />
+                <VscSettings className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-gray-600" />
               </button>
             </div>
           </div>
@@ -339,9 +397,10 @@ export default function Hero() {
       <MoreFiltersModal
         isOpen={showMoreFilters}
         onClose={() => setShowMoreFilters(false)}
+        // For homepage we want to navigate to the listings search page with filters in the URL
+        navigateToSearchPage={true}
         onShowResults={() => {
-          // Handle show results action
-          console.log("Show results clicked");
+          // No-op for now; navigation is handled inside the modal
         }}
         hideNewFilters={true}
       />

@@ -28,6 +28,9 @@ export default function ListingHeroSection({
   showMoreFilters = false,
   onShowMoreFilters,
   initialSearchQuery = "",
+  // Mobile-only view mode: "LIST" (default) or "MAP"
+  mobileViewMode = "LIST",
+  onMobileViewModeChange,
 }) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
@@ -42,13 +45,14 @@ export default function ListingHeroSection({
     }
   }, [initialSearchQuery]);
 
-  // Filter options
+  // Filter options (desktop top filter bar)
+  // Include an "All" option so user can reset each filter back to "All ..."
   const filterOptions = {
-    "Property Type": ["Apartment", "Villa", "Townhouse", "Penthouse", "Studio"],
-    Location: ["Doha", "Lusail", "West Bay", "Pearl Qatar", "Al Waab"],
-    Beds: ["1", "2", "3", "4", "5", "5+"],
-    Baths: ["1", "2", "3", "4", "5", "5+"],
-    Price: ["0-5000", "5000-10000", "10000-20000", "20000-50000", "50000+"],
+    "Property Type": ["All Property Types", "Apartment", "Villa", "Townhouse", "Penthouse", "Studio"],
+    Location: ["All Areas", "Doha", "Lusail", "West Bay", "Pearl Qatar", "Al Waab"],
+    Beds: ["All Bedrooms", "Studio", "1", "2", "3", "4", "5", "5+"],
+    Baths: ["All Bathrooms", "No bathroom", "1", "2", "3", "4", "5", "5+"],
+    Price: ["All Prices", "0-5000", "5000-10000", "10000-20000", "20000-50000", "50000+"],
   };
 
   const [selectedFilters, setSelectedFilters] = useState({
@@ -78,10 +82,17 @@ export default function ListingHeroSection({
   }, [openDropdown]);
 
   const handleFilterSelect = (filterName, value) => {
-    // Select the clicked value (always set, don't toggle)
+    // Interpret "All ..." options as clearing the filter
+    const isAllOption =
+      value === "All Property Types" ||
+      value === "All Areas" ||
+      value === "All Bedrooms" ||
+      value === "All Bathrooms" ||
+      value === "All Prices";
+
     const newFilters = {
       ...selectedFilters,
-      [filterName]: value,
+      [filterName]: isAllOption ? null : value,
     };
     setSelectedFilters(newFilters);
     setOpenDropdown(null);
@@ -216,15 +227,15 @@ export default function ListingHeroSection({
                   <span>Filters</span>
                   <ArrowDown className="h-4 w-4" />
                 </button>
-                <button className="flex items-center justify-center gap-2 bg-[#001730] text-white px-3 py-2.5 rounded-md font-medium shadow-lg text-sm">
-                  <Image
-                    src="/Icon (4).png"
-                    alt="List Icon"
-                    width={16}
-                    height={16}
-                    className="text-white"
-                  />
-                  <span>Map View</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextMode = mobileViewMode === "MAP" ? "LIST" : "MAP";
+                    onMobileViewModeChange?.(nextMode);
+                  }}
+                  className="flex items-center justify-center gap-2 bg-[#001730] text-white px-3 py-2.5 rounded-md font-medium shadow-lg text-sm"
+                >
+                  <span>{mobileViewMode === "MAP" ? "List View" : "Map View"}</span>
                 </button>
               </div>
             </div>
@@ -331,12 +342,7 @@ export default function ListingHeroSection({
 
                       {/* Label / Selected Value */}
                       <span className="text-[13px]">
-                        {selectedValue
-                          ? // When a value is selected, always show ONLY the value
-                            // e.g. "3" instead of "Beds", "Doha" instead of "Location"
-                            selectedValue
-                          : // Fallback placeholder label when nothing is selected yet
-                            label}
+                        {selectedValue || label}
                       </span>
                     </div>
 

@@ -15,9 +15,12 @@ import { searchPropertiesWithElasticsearch, checkElasticsearchHealth } from "../
 import ListingHeroSection from "./ListingHeroSection";
 
 export default function Sale({ 
-  priceType: initialPriceType = "rent",
+  priceType: initialPriceType = undefined,
   initialSearchQuery = "",
-  initialFilters = {}
+  initialFilters = {},
+  // When true, this component will NEVER call fetchProperties (property service)
+  // and will rely only on the search API / Elasticsearch. Used for /listings/search.
+  searchModeOnly = false,
 }) {
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [priceType, setPriceType] = useState(initialPriceType); // "rent" or "sale"
@@ -29,6 +32,7 @@ export default function Sale({
   const [activeFilters, setActiveFilters] = useState(initialFilters);
   const [useElasticsearch, setUseElasticsearch] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [mobileViewMode, setMobileViewMode] = useState("LIST"); // "LIST" or "MAP"
 
   // Update priceType when prop changes
   useEffect(() => {
@@ -75,12 +79,17 @@ export default function Sale({
         // Prepare search filters - ALWAYS use search API when there's a query
         const searchFilters = {
           q: searchText || "", // Use empty string if no query but forceSearch is true
-          priceType: priceType,
           status: "published",
           page: 1,
           limit: 50,
           ...filters,
         };
+
+        // Only send priceType when explicitly set (rent/sale), so backend can also
+        // infer it from natural language when not provided.
+        if (priceType) {
+          searchFilters.priceType = priceType;
+        }
 
         console.log('[RentMap] Calling search API with filters:', searchFilters);
 
@@ -111,10 +120,10 @@ export default function Sale({
 
         setProperties(result.properties || []);
         setTotalProperties(result.pagination?.total || result.total || 0);
-      } else {
+      } else if (!searchModeOnly) {
         // Use regular fetch for initial load (only when no search query and no filters)
         const result = await fetchProperties({
-          priceType: priceType,
+          priceType: priceType || "rent", // default to rent only for non-search listing pages
           page: 1,
           limit: 50,
           status: "published",
@@ -122,6 +131,11 @@ export default function Sale({
 
         setProperties(result.properties || []);
         setTotalProperties(result.totalProperties || 0);
+      } else {
+        // In search-only mode and no query/filters: do NOT call fetchProperties.
+        // Show an empty state until the user runs a search.
+        setProperties([]);
+        setTotalProperties(0);
       }
     } catch (err) {
       console.error("Error loading properties:", err);
@@ -131,7 +145,7 @@ export default function Sale({
     } finally {
       setLoading(false);
     }
-  }, [priceType, useElasticsearch]);
+  }, [priceType, useElasticsearch, searchModeOnly]);
 
   // Initial load - use initial query and filters if provided from URL
   useEffect(() => {
@@ -195,36 +209,48 @@ export default function Sale({
     }
 
     if (filters["Beds"]) {
-      // Handle "Studio" and "5+" formats
-      if (filters["Beds"] === "Studio") {
+      const bedsValue = filters["Beds"];
+      // Handle "All Bedrooms" (clear filter)
+      if (bedsValue === "All Bedrooms") {
+        // Do not set bedrooms in mappedFilters → removes filter
+      } else if (bedsValue === "Studio") {
         mappedFilters.bedrooms = "0";
-      } else if (filters["Beds"].endsWith("+")) {
-        const num = filters["Beds"].replace("+", "");
+      } else if (bedsValue.endsWith("+")) {
+        const num = bedsValue.replace("+", "");
         mappedFilters.bedrooms = `${num}+`;
       } else {
         // Handle regular numbers like "1", "2", "3", "4", "5"
-        mappedFilters.bedrooms = filters["Beds"];
+        mappedFilters.bedrooms = bedsValue;
       }
-      console.log(`[RentMap] Mapped Beds filter: "${filters["Beds"]}" → bedrooms: "${mappedFilters.bedrooms}"`);
+      console.log(`[RentMap] Mapped Beds filter: "${bedsValue}" → bedrooms: "${mappedFilters.bedrooms}"`);
     }
 
     if (filters["Baths"]) {
-      if (filters["Baths"].endsWith("+")) {
-        const num = filters["Baths"].replace("+", "");
+      const bathsValue = filters["Baths"];
+      // Handle "All Bathrooms" (clear filter)
+      if (bathsValue === "All Bathrooms") {
+        // Do not set bathrooms in mappedFilters → removes filter
+      } else if (bathsValue === "No bathroom") {
+        mappedFilters.bathrooms = "0";
+      } else if (bathsValue.endsWith("+")) {
+        const num = bathsValue.replace("+", "");
         mappedFilters.bathrooms = `${num}+`;
       } else {
-        mappedFilters.bathrooms = filters["Baths"];
+        mappedFilters.bathrooms = bathsValue;
       }
     }
 
     if (filters["Price"]) {
-      // Parse price range like "0-5000" or "50000+"
-      if (filters["Price"].includes("-")) {
-        const [min, max] = filters["Price"].split("-");
+      const priceValue = filters["Price"];
+      // "All Prices" clears price range
+      if (priceValue === "All Prices") {
+        // No min/max → removes price filter
+      } else if (priceValue.includes("-")) {
+        const [min, max] = priceValue.split("-");
         mappedFilters.minPrice = min;
         mappedFilters.maxPrice = max;
-      } else if (filters["Price"].endsWith("+")) {
-        mappedFilters.minPrice = filters["Price"].replace("+", "");
+      } else if (priceValue.endsWith("+")) {
+        mappedFilters.minPrice = priceValue.replace("+", "");
       }
     }
 
@@ -267,32 +293,36 @@ export default function Sale({
         showMoreFilters={showMoreFilters}
         onShowMoreFilters={setShowMoreFilters}
         initialSearchQuery={initialSearchQuery || searchQuery}
+        mobileViewMode={mobileViewMode}
+        onMobileViewModeChange={setMobileViewMode}
       />
 
-      {/* Mobile Map View */}
-      <div className="block lg:hidden w-full mt-[130px] relative" style={{ height: "calc(100vh - 350px)", minHeight: "60vh" }}>
-        {/* Los Angeles Map */}
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="absolute inset-0"
-        ></iframe>
+      {/* Mobile Map View (only when Map View is active on mobile) */}
+      {mobileViewMode === "MAP" && (
+        <div className="block lg:hidden w-full mt-[130px] relative" style={{ height: "calc(100vh - 350px)", minHeight: "60vh" }}>
+          {/* Los Angeles Map (placeholder) */}
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="absolute inset-0"
+          ></iframe>
 
-        {/* Zoom Controls - Bottom Right */}
-        <div className="absolute bottom-4 right-4 bg-gray-200 rounded-md shadow-lg flex flex-col z-10">
-          <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
-            <span className="text-lg font-semibold">+</span>
-          </button>
-          <button className="px-3 py-2 hover:bg-gray-50">
-            <span className="text-lg font-semibold">-</span>
-          </button>
+          {/* Zoom Controls - Bottom Right */}
+          <div className="absolute bottom-4 right-4 bg-gray-200 rounded-md shadow-lg flex flex-col z-10">
+            <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
+              <span className="text-lg font-semibold">+</span>
+            </button>
+            <button className="px-3 py-2 hover:bg-gray-50">
+              <span className="text-lg font-semibold">-</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ---------- READY TO FIND SECTION ---------- */}
       {/* <div className="hidden lg:block w-[100%] h-[1px] bg-gray-300 my-4  px-10"></div> */}
@@ -325,7 +355,10 @@ export default function Sale({
           </div>
         </div>
       ) : (
-        <PropertyListView properties={properties} totalProperties={totalProperties} />
+        // On mobile, hide the list when Map View is active; on desktop always show.
+        <div className={mobileViewMode === "MAP" ? "hidden lg:block" : ""}>
+          <PropertyListView properties={properties} totalProperties={totalProperties} />
+        </div>
       )}
 
       {/* More Filters Modal */}

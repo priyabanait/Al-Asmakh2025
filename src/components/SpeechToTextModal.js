@@ -44,16 +44,18 @@ export default function SpeechToTextModal({
       let interimTranscript = "";
       let finalTranscript = "";
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
+      // Aggregate ALL results so we don't lose earlier phrases
+      for (let i = 0; i < event.results.length; i++) {
+        const segment = event.results[i][0].transcript;
         if (event.results[i].isFinal) {
-          finalTranscript += transcript + " ";
+          finalTranscript += segment + " ";
         } else {
-          interimTranscript += transcript;
+          interimTranscript += segment;
         }
       }
 
-      setTranscript(finalTranscript || interimTranscript);
+      const combined = (finalTranscript + interimTranscript).trim();
+      setTranscript(combined);
     };
 
     recognition.onerror = (event) => {

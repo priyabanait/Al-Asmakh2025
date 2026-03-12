@@ -160,7 +160,10 @@ export default function Rent() {
           {/* Contact Team Button - Below the box */}
           <div className="mt-4 lg:mt-6">
             <div className="flex-shrink-0 lg:mr-40 ">
-              <button className="btn-details text-[12px]">
+              <button
+                className="btn-details text-[12px]"
+                onClick={() => (window.location.href = '/listings/luxury')}
+              >
                 <span>View Premium Portfolio</span>
                 <FaArrowRight size={12} className="md:w-[14px] md:h-[14px] ml-4 md:ml-16" />
               </button>
@@ -343,12 +346,10 @@ export default function Rent() {
       </div>
 
       <DreamPropertySection 
-
       title="Ready to present your property at its best?"
       description="Connect with our team for a tailored marketing plan, including recommended content, channels, and a clear campaign timeline."
-      btnText="Contact Us Now "
-      btnLink="/contact"
-      
+        btnText="Contact Us Now"
+        btnLink="/contactheadoffice"
       />
     </div>
   );

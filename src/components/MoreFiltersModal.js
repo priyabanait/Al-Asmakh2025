@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowDown, X, Sofa, Ruler, Gem, MapPin, Building, ListChecks, Search, Mic, Bed, DollarSign, User, Briefcase, Bath } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LocationAutocomplete from "./LocationAutocomplete";
@@ -8,7 +9,18 @@ import { searchPropertiesWithElasticsearch, checkElasticsearchHealth } from "../
 import { fetchAgents } from "../utils/propertyapi";
 import { fetchProjects } from "../utils/projectapi";
 
-export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideNewFilters = false, priceType: propPriceType = "rent", projectId }) {
+export default function MoreFiltersModal({
+  isOpen,
+  onClose,
+  onShowResults,
+  hideNewFilters = false,
+  priceType: propPriceType = "rent",
+  projectId,
+  // When true, clicking "Show Results" will navigate to /listings/search with filters as query params
+  // instead of performing the search here. This is used on the homepage Hero search.
+  navigateToSearchPage = false,
+}) {
+  const router = useRouter();
   const [openSections, setOpenSections] = useState({
     location: false,
     propertyType: false,
@@ -78,14 +90,16 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
     setPriceType(propPriceType);
   }, [propPriceType]);
 
-  // Check Elasticsearch availability on mount
+  // Check Elasticsearch availability on mount (only needed when we execute search here)
   useEffect(() => {
+    if (!navigateToSearchPage) {
     const checkElasticsearch = async () => {
       const isAvailable = await checkElasticsearchHealth();
       setUseElasticsearch(isAvailable);
     };
     checkElasticsearch();
-  }, []);
+    }
+  }, [navigateToSearchPage]);
 
   // Fetch agents and projects from backend on mount
   useEffect(() => {
@@ -209,6 +223,7 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
 
   const handleShowResults = async () => {
     try {
+      if (isSearching) return;
       setIsSearching(true);
 
       // Collect all filter state
@@ -238,7 +253,33 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
         searchParams.projectId = projectId;
       }
 
-      // Call search API - Try Elasticsearch first if available
+      if (navigateToSearchPage) {
+        // Build query string suitable for URL from searchParams (supports array values)
+        const urlSearchParams = new URLSearchParams();
+        Object.entries(searchParams).forEach(([key, value]) => {
+          if (value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0)) {
+            return;
+          }
+
+          if (Array.isArray(value)) {
+            value.forEach((v) => {
+              urlSearchParams.append(key, String(v));
+            });
+          } else {
+            urlSearchParams.append(key, String(value));
+          }
+        });
+
+        const queryString = urlSearchParams.toString();
+        // Navigate to listings search page with filters as query params
+        router.push(`/listings/search${queryString ? `?${queryString}` : ""}`);
+
+        // Optionally inform parent about the filters used
+        if (onShowResults) {
+          onShowResults({ searchParams });
+        }
+      } else {
+        // Execute search here and return results to parent (existing behaviour for listings pages)
       let results;
       
       if (useElasticsearch) {
@@ -261,6 +302,7 @@ export default function MoreFiltersModal({ isOpen, onClose, onShowResults, hideN
       // Pass results to parent component
       if (onShowResults) {
         onShowResults(results);
+        }
       }
 
       onClose();

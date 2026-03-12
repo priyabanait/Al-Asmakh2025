@@ -22,7 +22,7 @@ export default function Sale() {
       bathrooms: 2,
       area: "450",
       price: "280,000",
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
     {
       id: 2,
@@ -32,7 +32,7 @@ export default function Sale() {
       bathrooms: 2,
       area: "450",
       price: "280,000",
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
     {
       id: 3,
@@ -42,7 +42,7 @@ export default function Sale() {
       bathrooms: 2,
       area: "450",
       price: "280,000",
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
     {
       id: 4,
@@ -52,7 +52,7 @@ export default function Sale() {
       bathrooms: 2,
       area: "450",
       price: "280,000",
-      image: "/div.property-thumbnail-wrapper.png",
+      image: "/images/fallback-property.png",
     },
   ];
 
@@ -128,10 +128,10 @@ export default function Sale() {
             </div>
 
             {/* Status Indicator */}
-            <div className="text-center text-gray-600 text-sm font-medium pt-3  pb-2">
-              Showing 10 of 50
+            <div className="text-center text-gray-600 text-sm font-medium pt-3 pb-2 mt-1 mb-1">
+              Showing {properties.length} of {properties.length}
             </div>
-            <div className="w-[100%] h-[1px] bg-gray-300 my-2 mb-4  px-10"></div>
+            <div className="w-[100%] h-[1px] bg-gray-300 my-3 mb-6 px-10"></div>
           </div>
         </div>
 

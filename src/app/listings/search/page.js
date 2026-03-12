@@ -10,71 +10,88 @@ function SearchContent() {
   const searchParams = useSearchParams()
   const [initialQuery, setInitialQuery] = useState('')
   const [initialFilters, setInitialFilters] = useState({})
+  const [initialPriceType, setInitialPriceType] = useState(null) // "rent" or "sale" or null
 
   useEffect(() => {
-    // Get query parameter from URL and decode it
-    const query = searchParams.get('query') ? decodeURIComponent(searchParams.get('query')).trim() : ''
+    // Get query parameter from URL and decode it (for full-text search)
+    const queryParam = searchParams.get('query')
+    const query = queryParam ? decodeURIComponent(queryParam).trim() : ''
     console.log('[SearchPage] Query from URL:', query)
     setInitialQuery(query)
 
-    // Get filter parameters from URL if any
+    // Build filters object from all other query params
     const filters = {}
-    
-    // Location filter
-    const location = searchParams.get('location')
-    if (location) {
-      filters.locationLevel1 = location
-    }
 
-    // Property type filter
-    const propertyType = searchParams.get('propertyType')
-    if (propertyType) {
-      const typeMap = {
-        "Apartment": "apartment",
-        "Villa": "villa",
-        "Townhouse": "townhouse",
-        "Penthouse": "luxury",
-        "Studio": "studio",
+    // Helper to append values, supporting repeated keys (arrays)
+    const appendFilter = (key, value) => {
+      if (filters[key] === undefined) {
+        filters[key] = value
+      } else if (Array.isArray(filters[key])) {
+        filters[key].push(value)
+      } else {
+        filters[key] = [filters[key], value]
       }
-      filters.type = typeMap[propertyType] || propertyType.toLowerCase()
     }
 
-    // Bedrooms filter
-    const bedrooms = searchParams.get('bedrooms')
-    if (bedrooms) {
-      filters.bedrooms = bedrooms
+    // Iterate over all URL params and translate where needed
+    for (const [key, value] of searchParams.entries()) {
+      if (!value) continue
+
+      // Skip the main text query here; it's handled separately as initialQuery
+      if (key === 'query') continue
+
+      // Backwards compatibility for older param names
+      if (key === 'location') {
+        appendFilter('locationLevel1', value)
+        continue
+      }
+
+      if (key === 'propertyType') {
+        const typeMap = {
+          "Apartment": "apartment",
+          "Villa": "villa",
+          "Townhouse": "townhouse",
+          "Penthouse": "luxury",
+          "Studio": "studio",
+        }
+        appendFilter('type', typeMap[value] || value.toLowerCase())
+        continue
+      }
+
+      // For all other keys (including those coming directly from MoreFiltersModal
+      // such as locationSearch, type, bedrooms, bathrooms, amenities, sizeRange, etc.),
+      // pass them through as-is so they reach the search API unchanged.
+      appendFilter(key, value)
     }
 
-    // Bathrooms filter
-    const bathrooms = searchParams.get('bathrooms')
-    if (bathrooms) {
-      filters.bathrooms = bathrooms
+    // Determine desired priceType for this search page (optional)
+    // Priority:
+    // 1) Explicit priceType query param (e.g., ?priceType=sale)
+    // 2) Heuristic based on the main query text (e.g., "sale" → sale)
+    // 3) Otherwise leave undefined and let backend infer from q
+    const urlPriceType = searchParams.get('priceType')
+    const normalizedQuery = (query || '').toLowerCase()
+    let derivedPriceType = null
+
+    if (urlPriceType) {
+      derivedPriceType = urlPriceType.toLowerCase() === 'lease' ? 'rent' : urlPriceType.toLowerCase()
+    } else if (normalizedQuery === 'sale' || normalizedQuery.includes('for sale')) {
+      derivedPriceType = 'sale'
     }
 
-    // Price range filters
-    const minPrice = searchParams.get('minPrice')
-    const maxPrice = searchParams.get('maxPrice')
-    if (minPrice) {
-      filters.minPrice = minPrice
-    }
-    if (maxPrice) {
-      filters.maxPrice = maxPrice
-    }
-
-    // Price type (rent/sale)
-    const priceType = searchParams.get('priceType')
-    if (priceType) {
-      filters.priceType = priceType
-    }
+    setInitialPriceType(derivedPriceType)
 
     setInitialFilters(filters)
   }, [searchParams])
 
   return (
     <Rent 
-      priceType="rent" 
+      priceType={initialPriceType}
       initialSearchQuery={initialQuery}
       initialFilters={initialFilters}
+      // In search mode we want ONLY the search API / Elasticsearch,
+      // and never the generic fetchProperties fallback.
+      searchModeOnly={true}
     />
   )
 }

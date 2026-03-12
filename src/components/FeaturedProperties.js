@@ -226,18 +226,7 @@ export default function FeaturedProperties({
               {formattedProperties.map((property, index) => (
                 <div
                   key={property.id || index}
-                  className={`
-          w-[250px]  lg:w-[335px]
-          p-4
-          bg-[#E9E9E9] border border-gray-200 
-          rounded-md overflow-hidden shadow-md 
-          hover:shadow-xl transition-shadow duration-300 
-          flex-shrink-0
-          ${index === 0 || index === formattedProperties.length - 1
-                      ? 'scale-95'
-                      : 'scale-100'
-                    }
-        `}
+                  className="w-[250px] lg:w-[335px] p-4 bg-[#E9E9E9] border border-gray-200 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex-shrink-0"
                 >
                   {/* Image Section */}
                   <div className="relative w-full h-[180px]  xl:h-[200px] ">
