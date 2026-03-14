@@ -386,6 +386,7 @@ export const fetchPropertiesByOfferingType = async (offeringType, options = {}) 
                 statusType: statusType,
                 price: price,
                 image: image,
+                createdAt: prop.createdAt,
                 // Preserve exposure type so listing pages can filter (e.g. "premium")
                 exposureType: prop.exposureType,
             };

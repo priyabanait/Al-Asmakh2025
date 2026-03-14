@@ -222,14 +222,14 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                             {/* AMENITIES — GRID RESPONSIVE - Dynamic from API */}
 
                             {property.amenities && property.amenities.length > 0 && (
-                                <div className="p-2 shadow-md bg-gray-50 rounded-md mt-2">
+                                <div className="p-2 shadow-md  bg-gray-100 rounded-md mt-2">
                                     <div className="grid grid-cols-[1fr_1fr_1fr_60px] gap-1">
 
                                         {property.amenities.slice(0, 3).map((amenity, index) => (
                                             <div
                                                 key={index}
                                                 className="
-          bg-gray-300 text-white
+          bg-gray-400 text-white
           flex items-center justify-center
           text-center
           border border-gray-200
@@ -294,7 +294,7 @@ export default function PropertyListDev({ properties = [], viewMode = "LIST" }) 
                             <div>
                                 <p className="text-[10px] lg:text-xs text-gray-500">Starting at</p>
                                 <p className="text-base lg:text-lg font-semibold text-[#001730]">
-                                    {property.price || "Price on request"}
+                                    {property.minimumPrice || "Not Disclosed"} 
                                 </p>
                             </div>
 

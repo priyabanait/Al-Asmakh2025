@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
-import { MapPin } from 'lucide-react'
+import { MapPin, Calendar } from 'lucide-react'
 import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath } from 'react-icons/fa6'
 import { FaHome, FaBuilding, FaRegSquare, FaDollarSign, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBed, FaRulerCombined } from 'react-icons/fa'
 import Link from 'next/link'
@@ -217,7 +217,10 @@ export default function TowerDetailsPage() {
                   {area.name || area.title || "Area"}
                 </h1>
 
-                <div className="flex items-center gap-2 mb-4 sm:mb-6 px-10 lg:px-0">  <MapPin size={18} className="text-[#001730] flex-shrink-0" /> Kingdom of Qatar</div>
+                <div className="flex items-center gap-2 mb-4 sm:mb-6 px-10 lg:px-0 justify-center lg:justify-start">  
+                  <MapPin size={18} className="text-[#001730] flex-shrink-0 hidden lg:block" />
+                  <span className="text-center lg:text-left">Kingdom of Qatar</span>
+                </div>
                 
 
               
@@ -843,25 +846,13 @@ export default function TowerDetailsPage() {
                                   <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-xs sm:text-sm mb-4">
                                     {/* Year */}
                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-3 lg:px-4 rounded-md justify-center">
-                                      <Image
-                                        src="/Time.png"
-                                        alt="Year"
-                                        width={16}
-                                        height={16}
-                                        className="w-[18px] h-[18px]"
-                                      />
+                                      <Calendar size={18} className="text-[#001730] flex-shrink-0" />
                                       <span className="text-[11px] sm:text-xs lg:text-sm">{year || "N/A"}</span>
                                     </div>
 
                                     {/* Units */}
                                     <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-3 lg:px-4 rounded-md justify-center">
-                                      <Image
-                                        src="/3_Icons Used_Project Dvt 1 (1).png"
-                                        alt="Units"
-                                        width={16}
-                                        height={16}
-                                        className="w-[18px] h-[18px]"
-                                      />
+                                      <FaBuilding size={18} className="text-[#001730] flex-shrink-0" />
                                       <span className="text-[11px] sm:text-xs lg:text-sm">{units}</span>
                                     </div>
 

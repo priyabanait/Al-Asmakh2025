@@ -17,6 +17,24 @@ export default function MeetOurAgents() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const agentsPerPage = 20;
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileVisibleCount, setMobileVisibleCount] = useState(10);
+
+  // Desktop filter dropdown state
+  const [openDesktopFilter, setOpenDesktopFilter] = useState(null);
+  const desktopFilterRefs = useRef({});
+
+  // Mobile filter dropdown state
+  const [openMobileFilter, setOpenMobileFilter] = useState(null);
+
+  // Basic filter state (client-side filtering)
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedSpeciality, setSelectedSpeciality] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+
+  const [locations, setLocations] = useState([]);
+  const [specialities, setSpecialities] = useState([]);
+  const [languages, setLanguages] = useState([]);
 
   // Fetch agents when page changes
   useEffect(() => {
@@ -45,22 +63,118 @@ export default function MeetOurAgents() {
     loadAgents();
   }, [currentPage]);
 
+  // Track viewport for mobile-specific behaviour
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Build filter option lists whenever agents change
+  useEffect(() => {
+    if (!agents || agents.length === 0) {
+      setLocations([]);
+      setSpecialities([]);
+      setLanguages([]);
+      return;
+    }
+
+    const locs = Array.from(
+      new Set(agents.map((a) => a.location).filter(Boolean))
+    );
+
+    const specs = Array.from(
+      new Set(
+        agents
+          .flatMap((a) =>
+            a.specialties
+              ? String(a.specialties)
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+              : []
+          )
+      )
+    );
+
+    const langs = Array.from(
+      new Set(
+        agents
+          .flatMap((a) =>
+            a.languages
+              ? String(a.languages)
+                  .split(",")
+                  .map((l) => l.trim())
+                  .filter(Boolean)
+              : []
+          )
+      )
+    );
+
+    setLocations(locs);
+    setSpecialities(specs);
+    setLanguages(langs);
+  }, [agents]);
+
+  // Apply client-side filters
+  const getFilteredAgents = () => {
+    let list = agents;
+    if (selectedLocation) {
+      list = list.filter((a) =>
+        a.location?.toLowerCase().includes(selectedLocation.toLowerCase())
+      );
+    }
+    if (selectedSpeciality) {
+      list = list.filter((a) =>
+        String(a.specialties || "")
+          .toLowerCase()
+          .includes(selectedSpeciality.toLowerCase())
+      );
+    }
+    if (selectedLanguage) {
+      list = list.filter((a) =>
+        String(a.languages || "")
+          .toLowerCase()
+          .includes(selectedLanguage.toLowerCase())
+      );
+    }
+    return list;
+  };
+
+  const filteredAgents = getFilteredAgents();
+  const displayedAgents =
+    isMobile && filteredAgents.length > 0
+      ? filteredAgents.slice(0, mobileVisibleCount)
+      : filteredAgents;
+
   // Close filters when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showFilters && filtersRef.current && !filtersRef.current.contains(event.target)) {
         setShowFilters(false);
+        setOpenMobileFilter(null);
+      }
+
+      if (
+        openDesktopFilter &&
+        desktopFilterRefs.current[openDesktopFilter] &&
+        !desktopFilterRefs.current[openDesktopFilter].contains(event.target)
+      ) {
+        setOpenDesktopFilter(null);
       }
     };
 
-    if (showFilters) {
+    if (showFilters || openDesktopFilter) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showFilters]);
+  }, [showFilters, openDesktopFilter]);
   return (
     <div>
       {/* ---------- HERO SECTION ---------- */}
@@ -119,19 +233,17 @@ export default function MeetOurAgents() {
 
         {/* Desktop Filter Items - Moved to bottom of hero */}
         <div className="hidden lg:flex absolute w-full justify-center bottom-10 lg:bottom-[-32px] z-20">
-          <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md 
-                  gap-4 justify-center items-center">
+          <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md gap-4 justify-center items-center">
             {/* Filter Items */}
-            {["Location", "Specialities", "Reviews", "Languages"].map((label, index) => {
-              // Get appropriate icon for each label
+            {["Location", "Specialities", "Languages"].map((label, index) => {
+              const isOpen = openDesktopFilter === label;
+
               const getIcon = () => {
                 switch (label) {
                   case "Location":
                     return <MapPin size={16} />;
                   case "Specialities":
                     return <Tag size={16} />;
-                  case "Reviews":
-                    return <Star size={16} />;
                   case "Languages":
                     return <Globe size={16} />;
                   default:
@@ -139,25 +251,97 @@ export default function MeetOurAgents() {
                 }
               };
 
+              const getSelectedValue = () => {
+                switch (label) {
+                  case "Location":
+                    return selectedLocation || "Location";
+                  case "Specialities":
+                    return selectedSpeciality || "Specialities";
+                  case "Languages":
+                    return selectedLanguage || "Languages";
+                  default:
+                    return label;
+                }
+              };
+
+              const getOptions = () => {
+                switch (label) {
+                  case "Location":
+                    return ["All Locations", ...locations];
+                  case "Specialities":
+                    return ["All Specialities", ...specialities];
+                  case "Languages":
+                    return ["All Languages", ...languages];
+                  default:
+                    return [];
+                }
+              };
+
+              const handleSelect = (value) => {
+                if (label === "Location") {
+                  setSelectedLocation(value === "All Locations" ? "" : value);
+                } else if (label === "Specialities") {
+                  setSelectedSpeciality(value === "All Specialities" ? "" : value);
+                } else if (label === "Languages") {
+                  setSelectedLanguage(value === "All Languages" ? "" : value);
+                }
+                setOpenDesktopFilter(null);
+              };
+
               return (
                 <div
                   key={index}
-                  className="flex items-center justify-between bg-[#0B1F3A] text-white px-8 py-2 w-full max-w-[250px]
-                       rounded-md shadow-lg hover:bg-[#001730] transition"
+                  ref={(el) => (desktopFilterRefs.current[label] = el)}
+                  className="relative w-full max-w-[250px]"
                 >
-                  <div className="flex items-center gap-4">
-                    {/* Icon + Divider */}
-                    <div className="flex items-center gap-2">
-                      {getIcon()}
-                      <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                  <button
+                    type="button"
+                    onClick={() => setOpenDesktopFilter(isOpen ? null : label)}
+                    className={`flex items-center justify-between w-full bg-[#0B1F3A] text-white px-8 py-2 rounded-md shadow-lg hover:bg-[#001730] transition ${
+                      getSelectedValue() !== label ? "ring-2 ring-[#001730]" : ""
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Icon + Divider */}
+                      <div className="flex items-center gap-2">
+                        {getIcon()}
+                        <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                      </div>
+
+                      {/* Label / Selected */}
+                      <span className="text-[13px] whitespace-nowrap">
+                        {getSelectedValue()}
+                      </span>
                     </div>
 
-                    {/* Label */}
-                    <span className="text-[13px]">{label}</span>
-                  </div>
+                    {/* Down Arrow */}
+                    <ArrowDown
+                      size={16}
+                      className={`opacity-80 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
 
-                  {/* Down Arrow */}
-                  <ArrowDown size={16} className="opacity-80" />
+                  {/* Dropdown */}
+                  {isOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-60 overflow-y-auto">
+                      {getOptions().map((option, optIndex) => (
+                        <button
+                          key={optIndex}
+                          type="button"
+                          onClick={() => handleSelect(option)}
+                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${
+                            getSelectedValue() === option
+                              ? "bg-[#001730] text-white"
+                              : "text-gray-700"
+                          } ${optIndex === 0 ? "rounded-t-md" : ""} ${
+                            optIndex === getOptions().length - 1 ? "rounded-b-md" : ""
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -191,26 +375,116 @@ export default function MeetOurAgents() {
             {/* Filter Items - Shown when button is clicked */}
             {showFilters && (
               <div className="flex flex-col bottom-20 gap-3">
-                {["Location", "Specialities", "Reviews", "Languages"].map((label, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-3 rounded-md w-full shadow-lg hover:bg-[#001730] transition"
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Icon + Divider */}
-                      <div className="flex items-center gap-2">
-                        <MapPin size={16} />
-                        <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
-                      </div>
+                {["Location", "Specialities", "Languages"].map((label, index) => {
+                  const isOpen = openMobileFilter === label;
 
-                      {/* Label */}
-                      <span className="text-sm font-medium">{label}</span>
+                  const getIcon = () => {
+                    switch (label) {
+                      case "Location":
+                        return <MapPin size={16} />;
+                      case "Specialities":
+                        return <Tag size={16} />;
+                      case "Languages":
+                        return <Globe size={16} />;
+                      default:
+                        return <MapPin size={16} />;
+                    }
+                  };
+
+                  const getSelectedValue = () => {
+                    switch (label) {
+                      case "Location":
+                        return selectedLocation || "Location";
+                      case "Specialities":
+                        return selectedSpeciality || "Specialities";
+                      case "Languages":
+                        return selectedLanguage || "Languages";
+                      default:
+                        return label;
+                    }
+                  };
+
+                  const getOptions = () => {
+                    switch (label) {
+                      case "Location":
+                        return ["All Locations", ...locations];
+                      case "Specialities":
+                        return ["All Specialities", ...specialities];
+                      case "Languages":
+                        return ["All Languages", ...languages];
+                      default:
+                        return [];
+                    }
+                  };
+
+                  const handleSelect = (value) => {
+                    if (label === "Location") {
+                      setSelectedLocation(value === "All Locations" ? "" : value);
+                    } else if (label === "Specialities") {
+                      setSelectedSpeciality(value === "All Specialities" ? "" : value);
+                    } else if (label === "Languages") {
+                      setSelectedLanguage(value === "All Languages" ? "" : value);
+                    }
+                    setOpenMobileFilter(null);
+                  };
+
+                  return (
+                    <div key={index} className="relative">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setOpenMobileFilter(isOpen ? null : label)
+                        }
+                        className="flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-3 rounded-md w-full shadow-lg hover:bg-[#001730] transition"
+                      >
+                        <div className="flex items-center gap-4">
+                          {/* Icon + Divider */}
+                          <div className="flex items-center gap-2">
+                            {getIcon()}
+                            <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
+                          </div>
+
+                          {/* Label / Selected */}
+                          <span className="text-sm font-medium">
+                            {getSelectedValue()}
+                          </span>
+                        </div>
+
+                        {/* Down Arrow */}
+                        <ArrowDown
+                          size={16}
+                          className={`text-white opacity-80 transition-transform ${
+                            isOpen ? "rotate-180" : ""
+                          }`}
+                        />
+                      </button>
+
+                      {/* Mobile dropdown */}
+                      {isOpen && (
+                        <div className="mt-1 bg-white rounded-md shadow-lg z-40 border border-gray-200 max-h-60 overflow-y-auto">
+                          {getOptions().map((option, optIndex) => (
+                            <button
+                              key={optIndex}
+                              type="button"
+                              onClick={() => handleSelect(option)}
+                              className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${
+                                getSelectedValue() === option
+                                  ? "bg-[#001730] text-white"
+                                  : "text-gray-700"
+                              } ${optIndex === 0 ? "rounded-t-md" : ""} ${
+                                optIndex === getOptions().length - 1
+                                  ? "rounded-b-md"
+                                  : ""
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Down Arrow */}
-                    <ArrowDown size={16} className="text-white opacity-80" />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -256,7 +530,7 @@ export default function MeetOurAgents() {
           </div>
         ) : (
           <div className="container mx-auto px-4 sm:px-6 md:px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-            {agents.map((agent) => (
+            {displayedAgents.map((agent) => (
               <div
                 key={agent.id || agent.name}
                 className="shadow-lg rounded-md overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 bg-gray-200"
@@ -321,7 +595,7 @@ export default function MeetOurAgents() {
                   <div className="flex flex-row gap-2">
                     {agent.phone ? (
                       <a
-                        href={`tel:${agent.phone}`}
+                        href={`tel:${agent.phone.startsWith("+") ? agent.phone.replace(/\s+/g, "") : `+974${agent.phone.replace(/^0+/, "").replace(/\s+/g, "")}`}`}
                         className="flex-1 flex items-center justify-between
     p-2 px-4 bg-[#001730] text-white py-2 rounded-md
     text-[12px] sm:text-[12px] font-medium

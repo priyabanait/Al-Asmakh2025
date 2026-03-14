@@ -8,6 +8,7 @@ import { Md360 } from "react-icons/md";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchPropertyById, fetchProperties } from "../utils/propertyapi";
+import FeaturedProperties from "./FeaturedProperties";
 
 // Google Maps API Key
 const GOOGLE_MAPS_API_KEY = "AIzaSyBS4N8g1D0VhjnOHwSMWRdz1JbTmEUg8Gw";
@@ -28,6 +29,9 @@ function PropertyDetailsContent() {
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const thumbnailStripRef = useRef(null);
+  const thumbnailRefs = useRef([]);
 
   // Fetch property details
   useEffect(() => {
@@ -132,15 +136,21 @@ function PropertyDetailsContent() {
     }
 
     // Format price
-    let price = "Price on request";
+    let price = "Price ";
     let priceLabel = "";
-    if (property.priceAmount) {
+    // Check if priceAmount exists and is a valid number (including 0)
+    if (property.priceAmount !== undefined && property.priceAmount !== null && property.priceAmount !== '') {
       const currency = property.priceCurrency || "QAR";
-      const frequency = property.priceFrequency ? `/${property.priceFrequency}` : "";
-      price = `${property.priceAmount.toLocaleString()} ${currency}${frequency}`;
-      priceLabel = property.priceFrequency === "monthly" ? "Per Month" :
-        property.priceFrequency === "weekly" ? "Per Week" :
-          property.priceFrequency === "daily" ? "Per Day" : "";
+      // Default to monthly for rent properties if frequency is not provided
+      const frequency = property.priceFrequency || (property.priceType === 'rent' ? 'monthly' : '');
+      const frequencyStr = frequency ? `/${frequency}` : "";
+      const priceValue = typeof property.priceAmount === 'number' 
+        ? property.priceAmount 
+        : parseFloat(property.priceAmount) || 0;
+      price = `${priceValue.toLocaleString()} ${currency}${frequencyStr}`;
+      priceLabel = frequency === "monthly" ? "Per Month" :
+        frequency === "weekly" ? "Per Week" :
+          frequency === "daily" ? "Per Day" : "";
     }
 
     return {
@@ -283,10 +293,16 @@ function PropertyDetailsContent() {
     }
 
     let price = "Price on request";
-    if (property.priceAmount) {
+    // Check if priceAmount exists and is a valid number (including 0)
+    if (property.priceAmount !== undefined && property.priceAmount !== null && property.priceAmount !== '') {
       const currency = property.priceCurrency || "QAR";
-      const frequency = property.priceFrequency ? `/${property.priceFrequency}` : "";
-      price = `${property.priceAmount.toLocaleString()} ${currency}${frequency}`;
+      // Default to monthly for rent properties if frequency is not provided
+      const frequency = property.priceFrequency || (property.priceType === 'rent' ? 'monthly' : '');
+      const frequencyStr = frequency ? `/${frequency}` : "";
+      const priceValue = typeof property.priceAmount === 'number' 
+        ? property.priceAmount 
+        : parseFloat(property.priceAmount) || 0;
+      price = `${priceValue.toLocaleString()} ${currency}${frequencyStr}`;
     }
 
     return {
@@ -302,6 +318,15 @@ function PropertyDetailsContent() {
       priceType: property.priceType || property.offeringType || "rent",
       virtualTourUrl: property.virtualTourUrl || null,
     };
+  };
+
+  const scrollThumbnailIntoView = (index) => {
+    if (!thumbnailStripRef.current || !thumbnailRefs.current[index]) return;
+    thumbnailRefs.current[index].scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
   };
 
   if (loading) {
@@ -377,12 +402,23 @@ function PropertyDetailsContent() {
 
           {/* Thumbnail Images */}
           {formattedProperty.images.length > 0 && (
-            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3">
+            <div
+              ref={thumbnailStripRef}
+              className="flex gap-2 sm:gap-3 overflow-x-auto pb-3"
+            >
               {formattedProperty.images.map((img, index) => (
                 <div
                   key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`min-w-[100px] sm:min-w-[120px] lg:min-w-[150px] h-[60px] sm:h-[75px] lg:h-[90px] rounded-[5px] overflow-hidden shadow cursor-pointer border-2 ${currentImageIndex === index ? 'border-[#001730]' : 'border-transparent'}`}
+                  ref={(el) => {
+                    thumbnailRefs.current[index] = el;
+                  }}
+                  onClick={() => {
+                    setCurrentImageIndex(index);
+                    scrollThumbnailIntoView(index);
+                  }}
+                  className={`min-w-[100px] sm:min-w-[120px] lg:min-w-[150px] h-[60px] sm:h-[75px] lg:h-[90px] rounded-[5px] overflow-hidden shadow cursor-pointer border-2 ${
+                    currentImageIndex === index ? "border-[#001730]" : "border-transparent"
+                  }`}
                 >
                   <Image
                     src={img}
@@ -390,7 +426,7 @@ function PropertyDetailsContent() {
                     width={150}
                     height={90}
                     className="object-cover w-full h-full"
-                    unoptimized={img.startsWith('http')}
+                    unoptimized={img.startsWith("http")}
                   />
                 </div>
               ))}
@@ -425,7 +461,11 @@ function PropertyDetailsContent() {
           {formattedProperty.images.length > 2 && (
             <div className="flex justify-center items-center gap-4 sm:gap-6 mt-4 sm:mt-6">
               <button
-                onClick={() => setCurrentImageIndex(Math.max(0, currentImageIndex - 2))}
+                onClick={() => {
+                  const newIndex = Math.max(0, currentImageIndex - 2);
+                  setCurrentImageIndex(newIndex);
+                  scrollThumbnailIntoView(newIndex);
+                }}
                 disabled={currentImageIndex === 0}
                 className="bg-white p-2 sm:p-3 rounded-[5px] shadow-md border border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -435,7 +475,14 @@ function PropertyDetailsContent() {
                 {Math.floor(currentImageIndex / 2) + 1} / {Math.ceil(formattedProperty.images.length / 2)}
               </div>
               <button
-                onClick={() => setCurrentImageIndex(Math.min(formattedProperty.images.length - 2, currentImageIndex + 2))}
+                onClick={() => {
+                  const newIndex = Math.min(
+                    formattedProperty.images.length - 2,
+                    currentImageIndex + 2
+                  );
+                  setCurrentImageIndex(newIndex);
+                  scrollThumbnailIntoView(newIndex);
+                }}
                 disabled={currentImageIndex >= formattedProperty.images.length - 2}
                 className="bg-white p-2 sm:p-3 rounded-[5px] shadow-md border border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -546,12 +593,42 @@ function PropertyDetailsContent() {
               {activeTab === "overview" ? (
                 <>
                   {formattedProperty.description ? (
-                    <div
-                      className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4"
-                      dangerouslySetInnerHTML={{
-                        __html: renderDescriptionHtml(formattedProperty.description),
-                      }}
-                    />
+                    <>
+                      {/* Mobile / Responsive: collapsible description with padding and narrower width */}
+                      <div className="block lg:hidden mx-4 sm:mx-10 mb-4">
+                        <div
+                          className={`
+                            text-gray-600 text-sm leading-relaxed 
+                            bg-white/90 rounded-md 
+                            px-3 py-3 sm:px-4 sm:py-4 
+                            max-w-md mx-auto
+                            transition-all duration-300 
+                            ${isDescriptionExpanded ? "max-h-[900px]" : "max-h-[140px]"} 
+                            overflow-hidden
+                          `}
+                          dangerouslySetInnerHTML={{
+                            __html: renderDescriptionHtml(formattedProperty.description),
+                          }}
+                        />
+                        <div className="flex justify-center mt-3">
+                          <button
+                            type="button"
+                            onClick={() => setIsDescriptionExpanded((prev) => !prev)}
+                            className="text-[12px] sm:text-sm font-semibold text-[#001730] px-4 py-1.5 rounded-full border border-[#001730]/40 bg-white hover:bg-[#001730] hover:text-white transition-colors"
+                          >
+                            {isDescriptionExpanded ? "Show less" : "Show more"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Desktop: full description, wider and without toggle */}
+                      <div
+                        className="hidden lg:block text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4"
+                        dangerouslySetInnerHTML={{
+                          __html: renderDescriptionHtml(formattedProperty.description),
+                        }}
+                      />
+                    </>
                   ) : (
                     <div className="text-gray-600 text-sm sm:text-base mx-4 sm:mx-10 leading-relaxed mb-4">
                       No description available for this property.
@@ -767,7 +844,7 @@ function PropertyDetailsContent() {
           </div>
 
           {/* RIGHT SIDE - AGENT CARDS */}
-          <div className="col-span-1 flex flex-col gap-3 sm:gap-4">
+          <div className="col-span-1 flex flex-col gap-4 sm:gap-5 px-1 sm:px-2">
             {(() => {
               let agentsToDisplay = [];
 
@@ -813,19 +890,25 @@ function PropertyDetailsContent() {
                 return (
                   <div
                     key={agent.id || agent.userId || agent._id || `agent-${index}`}
-                    className="bg-white rounded-[5px] shadow overflow-hidden flex flex-col lg:flex-row items-start"
+                    className="
+                      bg-white rounded-[10px] shadow-md 
+                      overflow-hidden 
+                      flex flex-col lg:flex-row items-start
+                      w-full max-w-[360px] sm:max-w-[400px] lg:max-w-full
+                      mx-auto
+                    "
                   >
                     {/* LEFT IMAGE */}
                     <div
                       className="
               w-full lg:w-1/2
-              rounded-[5px]
+              rounded-[10px]
               relative
               flex-shrink-0
-              h-40 sm:h-36
+              h-48 sm:h-52 lg:min-h-[300px]
               lg:min-h-[300px]
               lg:max-h-[300px]
-              p-4
+              p-3 sm:p-4
               lg:pr-0 lg:mr-0
             "
                     >
@@ -923,193 +1006,19 @@ function PropertyDetailsContent() {
       </div>
 
 
-      <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-4 5xl:px-4">
-        <div className="max-w-[1500px] mt-10 mx-auto w-full">
-          <h2
-            id="my-heading"
-            className="text-[#001730] uppercase mb-2 lg:mb-2 text-center whitespace-nowrap"
-            style={{
-              fontSize: "clamp(16px, 4vw, 24px)"
-            }}
-          >
-            Related Listings
-          </h2>
-          <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2
-          mx-auto w-[60%] md:w-[40%] lg:w-[20%] "></div>
-          <p
-            id="desc"
-            className="
-    text-gray-500 
-    mx-auto text-center px-2 md:px-4 lg:px-0
+      <div className="relative w-full py-2 lg:py-4 px-2 md:px-2 lg:px-2 xl:px-2 2xl:px-2 3xl:px-2 4xl:px-2 5xl:px-2">
+     
+        
 
-    max-w-xs md:max-w-xl lg:max-w-2xl 
-   
-   
-
-    mb-6 md:mb-8 lg:mb-12 xl:mb-12 2xl:mb-14 3xl:mb-16 4xl:mb-20 5xl:mb-24
- 
-  " style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
-          >
-            Discover similar properties that might interest you in the same area or with comparable features
-
-
-          </p>
-
-          <div
-            className="flex gap-3 md:gap-4 lg:gap-6 xl:gap-6 2xl:gap-7 3xl:gap-8 4xl:gap-10 5xl:gap-12 overflow-x-auto scroll-smooth pb-4 lg:pb-6"
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#cbd5e0 transparent'
-            }}
-          >
-            {relatedProperties.length > 0 ? (
-              relatedProperties.map((property, index) => {
-                const formatted = formatRelatedProperty(property);
-                return (
-                  <div
-                    key={formatted.id || index}
-                    className={`
-          w-[250px]  lg:w-[333px]
-          p-4
-          bg-[#E9E9E9] border border-gray-200 
-          rounded-md overflow-hidden shadow-md 
-          hover:shadow-xl transition-shadow duration-300 
-          flex-shrink-0
-          ${index === 0 || index === relatedProperties.length - 1
-                        ? 'scale-95'
-                        : 'scale-100'
-                      }
-        `}
-                  >
-                    {/* Image Section */}
-                    <div className="relative w-full h-[180px]  xl:h-[200px] ">
-                      <Image
-                        src={formatted.image}
-                        alt={formatted.title}
-                        fill
-                        className="object-fill rounded-md"
-                        unoptimized={formatted.image?.startsWith('http')}
-                      />
-
-                      {/* Glass Effect Overlay with Property Type and 360° Icon */}
-                      <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-1.5 lg:p-2">
-                        {/* Property Type Badge - Glass Effect */}
-                        <div 
-                          className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30"
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.15)',
-                            backdropFilter: 'blur(8px)',
-                            WebkitBackdropFilter: 'blur(8px)',
-                            boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
-                          }}
-                        >
-                          <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
-                            {formatted.priceType === 'sale' ? 'SALE' : 
-                             formatted.priceType === 'rent' || formatted.priceType === 'lease' ? 'RENT' : 
-                             formatted.priceType === 'marketing' ? 'MARKETING' : 
-                             formatted.priceType?.toUpperCase() || 'RENT'}
-                          </span>
-                        </div>
-
-                        {/* 360° Icon Badge - Glass Effect */}
-                        <div 
-                          className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30 flex items-center justify-center"
-                          style={{
-                            background: 'rgba(255, 255, 255, 0.15)',
-                            backdropFilter: 'blur(8px)',
-                            WebkitBackdropFilter: 'blur(8px)',
-                            boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
-                          }}
-                        >
-                          <Md360 className="text-white w-3 h-3 lg:w-4 lg:h-4" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Property Info */}
-                    <div className="py-2">
-                      <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2">
-                        {formatted.title}
-                      </h3>
-
-                      {/* Location */}
-                      <div className="flex items-center text-[#001730] text-sm mb-3">
-                        <MapPin size={12} className="mr-2" />
-                        <span
-                          className="line-clamp-1 text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base 3xl:text-lg 4xl:text-xl 5xl:text-2xl"
-                          style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
-                        >
-                          {formatted.location}
-                        </span>
-                      </div>
-
-
-                      {/* Bed/Bath/Area Info */}
-                      <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
-
-                        <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                          <FaBed className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
-                          <span>{formatted.beds}</span>
-                        </div>
-
-                        <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                          <FaBath className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
-                          <span>{formatted.baths}</span>
-                        </div>
-
-                        <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                          <FaRulerCombined className="w-[14px] h-[14px] lg:w-[18px] lg:h-[18px] text-[#001730]" />
-                          <span>{formatted.area}</span>
-                        </div>
-
-                      </div>
-
-
-                      <div
-                        className="w-[100%]  h-[0.5px] bg-gray-300  my-3 "
-                      ></div>
-
-                      {/* Price and Button */}
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
-                          {formatted.price}
-                        </p>
-
-                        <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
-                          <Link
-                            href={`/propertydetails?id=${formatted.id}`}
-                            className="flex items-center gap-2 w-full"
-                          >
-                            <span>Details</span>
-                            <FaArrowRight
-                              size={12}
-                              className="w-3 h-3  lg:w-[16px]  ml-10"
-                            />
-                          </Link>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="text-center text-gray-500 py-8 w-full">No related properties available</div>
-            )}
-          </div>
-
-          {/* View All Button - Moved inside max-w container */}
-          <div className="flex justify-center mt-4 lg:mt-6 mb-5">
-            <Link href="/listings/rent">
-              <button className="bg-[#001730] text-white text-[12px] px-4 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 md:py-1.5 lg:py-2 xl:py-2 2xl:py-3 3xl:py-3 4xl:py-4 5xl:py-5 rounded flex items-center justify-center gap-2 transition hover:bg-[#1b3a70]">
-                <span>View All</span>
-                <FaArrowRight
-                  size={12}
-                  className="w-3 h-3  lg:w-[12px] lg:h-[12px] ml-20"
-                />
-              </button>
-            </Link>
-          </div>
-        </div>
+          <FeaturedProperties 
+            priceType={formattedProperty.priceType || "rent"}
+            limit={4}
+            status="published"
+            viewAllLink={formattedProperty.priceType === "sale" ? "/listings/sale" : "/listings/rent"}
+            title="Related Listings"
+            description="Discover similar properties that might interest you in the same area or with comparable features"
+          />
+       
       </div>
 
 

@@ -63,7 +63,7 @@ export default function BlogHero() {
 
   return (
     <div>
-      <div className="relative w-full h-[70vh]">
+      <div className="relative w-full h-[70vh] md:h-[70vh]">
         {/* BACKGROUND IMAGE */}
         <Image
           src={blog.image || "/Image (12).png"}
@@ -102,8 +102,8 @@ export default function BlogHero() {
           </div>
         </div>
 
-        {/* CENTER TITLE */}
-        <div className="absolute bottom-10 w-full text-center px-4">
+        {/* CENTER TITLE (Desktop only to avoid duplicate title on mobile) */}
+        <div className="absolute bottom-10 w-full text-center px-4 hidden md:block">
           <h1 className="text-3xl md:text-4xl font-semibold text-white">
             {blog.title}
           </h1>
@@ -112,6 +112,7 @@ export default function BlogHero() {
 
       {/* BLOG CONTENT */}
       <div className="lg:px-20 px-4 py-8">
+        {/* Main title (shown on all devices; hero title is desktop-only) */}
         <h1 className="text-2xl lg:text-3xl font-semibold mt-8 mb-4 text-[#001730]">
           {blog.title}
         </h1>
@@ -184,9 +185,14 @@ export default function BlogHero() {
                     <h3 className="text-white font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3">
                       {relatedBlog.title}
                     </h3>
-                    <p className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90">
-                      {relatedBlog.description}
-                    </p>
+                    {relatedBlog.description && (
+                      <div
+                        className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90"
+                        dangerouslySetInnerHTML={{
+                          __html: relatedBlog.description.replace(/<p[^>]*>/gi, '<div>').replace(/<\/p>/gi, '</div>'),
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -210,10 +216,12 @@ export default function BlogHero() {
             </div>
 
             <div className="flex-shrink-0">
-              <button className="bg-[#001730] text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#002d52] transition-all duration-300 flex items-center gap-3 shadow-lg">
-                Contact Expert
-                <FaArrowRight size={16} />
-              </button>
+              <Link href="/contact">
+                <button className="bg-[#001730] text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#002d52] transition-all duration-300 flex items-center gap-3 shadow-lg">
+                  Contact Expert
+                  <FaArrowRight size={16} />
+                </button>
+              </Link>
               <p className="text-center text-sm mt-2">Explore Available Units</p>
             </div>
           </div>

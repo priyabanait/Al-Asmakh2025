@@ -68,8 +68,28 @@ export const formatProject = (project) => {
     // Get units from propertiesCount if available
     const units = project.propertiesCount || "N/A";
 
-    // Price - projects might not have price, use "Price on request"
-    const price = "Price on request";
+    // Format price - use minimumPrice from backend if available
+    let price = "Price on request";
+    if (project.minimumPrice) {
+        price = typeof project.minimumPrice === 'number' 
+            ? project.minimumPrice.toLocaleString() 
+            : project.minimumPrice;
+    }
+
+    // Format minimumPrice and averagePrice from backend
+    let formattedMinimumPrice = null;
+    if (project.minimumPrice) {
+        formattedMinimumPrice = typeof project.minimumPrice === 'number' 
+            ? project.minimumPrice.toLocaleString() 
+            : project.minimumPrice;
+    }
+
+    let formattedAveragePrice = null;
+    if (project.averagePrice) {
+        formattedAveragePrice = typeof project.averagePrice === 'number' 
+            ? project.averagePrice.toLocaleString() 
+            : project.averagePrice;
+    }
 
     return {
         id: project.id,
@@ -81,6 +101,9 @@ export const formatProject = (project) => {
         statusType: statusType,
         price: price,
         image: imageUrl,
+        // Preserve price fields from backend (formatted for display)
+        minimumPrice: formattedMinimumPrice,
+        averagePrice: formattedAveragePrice,
         // Preserve raw project fields
         projectType: project.projectType,
         descriptionEn: project.descriptionEn,

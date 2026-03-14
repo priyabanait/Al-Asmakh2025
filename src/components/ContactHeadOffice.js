@@ -12,6 +12,19 @@ export default function ContactHeadOffice({ isActive }) {
   const [isPaused, setIsPaused] = useState(false);
   const autoScrollIntervalRef = useRef(null);
   const [currentSlides, setCurrentSlide] = useState(0);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    countryCode: "+974",
+    inquiryType: "",
+    hearAbout: "",
+    message: "",
+    terms: false,
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Office data array
   const offices = [
@@ -99,6 +112,72 @@ export default function ContactHeadOffice({ isActive }) {
     const index = (currentSlides + i) % offices.length;
     visibleOffices.push(offices[index]);
   }
+
+  const validateForm = () => {
+    const errors = {};
+    if (!formData.firstName.trim()) errors.firstName = "First name is required";
+    if (!formData.lastName.trim()) errors.lastName = "Last name is required";
+    if (!formData.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errors.email = "Enter a valid email address";
+    }
+    const numericPhone = formData.phone.replace(/\D/g, "");
+    if (!numericPhone) {
+      errors.phone = "Phone number is required";
+    } else if (numericPhone.length < 7 || numericPhone.length > 15) {
+      errors.phone = "Enter a valid phone number";
+    }
+    if (!formData.message.trim()) errors.message = "Message is required";
+    if (!formData.terms) errors.terms = "You must agree before submitting";
+    return errors;
+  };
+
+  const handleFormChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (formErrors[field]) {
+      setFormErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      // Here you could POST to backend; for now we just simulate success
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        countryCode: "+974",
+        inquiryType: "",
+        hearAbout: "",
+        message: "",
+        terms: false,
+      });
+      setFormErrors({});
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      alert("Thank you, your message has been sent.");
+    } catch (err) {
+      console.error("Error submitting contact form", err);
+      alert("Failed to submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div>
@@ -604,32 +683,46 @@ export default function ContactHeadOffice({ isActive }) {
 
             {/* Introduction Paragraph */}
             <p className="subheading text-gray-600 text-center mb-8 mx-auto">
-            Tell us a bit about your enquiry and how we can reach you. Whether you’re a resident, a prospective client, or a partner, our team will review your message and respond with clear next steps.
+              Tell us a bit about your enquiry and how we can reach you. Whether you’re a resident, a prospective client, or a partner, our team will review your message and respond with clear next steps.
             </p>
 
             {/* Contact Form */}
-            <form className="space-y-6 ">
+            <form className="space-y-6" onSubmit={handleSubmit} noValidate>
               {/* First Row: First Name & Last Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name
+                    First Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     placeholder="Enter First Name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 placeholder:text-gray-400"
+                    value={formData.firstName}
+                    onChange={(e) => handleFormChange("firstName", e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-gray-800 placeholder:text-gray-400 ${
+                      formErrors.firstName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#001730]"
+                    }`}
                   />
+                  {formErrors.firstName && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.firstName}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name
+                    Last Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     placeholder="Enter Last Name"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 placeholder:text-gray-400"
+                    value={formData.lastName}
+                    onChange={(e) => handleFormChange("lastName", e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-gray-800 placeholder:text-gray-400 ${
+                      formErrors.lastName ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#001730]"
+                    }`}
                   />
+                  {formErrors.lastName && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.lastName}</p>
+                  )}
                 </div>
               </div>
 
@@ -637,23 +730,53 @@ export default function ContactHeadOffice({ isActive }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
+                    Email <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     placeholder="Enter your Email"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 placeholder:text-gray-400"
+                    value={formData.email}
+                    onChange={(e) => handleFormChange("email", e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-gray-800 placeholder:text-gray-400 ${
+                      formErrors.email ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#001730]"
+                    }`}
                   />
+                  {formErrors.email && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.email}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone
+                    Phone <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="tel"
-                    placeholder="Enter Phone Number"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 placeholder:text-gray-400"
-                  />
+                  <div className="flex">
+                    <select
+                      value={formData.countryCode}
+                      onChange={(e) => handleFormChange("countryCode", e.target.value)}
+                      className="px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#001730]"
+                    >
+                      <option value="+974">+974 QA</option>
+                      <option value="+971">+971 AE</option>
+                      <option value="+966">+966 SA</option>
+                      <option value="+965">+965 KW</option>
+                      <option value="+973">+973 BH</option>
+                      <option value="+968">+968 OM</option>
+                      <option value="+44">+44 UK</option>
+                      <option value="+1">+1 US/CA</option>
+                    </select>
+                    <input
+                      type="tel"
+                      placeholder="Enter Phone Number"
+                      value={formData.phone}
+                      onChange={(e) => handleFormChange("phone", e.target.value)}
+                      className={`flex-1 px-4 py-3 border rounded-r-lg focus:outline-none focus:ring-2 text-gray-800 placeholder:text-gray-400 ${
+                        formErrors.phone ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#001730]"
+                      }`}
+                    />
+                  </div>
+                  {formErrors.phone && (
+                    <p className="mt-1 text-xs text-red-500">{formErrors.phone}</p>
+                  )}
                 </div>
               </div>
 
@@ -663,7 +786,11 @@ export default function ContactHeadOffice({ isActive }) {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Inquiry Type
                   </label>
-                  <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 bg-white appearance-none cursor-pointer">
+                  <select
+                    value={formData.inquiryType}
+                    onChange={(e) => handleFormChange("inquiryType", e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 bg-white appearance-none cursor-pointer"
+                  >
                     <option value="">Select Inquiry Type</option>
                     <option value="general">General Inquiry</option>
                     <option value="property">Property Inquiry</option>
@@ -675,7 +802,11 @@ export default function ContactHeadOffice({ isActive }) {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     How Did You Hear About Us?
                   </label>
-                  <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 bg-white appearance-none cursor-pointer">
+                  <select
+                    value={formData.hearAbout}
+                    onChange={(e) => handleFormChange("hearAbout", e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 bg-white appearance-none cursor-pointer"
+                  >
                     <option value="">Select</option>
                     <option value="google">Google</option>
                     <option value="social">Social Media</option>
@@ -694,8 +825,15 @@ export default function ContactHeadOffice({ isActive }) {
                 <textarea
                   rows="6"
                   placeholder="Enter your Message here..."
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#001730] text-gray-800 placeholder:text-gray-400 resize-none"
+                  value={formData.message}
+                  onChange={(e) => handleFormChange("message", e.target.value)}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 text-gray-800 placeholder:text-gray-400 resize-none ${
+                    formErrors.message ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-[#001730]"
+                  }`}
                 />
+                {formErrors.message && (
+                  <p className="mt-1 text-xs text-red-500">{formErrors.message}</p>
+                )}
               </div>
 
               {/* Form Footer: Terms & Submit Button */}
@@ -704,18 +842,24 @@ export default function ContactHeadOffice({ isActive }) {
                   <input
                     type="checkbox"
                     id="terms"
+                    checked={formData.terms}
+                    onChange={(e) => handleFormChange("terms", e.target.checked)}
                     className="w-4 h-4 text-[#001730] border-gray-300 rounded focus:ring-[#001730] cursor-pointer"
                   />
                   <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer">
-                    I agree with Terms of Use and Privacy Policy
+                    I agree with Terms of Use and Privacy Policy <span className="text-red-500">*</span>
                   </label>
                 </div>
+                {formErrors.terms && (
+                  <p className="mt-1 text-xs text-red-500">{formErrors.terms}</p>
+                )}
                 <button
                   type="submit"
-                  className="bg-[#001730] text-white text-[12px] px-8 py-3 rounded-md   transition-colors flex items-center justify-between
+                  disabled={isSubmitting}
+                  className="bg-[#001730] text-white text-[12px] px-8 py-3 rounded-md transition-colors flex items-center justify-between
     shadow-lg w-full max-w-[260px]"
                 >
-                  <span>Submit</span>
+                  <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
 

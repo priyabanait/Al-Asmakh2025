@@ -15,7 +15,7 @@ import MoreFiltersModal from "../../../components/MoreFiltersModal";
 import { FaArrowRight, FaChevronUp, FaChevronDown, FaBath,  } from "react-icons/fa6";
 import { FaCheckCircle } from "react-icons/fa";
 
-import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch, FaRulerCombined } from "react-icons/fa";
+import { FaHome, FaUser, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp, FaArrowDown, FaBuilding, FaBed, FaRegSquare, FaCar, FaCouch, FaRulerCombined } from "react-icons/fa";
 import ShareButton from "@/components/ShareButton";
 import { FALLBACK_PROPERTY_IMAGE, getSafeImage, handleImageErrorOnce } from "@/utils/imageUtils";
 import Link from "next/link";
@@ -50,6 +50,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
     const [imageError, setImageError] = useState(false);
     const [galleryModalOpen, setGalleryModalOpen] = useState(false);
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
     // Filter options
     const filterOptions = {
@@ -877,7 +878,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
       {/* Description box */}
       <div className="bg-[#F5F7FA] p-4 sm:p-6 rounded-[5px] shadow mb-4">
-  <div className="flex gap-2 sm:gap-4 mb-4">
+  <div className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-4 mb-4 overflow-x-auto">
     {[
       { key: "overview", label: "Overview" },
       { key: "gallery", label: "Gallery" },
@@ -907,12 +908,36 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
   {project && (
     <>
       {activeTab === "overview" && (
-        <div 
-          className="project-description text-gray-600 text-xs sm:text-sm mx-4 sm:mx-10 leading-relaxed mb-4"
-          dangerouslySetInnerHTML={{ 
-            __html: cleanHtmlDescriptionRegex(project.descriptionEn || "No description available")
-          }}
-        />
+        <div className="mx-4 sm:mx-10 mb-4">
+          <div 
+            className={`project-description text-gray-600 text-xs sm:text-sm leading-relaxed ${
+              !isDescriptionExpanded ? 'line-clamp-4 sm:line-clamp-none' : ''
+            }`}
+            dangerouslySetInnerHTML={{ 
+              __html: cleanHtmlDescriptionRegex(project.descriptionEn || "No description available")
+            }}
+          />
+          {/* Load More / Load Less buttons - only show on mobile */}
+          <div className="flex justify-center mt-4 sm:hidden">
+            {!isDescriptionExpanded ? (
+              <button
+                onClick={() => setIsDescriptionExpanded(true)}
+                className="bg-[#001730] text-white text-sm font-medium px-6 py-2 rounded-md hover:bg-[#002d52] transition-all duration-300 flex items-center gap-2"
+              >
+                <span>Load More</span>
+                <FaArrowDown size={12} />
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsDescriptionExpanded(false)}
+                className="bg-[#001730] text-white text-sm font-medium px-6 py-2 rounded-md hover:bg-[#002d52] transition-all duration-300 flex items-center gap-2"
+              >
+                <span>Load Less</span>
+                <FaArrowUp size={12} />
+              </button>
+            )}
+          </div>
+        </div>
       )}
 
       {activeTab === "gallery" && (
@@ -934,18 +959,95 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
       {activeTab === "document" && (
         <div className="mx-4 sm:mx-10 mb-4 space-y-3">
-          {project.documents?.map((doc, index) => (
-            <a
-              key={index}
-              href={doc}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors text-xs sm:text-sm"
-            >
-              Document {index + 1}
-              <FaArrowRight size={12} />
-            </a>
-          ))}
+          {(() => {
+            const docs = [];
+
+            // Named document types with multiple possible field names
+            const brochureUrl =
+              project.brochureUrl ||
+              project.brochure ||
+              project.brochureEn ||
+              project.brochureFile;
+            const floorPlanUrl =
+              project.floorPlanUrl ||
+              project.floorPlan ||
+              project.floorPlanEn ||
+              project.floorPlanFile;
+            const masterPlanUrl =
+              project.masterPlanUrl ||
+              project.masterPlan ||
+              project.masterPlanEn ||
+              project.masterPlanFile;
+
+            docs.push({
+              label: "Brochure",
+              url: brochureUrl,
+            });
+            docs.push({
+              label: "Floor Plan",
+              url: floorPlanUrl,
+            });
+            docs.push({
+              label: "Master Plan",
+              url: masterPlanUrl,
+            });
+
+            // Generic documents array from API, if provided
+            if (project.documents && Array.isArray(project.documents)) {
+              project.documents.forEach((doc, index) => {
+                if (!doc) return;
+                if (typeof doc === "string") {
+                  docs.push({
+                    label: `Document ${index + 1}`,
+                    url: doc,
+                  });
+                } else if (typeof doc === "object") {
+                  docs.push({
+                    label: doc.name || doc.title || `Document ${index + 1}`,
+                    url: doc.url || doc.href || doc.link,
+                  });
+                }
+              });
+            }
+
+            const hasAnyFile = docs.some((d) => d.url);
+
+            if (!hasAnyFile) {
+              return (
+                <p className="text-xs sm:text-sm text-gray-500">
+                  This development does not provide any downloadable documents
+                  (brochure, floor plan, or other files).
+                </p>
+              );
+            }
+
+            return docs.map((doc, index) => {
+              if (!doc.url) {
+                return (
+                  <div
+                    key={`${doc.label}-${index}`}
+                    className="flex items-center justify-between p-3 bg-gray-100 rounded-md text-xs sm:text-sm text-gray-500"
+                  >
+                    <span>{doc.label}</span>
+                    <span className="italic">Not provided</span>
+                  </div>
+                );
+              }
+
+              return (
+                <a
+                  key={`${doc.label}-${index}`}
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors text-xs sm:text-sm"
+                >
+                  <span>{doc.label}</span>
+                  <FaArrowRight size={12} />
+                </a>
+              );
+            });
+          })()}
         </div>
       )}
 
@@ -988,8 +1090,8 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
         {[
           {
             title: "Average Price",
-            value: project.startingPrice
-              ? `QAR ${project.startingPrice.toLocaleString()}`
+            value: project.averagePrice
+              ? `QAR ${project.averagePrice.toLocaleString()}`
               : "N/A",
           },
           {
@@ -1249,7 +1351,7 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
                       </div>
                       {/* Additional Property Images (starting from order > 0) */}
                       {additionalImages.length > 0 && (
-                        <div className="absolute top-2 right-2 flex gap-1 z-10 flex-wrap max-w-[140px]">
+                        <div className="absolute top-2 -right-2 flex gap-1 z-10 flex-wrap max-w-[140px]">
                           {additionalImages.map((img, idx) => {
                             const imgUrl = getSafeImage(img.url || img.thumbnailUrl);
                             return (

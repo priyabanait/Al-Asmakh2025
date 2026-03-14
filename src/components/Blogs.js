@@ -93,42 +93,79 @@ export default function Buy() {
         {/* Dark Overlay */}
         <div className="absolute inset-0" />
 
-        {/* 🔍 Search Bar (Half on BG, Half outside) - First - Centered */}
+        {/* 🔍 DESKTOP SEARCH BAR (Half on BG, Half outside) - Centered */}
         <div className="absolute left-1/2 bottom-20 lg:bottom-12 transform -translate-x-1/2 z-30 w-[70%] lg:w-[60%] hidden lg:block">
           <div className="border border-white/10 backdrop-blur-[10px] bg-white/30 rounded-md p-4 lg:p-6 shadow-lg">
-            <div className="flex items-center gap-3">
-              <Search className="text-[#001730] w-5 h-5" />
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                // searchQuery is already bound; submit just prevents page reload
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <Search className="text-[#001730] w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search blogs and articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 bg-transparent border-none outline-none text-[#001730] placeholder-gray-500 text-base lg:text-lg"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-[#001730] hover:text-gray-600"
+                  >
+                    ×
+                  </button>
+                )}
+                {/* Explicit submit button to match UI/UX requirement */}
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-md bg-[#001730] text-white text-sm font-medium shadow hover:bg-[#002d52] transition"
+                >
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {/* Mobile Search + Filters - Absolute positioned in hero section */}
+        <div className="absolute left-1/2 bottom-[-45px] mb-4 transform -translate-x-1/2 z-20 w-[90%] px-4 md:hidden">
+          <div ref={filtersRef} className="flex flex-col gap-3 bg-[#8C8C8C66] border border-white/20 p-3 px-6 rounded-md shadow-md">
+            {/* Mobile Search Bar */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+              }}
+              className="bg-white rounded-md shadow-sm flex items-center px-2 py-2"
+            >
+              <button
+                type="submit"
+                className="p-2 bg-[#001730] rounded-md mr-2 flex items-center justify-center h-8 w-8 flex-shrink-0"
+              >
+                <Search className="text-white h-4 w-4" />
+              </button>
               <input
                 type="text"
                 placeholder="Search blogs and articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none text-[#001730] placeholder-gray-500 text-base lg:text-lg"
+                className="flex-1 text-gray-800 text-sm bg-transparent outline-none placeholder:text-gray-400"
               />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="text-[#001730] hover:text-gray-600"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
+            </form>
 
-        {/* Mobile Filters Button - Absolute positioned in hero section */}
-        <div className="absolute left-1/2 bottom-[-45px] mb-4 transform -translate-x-1/2 z-20 w-[90%] px-4 md:hidden">
-          <div ref={filtersRef} className="flex flex-col gap-3 bg-[#8C8C8C66] border border-white/20 p-3 px-10 rounded-md shadow-md">
             {/* Single Filters Button for Mobile */}
             <div
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center justify-between bg-[#0B1F3A] text-white px-4 py-3 rounded-md shadow-lg hover:bg-[#001730] transition cursor-pointer"
+              className="flex items-center justify-between bg-white text-[#001730] px-4 py-3 rounded-md shadow-lg hover:bg-gray-100 transition cursor-pointer border border-[#0B1F3A]/30"
             >
               <div className="flex items-center gap-3">
                 {/* Filter Icon */}
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal size={16} />
+                  <SlidersHorizontal className="text-[#001730]" size={16} />
                   <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
                 </div>
                 {/* Label */}
@@ -137,7 +174,7 @@ export default function Buy() {
               {/* Down Arrow - Rotates when open */}
               <ArrowDown
                 size={16}
-                className={`text-white opacity-80 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`}
+                className={`text-[#001730] opacity-80 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`}
               />
             </div>
 

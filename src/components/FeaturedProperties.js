@@ -28,7 +28,9 @@ export default function FeaturedProperties({
   viewAllLink = "/listings/rent",
   type = "",
   locationLevel1 = "",
-  title =""
+  title = "",
+  description = "",
+
 }) {
   // React Query: cache and manage featured properties on the frontend
   const {
@@ -173,12 +175,12 @@ export default function FeaturedProperties({
 
   return (
     <div className="relative w-full py-4 lg:py-4 px-4 md:px-4 lg:px-4 xl:px-4 2xl:px-4 3xl:px-4 4xl:px-4 5xl:px-4">
-      <div className="max-w-[1500px] mt-10 mx-auto w-full">
+      <div className="max-w-[1500px] mt-5 mx-auto w-full">
         <h2
           id="my-heading"
           className="text-2xl text-[#001730] uppercase mb-2  lg:mb-2 text-center"
         >
-          FEATURED PROPERTIES
+          {title ? title :"Featured Properties"}
         </h2>
         <div className="flex-1 h-[0.5px] bg-gray-300 my-2 lg:my-2
           mx-auto w-[60%] md:w-[40%] lg:w-[20%] "></div>
@@ -198,7 +200,7 @@ export default function FeaturedProperties({
         >
         
         
-       {title ? title :" From luxury residences to commercial developments, we deliver trusted services that turn your real estate goals into reality. "}
+       {description ? description:" From luxury residences to commercial developments, we deliver trusted services that turn your real estate goals into reality. "}
          
         </p>
 

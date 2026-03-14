@@ -2,7 +2,21 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Search, Mic, MapPin, ArrowDown, Bed, Bath, Square, ArrowRight, Leaf, Home, Map as MapIcon, Check, SlidersHorizontal } from "lucide-react";
+import {
+  Search,
+  Mic,
+  MapPin,
+  ArrowDown,
+  Bed,
+  Bath,
+  Square,
+  ArrowRight,
+  Leaf,
+  Home,
+  Map as MapIcon,
+  Check,
+  SlidersHorizontal,
+} from "lucide-react";
 import { FaArrowRight } from "react-icons/fa6";
 import { FaList } from "react-icons/fa";
 import { FaMapLocationDot } from "react-icons/fa6";
@@ -11,7 +25,7 @@ import DreamPropertySection from "./DreamPropertySection";
 import PropertyListDev from "./PropertyListDev";
 import { fetchPropertiesByOfferingType } from "../utils/propertyapi";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Services({
   offeringType = "lease",
@@ -34,11 +48,17 @@ export default function Services({
   loading: externalLoading, // Loading state from parent
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
   const [showFilters, setShowFilters] = useState(false); // Toggle for mobile filters
   const filtersRef = useRef(null); // Ref for filter container
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dynamicLocations, setDynamicLocations] = useState([]);
+  const [dateRange, setDateRange] = useState({ start: "", end: "" });
+  const [activeFilterButton, setActiveFilterButton] = useState(
+    filterButtons?.[0] || null
+  );
   
   // Filter state management
   const [openDropdown, setOpenDropdown] = useState(null); // Track which dropdown is open
@@ -80,17 +100,64 @@ export default function Services({
     };
   }, [showFilters]);
 
+  // Fallback list of Qatar areas used when API doesn't provide locations
+  const fallbackQatarAreas = [
+    "Doha",
+    "West Bay",
+    "The Pearl",
+    "Lusail",
+    "Al Sadd",
+    "Al Waab",
+    "Al Rayyan",
+    "Al Wakrah",
+    "Al Khor",
+    "Msheireb",
+    "Education City",
+    "Old Airport",
+    "Al Dafna",
+    "Najma",
+    "Al Thumama",
+  ];
+
   // Filter options
   const filterOptions = {
     projectType: ["Luxury", "Commercial", "Industrial", "Residential"],
-    location: ["West Bay", "The Pearl", "Al Sadd", "Lusail", "Doha"],
-    status: ["Completed", "Ongoing", "Upcoming"],
-    date: ["Newest", "Oldest", "Recently Updated"],
+    // Location options will be populated dynamically from API data
+    location: [],
+    status: ["All Statuses", "Completed", "Ongoing", "Upcoming"],
+    date: ["Last Year", "Last 3 Years", "Last 5 Years", "Custom Range"],
   };
 
   // Handle filter selection (desktop + mobile)
   const handleFilterSelect = (filterType, value) => {
-    // Just toggle filter value locally so it behaves like /listings/rent
+    // Special handling for "All" options
+    if (filterType === "location" && value === "All Areas") {
+      setFilters((prev) => ({ ...prev, [filterType]: null }));
+      setOpenDropdown(null);
+      return;
+    }
+
+    if (filterType === "status" && value === "All Statuses") {
+      setFilters((prev) => ({ ...prev, [filterType]: null }));
+      setOpenDropdown(null);
+      return;
+    }
+
+    // Date filter options
+    if (filterType === "date") {
+      setFilters((prev) => ({
+        ...prev,
+        date: value,
+      }));
+
+      // Keep dropdown open for custom range so user can pick dates
+      if (value !== "Custom Range") {
+        setOpenDropdown(null);
+      }
+      return;
+    }
+
+    // Default toggle behaviour
     setFilters((prev) => ({
       ...prev,
       [filterType]: prev[filterType] === value ? null : value,
@@ -145,6 +212,35 @@ export default function Services({
       const status = property.statusType || property.projectStatus || '';
       if (status.toLowerCase() !== filters.status.toLowerCase()) {
         return false;
+      }
+    }
+
+    // Date filter - use year or createdAt when available
+    if (filters.date) {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const propYear = property.year ? parseInt(property.year, 10) : currentYear;
+
+      if (filters.date === "Last Year") {
+        const minYear = currentYear - 1;
+        if (propYear < minYear) return false;
+      } else if (filters.date === "Last 3 Years") {
+        const minYear = currentYear - 3;
+        if (propYear < minYear) return false;
+      } else if (filters.date === "Last 5 Years") {
+        const minYear = currentYear - 5;
+        if (propYear < minYear) return false;
+      } else if (
+        filters.date === "Custom Range" &&
+        dateRange.start &&
+        dateRange.end
+      ) {
+        const propDate = property.createdAt
+          ? new Date(property.createdAt)
+          : new Date(`${propYear}-01-01`);
+        const start = new Date(dateRange.start);
+        const end = new Date(dateRange.end);
+        if (propDate < start || propDate > end) return false;
       }
     }
     
@@ -219,9 +315,22 @@ export default function Services({
         // Use API response data only
         if (fetchedProperties && Array.isArray(fetchedProperties)) {
           setProperties(fetchedProperties);
+
+          // Build dynamic locations from API data to show all available areas
+          const allLocations = new Set();
+          fetchedProperties.forEach((p) => {
+            if (p.locationLevel1) {
+              allLocations.add(p.locationLevel1);
+            }
+            if (p.locationLevel2) {
+              allLocations.add(p.locationLevel2);
+            }
+          });
+          setDynamicLocations(Array.from(allLocations));
         } else {
           // Set empty array if no data
           setProperties([]);
+          setDynamicLocations([]);
         }
       } catch (error) {
         console.error("Error fetching properties:", error);
@@ -247,6 +356,26 @@ export default function Services({
     filters.status,
     filters.date,
   ]);
+
+  // Initialise active filter button based on current pathname (development tabs)
+  useEffect(() => {
+    if (!filterButtons || filterButtons.length === 0) return;
+
+    const mapPathToLabel = () => {
+      if (!pathname) return null;
+      if (pathname.includes("luxury")) return "LUXURY";
+      if (pathname.includes("commercial")) return "COMMERCIAL";
+      if (pathname.includes("industrial")) return "INDUSTRIAL";
+      return null;
+    };
+
+    const fromPath = mapPathToLabel();
+    if (fromPath && filterButtons.includes(fromPath)) {
+      setActiveFilterButton(fromPath);
+    } else {
+      setActiveFilterButton(filterButtons[0]);
+    }
+  }, [pathname, filterButtons]);
 
 
 
@@ -345,7 +474,15 @@ export default function Services({
                       </div>
 
                       {/* Label */}
-                      <span className="text-[13px]">{selectedValue || label}</span>
+                      <span className="text-[13px]">
+                        {filterKey === "location" && !selectedValue
+                          ? "Location"
+                          : filterKey === "status" && !selectedValue
+                          ? "All Statuses"
+                          : filterKey === "date" && !selectedValue
+                          ? "Date"
+                          : selectedValue || label}
+                      </span>
                     </div>
 
                     {/* Down Arrow */}
@@ -358,17 +495,83 @@ export default function Services({
                   {/* Dropdown Menu */}
                   {isOpen && (
                     <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto">
-                      {filterOptions[filterKey]?.map((option, optIndex) => (
-                        <div
-                          key={optIndex}
-                          onClick={() => handleFilterSelect(filterKey, option)}
-                          className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
-                            selectedValue === option ? 'bg-[#001730] text-white hover:bg-[#002d52]' : 'text-gray-800'
-                          }`}
-                        >
-                          <span className="text-sm">{option}</span>
+                      {/* Location options: include "All Areas" plus dynamic list or full Qatar fallback */}
+                      {filterKey === "location" &&
+                        [
+                          "All Areas",
+                          ...(dynamicLocations.length
+                            ? dynamicLocations
+                            : fallbackQatarAreas),
+                        ].map((option, optIndex) => (
+                          <div
+                            key={optIndex}
+                            onClick={() => handleFilterSelect(filterKey, option)}
+                            className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                              selectedValue === option
+                                ? "bg-[#001730] text-white hover:bg-[#002d52]"
+                                : "text-gray-800"
+                            }`}
+                          >
+                            <span className="text-sm">{option}</span>
+                          </div>
+                        ))}
+
+                      {/* Other filters (projectType, status, date presets) */}
+                      {filterKey !== "location" &&
+                        filterOptions[filterKey]?.map((option, optIndex) => (
+                          <div
+                            key={optIndex}
+                            onClick={() => handleFilterSelect(filterKey, option)}
+                            className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                              selectedValue === option
+                                ? "bg-[#001730] text-white hover:bg-[#002d52]"
+                                : "text-gray-800"
+                            }`}
+                          >
+                            <span className="text-sm">{option}</span>
+                          </div>
+                        ))}
+
+                      {/* Custom date range picker */}
+                      {filterKey === "date" && (
+                        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 space-y-2">
+                          <p className="text-xs font-medium text-gray-700">
+                            Custom range
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="date"
+                              value={dateRange.start}
+                              onChange={(e) =>
+                                setDateRange((prev) => ({
+                                  ...prev,
+                                  start: e.target.value,
+                                }))
+                              }
+                              className="w-1/2 border border-gray-300 rounded-md px-2 py-1 text-xs"
+                            />
+                            <span className="text-xs text-gray-500">to</span>
+                            <input
+                              type="date"
+                              value={dateRange.end}
+                              onChange={(e) =>
+                                setDateRange((prev) => ({
+                                  ...prev,
+                                  end: e.target.value,
+                                }))
+                              }
+                              className="w-1/2 border border-gray-300 rounded-md px-2 py-1 text-xs"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleFilterSelect("date", "Custom Range")}
+                            className="mt-1 w-full bg-[#001730] text-white text-xs py-1.5 rounded-md hover:bg-[#002d52] transition"
+                          >
+                            Apply range
+                          </button>
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
                 </div>
@@ -453,8 +656,16 @@ export default function Services({
                             <div className="h-5 w-[1px] bg-gray-400 opacity-60"></div>
                           </div>
 
-                          {/* Label */}
-                          <span className="text-sm font-medium">{selectedValue || label}</span>
+                      {/* Label */}
+                      <span className="text-sm font-medium">
+                        {filterKey === "location" && !selectedValue
+                          ? "Location"
+                          : filterKey === "status" && !selectedValue
+                          ? "All Statuses"
+                          : filterKey === "date" && !selectedValue
+                          ? "Date"
+                          : selectedValue || label}
+                      </span>
                         </div>
 
                         {/* Down Arrow */}
@@ -467,17 +678,89 @@ export default function Services({
                       {/* Dropdown Menu */}
                       {isOpen && (
                         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-gray-200 z-50 max-h-60 overflow-y-auto">
-                          {filterOptions[filterKey]?.map((option, optIndex) => (
-                            <div
-                              key={optIndex}
-                              onClick={() => handleFilterSelect(filterKey, option)}
-                              className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
-                                selectedValue === option ? 'bg-[#001730] text-white hover:bg-[#002d52]' : 'text-gray-800'
-                              }`}
-                            >
-                              <span className="text-sm">{option}</span>
+                          {/* Location options: include "All Areas" plus dynamic list or full Qatar fallback */}
+                          {filterKey === "location" &&
+                            [
+                              "All Areas",
+                              ...(dynamicLocations.length
+                                ? dynamicLocations
+                                : fallbackQatarAreas),
+                            ].map((option, optIndex) => (
+                              <div
+                                key={optIndex}
+                                onClick={() =>
+                                  handleFilterSelect(filterKey, option)
+                                }
+                                className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                                  selectedValue === option
+                                    ? "bg-[#001730] text-white hover:bg-[#002d52]"
+                                    : "text-gray-800"
+                                }`}
+                              >
+                                <span className="text-sm">{option}</span>
+                              </div>
+                            ))}
+
+                          {/* Other filters (projectType, status, date presets) */}
+                          {filterKey !== "location" &&
+                            filterOptions[filterKey]?.map((option, optIndex) => (
+                              <div
+                                key={optIndex}
+                                onClick={() =>
+                                  handleFilterSelect(filterKey, option)
+                                }
+                                className={`px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors ${
+                                  selectedValue === option
+                                    ? "bg-[#001730] text-white hover:bg-[#002d52]"
+                                    : "text-gray-800"
+                                }`}
+                              >
+                                <span className="text-sm">{option}</span>
+                              </div>
+                            ))}
+
+                          {/* Custom date range picker */}
+                          {filterKey === "date" && (
+                            <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 space-y-2">
+                              <p className="text-xs font-medium text-gray-700">
+                                Custom range
+                              </p>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="date"
+                                  value={dateRange.start}
+                                  onChange={(e) =>
+                                    setDateRange((prev) => ({
+                                      ...prev,
+                                      start: e.target.value,
+                                    }))
+                                  }
+                                  className="w-1/2 border border-gray-300 rounded-md px-2 py-1 text-xs"
+                                />
+                                <span className="text-xs text-gray-500">to</span>
+                                <input
+                                  type="date"
+                                  value={dateRange.end}
+                                  onChange={(e) =>
+                                    setDateRange((prev) => ({
+                                      ...prev,
+                                      end: e.target.value,
+                                    }))
+                                  }
+                                  className="w-1/2 border border-gray-300 rounded-md px-2 py-1 text-xs"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleFilterSelect("date", "Custom Range")
+                                }
+                                className="mt-1 w-full bg-[#001730] text-white text-xs py-1.5 rounded-md hover:bg-[#002d52] transition"
+                              >
+                                Apply range
+                              </button>
                             </div>
-                          ))}
+                          )}
                         </div>
                       )}
                     </div>
@@ -517,13 +800,18 @@ export default function Services({
               <div
                 key={index}
                 onClick={() => {
+                  setActiveFilterButton(label);
                   if (route) {
                     router.push(route);
                   }
                 }}
                 className={`
-                  flex items-center justify-center bg-[#0B1F3A] text-white
-                  px-4 py-1.5 rounded-md shadow-lg hover:bg-[#001730] transition
+                  flex items-center justify-center px-4 py-1.5 rounded-md shadow-lg transition
+                  ${
+                    activeFilterButton === label
+                      ? "bg-white text-[#001730] border border-[#001730] scale-[1.02]"
+                      : "bg-[#0B1F3A] text-white hover:bg-[#001730]"
+                  }
                   ${route ? 'cursor-pointer' : ''}
                 `}
               >
