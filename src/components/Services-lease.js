@@ -809,7 +809,7 @@ export default function Services({
                   flex items-center justify-center px-4 py-1.5 rounded-md shadow-lg transition
                   ${
                     activeFilterButton === label
-                      ? "bg-white text-[#001730] border border-[#001730] scale-[1.02]"
+                      ? "bg-white/20 backdrop-blur-[10px] border border-white/30 text-white scale-[1.02]"
                       : "bg-[#0B1F3A] text-white hover:bg-[#001730]"
                   }
                   ${route ? 'cursor-pointer' : ''}

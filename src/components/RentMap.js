@@ -9,6 +9,7 @@ import Link from "next/link";
 import { FaList } from "react-icons/fa";
 import DreamPropertySection from "./DreamPropertySection";
 import PropertyListView from "./PropertyListView";
+import InteractivePropertyMap from "./InteractivePropertyMap";
 import { fetchProperties } from "../utils/propertyapi";
 import { searchProperties } from "../utils/searchApi";
 import { searchPropertiesWithElasticsearch, checkElasticsearchHealth } from "../utils/elasticsearchApi";
@@ -33,6 +34,8 @@ export default function Sale({
   const [useElasticsearch, setUseElasticsearch] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [mobileViewMode, setMobileViewMode] = useState("LIST"); // "LIST" or "MAP"
+  const [selectedPropertyId, setSelectedPropertyId] = useState(null);
+  const [mapLoading, setMapLoading] = useState(true);
 
   // Update priceType when prop changes
   useEffect(() => {
@@ -300,27 +303,19 @@ export default function Sale({
       {/* Mobile Map View (only when Map View is active on mobile) */}
       {mobileViewMode === "MAP" && (
         <div className="block lg:hidden w-full mt-[130px] relative" style={{ height: "calc(100vh - 350px)", minHeight: "60vh" }}>
-          {/* Los Angeles Map (placeholder) */}
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d423283.4355503344!2d-118.69192047499999!3d34.02016129999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80c2c75ddc27da13%3A0xe22fdf6f254608f4!2sLos%20Angeles%2C%20CA%2C%20USA!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            className="absolute inset-0"
-          ></iframe>
-
-          {/* Zoom Controls - Bottom Right */}
-          <div className="absolute bottom-4 right-4 bg-gray-200 rounded-md shadow-lg flex flex-col z-10">
-            <button className="px-3 py-2 border-b border-gray-200 hover:bg-gray-50">
-              <span className="text-lg font-semibold">+</span>
-            </button>
-            <button className="px-3 py-2 hover:bg-gray-50">
-              <span className="text-lg font-semibold">-</span>
-            </button>
-          </div>
+          <InteractivePropertyMap
+            properties={properties}
+            selectedPropertyId={selectedPropertyId}
+            onPropertyClick={(propertyId) => {
+              setSelectedPropertyId(propertyId);
+              // Scroll to property in list when switching back to list view
+              const element = document.querySelector(`[data-property-id="${propertyId}"]`);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }}
+            onMapReady={() => setMapLoading(false)}
+          />
         </div>
       )}
 
@@ -355,10 +350,32 @@ export default function Sale({
           </div>
         </div>
       ) : (
-        // On mobile, hide the list when Map View is active; on desktop always show.
-        <div className={mobileViewMode === "MAP" ? "hidden lg:block" : ""}>
-          <PropertyListView properties={properties} totalProperties={totalProperties} />
-        </div>
+        <>
+          {/* On mobile, hide the list when Map View is active; on desktop always show. */}
+          <div className={mobileViewMode === "MAP" ? "hidden lg:block" : ""}>
+            <PropertyListView 
+              properties={properties} 
+              totalProperties={totalProperties}
+            />
+          </div>
+          
+          {/* Desktop Map View (always visible on desktop, hidden on mobile when list is shown) */}
+          <div className="hidden lg:block mt-4">
+            <InteractivePropertyMap
+              properties={properties}
+              selectedPropertyId={selectedPropertyId}
+              onPropertyClick={(propertyId) => {
+                setSelectedPropertyId(propertyId);
+                // Scroll to property in list
+                const element = document.querySelector(`[data-property-id="${propertyId}"]`);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+              onMapReady={() => setMapLoading(false)}
+            />
+          </div>
+        </>
       )}
 
       {/* More Filters Modal */}

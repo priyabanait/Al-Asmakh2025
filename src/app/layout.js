@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
         />
       </head>
 
-      <body className="min-h-screen bg-white">
+      <body className="min-h-screen ">
         <QueryProvider>
           <TranslationProvider>
             <AuthProvider>

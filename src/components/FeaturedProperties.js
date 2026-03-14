@@ -2,8 +2,10 @@
 import React from "react";
 import Image from "next/image";
 import { FaArrowRight } from "react-icons/fa6";
-import { Md360 } from "react-icons/md";
-import { FaBed, FaBath, FaRulerCombined } from "react-icons/fa";
+import { TbView360Number } from "react-icons/tb";
+import { HiOutlineSquare2Stack } from "react-icons/hi2";
+import { RiHotelBedLine } from "react-icons/ri";
+import { BiBath } from "react-icons/bi";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { fetchProperties, fetchPropertiesByOfferingType } from "../utils/propertyapi";
@@ -252,7 +254,7 @@ export default function FeaturedProperties({
                           boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
                         }}
                       >
-                        <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                        <span className="text-[#001730] font-bold text-[10px] lg:text-[10px] uppercase tracking-wide">
                           {property.priceType === 'sale' ? 'SALE' : 
                            property.priceType === 'rent' || property.priceType === 'lease' ? 'RENT' : 
                            property.priceType === 'marketing' ? 'MARKETING' : 
@@ -270,61 +272,56 @@ export default function FeaturedProperties({
                           boxShadow: '0 4px 16px 0 rgba(31, 38, 135, 0.2)'
                         }}
                       >
-                        <Md360 className="text-white w-3 h-3 lg:w-4 lg:h-4" />
+                        <TbView360Number className="text-[#062e59] w-4 h-5 lg:w-10 lg:h-5" />
                       </div>
                     </div>
                   </div>
 
                   {/* Property Info */}
                   <div className="py-2">
-                    <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2 min-h-[2.5rem] lg:min-h-[3.125rem]">
+                    <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2 min-h-[1.5rem] lg:min-h-[3.125rem]">
                       {property.title}
                     </h3>
 
                     {/* Location */}
                     <div className="flex items-center text-[#001730] text-sm mb-3">
                       <MapPin size={12} className="mr-2" />
-                      <span
-                        className="line-clamp-1 text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base 3xl:text-lg 4xl:text-xl 5xl:text-2xl"
-                        style={{ fontSize: "clamp(13px, 0.8vw, 17px)" }}
-                      >
+                      <span className="line-clamp-1 text-xs md:text-xs lg:text-sm">
                         {property.location}
                       </span>
                     </div>
 
-
                     {/* Bed/Bath/Area Info */}
                     <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
-
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                        <FaBed className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                        <RiHotelBedLine className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                         <span>{property.beds || property.bedrooms || 0}</span>
                       </div>
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                        <FaBath className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                        <BiBath className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                         <span>{property.baths || property.bathrooms || 0}</span>
                       </div>
 
                       <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                        <FaRulerCombined className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
-                        <span>{property.area.toFixed(0)} </span>
+                        <HiOutlineSquare2Stack className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                        <span>{Number(property.area || 0).toFixed(0)}</span>
                       </div>
-
                     </div>
 
-
-                    <div
-                      className="w-[100%]  h-[0.5px] bg-gray-300  my-3 "
-                    ></div>
+                    <div className="w-[100%] h-[0.5px] bg-gray-300 my-3"></div>
 
                     {/* Price and Button */}
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-base md:text-base lg:text-base xl:text-lg 2xl:text-lg 3xl:text-xl 4xl:text-2xl 5xl:text-3xl font-semibold text-[#001730]">
-                        {property.price && !property.price.includes('QAR') ? `${property.price} QAR` : property.price}
+                      <p className="text-base md:text-base lg:text-base xl:text-lg font-semibold text-[#001730]">
+                        {property.price && typeof property.price === "string" && property.price.includes("QAR")
+                          ? property.price
+                          : property.price
+                            ? `${property.price} QAR`
+                            : "Price on request"}
                       </p>
 
-                      <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5  lg:py-2  rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                      <button className="w-[150px] md:w-auto bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
                         <Link
                           href={`/propertydetails?id=${property.id}`}
                           className="flex items-center gap-2 w-full"
@@ -332,7 +329,7 @@ export default function FeaturedProperties({
                           <span>Details</span>
                           <FaArrowRight
                             size={12}
-                            className="w-3 h-3  lg:w-[16px]  ml-10"
+                            className="w-3 h-3 lg:w-[16px] ml-16 lg:ml-10"
                           />
                         </Link>
                       </button>

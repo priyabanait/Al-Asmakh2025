@@ -184,11 +184,8 @@ export default function Rent() {
               </div>
 
             </div>
-
-          </div>
-
-          {/* Contact Team Button - Below the box */}
-          <div className="mt-4 lg:mt-6">
+   {/* Contact Team Button - Below the box */}
+   <div className="mt-4 lg:mt-6">
             <div className="flex-shrink-0 lg:mr-40">
               <button
                 className="btn-details text-[12px]"
@@ -199,6 +196,9 @@ export default function Rent() {
               </button>
             </div>
           </div>
+          </div>
+
+       
         </div>
 
         {/* 🔍 Search Bar (Half on BG, Half outside if needed) */}
@@ -223,13 +223,7 @@ export default function Rent() {
           {/* Card 1 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
-                <img
-                  src="/Icon Container.png"   // 🔹 replace with your image path
-                  alt="icon"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+         
 
               <h3 className="text-[#001730] font-semibold text-lg">
                 Moving Coordination
@@ -247,11 +241,7 @@ export default function Rent() {
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
-                <img
-                  src="/Icon Container.png"   // 🔹 replace with your image path
-                  alt="icon"
-                  className="w-full h-full object-cover"
-                />
+                
               </div>
 
               <h3 className="text-[#001730] font-semibold text-lg">
@@ -270,11 +260,7 @@ export default function Rent() {
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
-                <img
-                  src="/Icon Container.png"   // 🔹 replace with your image path
-                  alt="icon"
-                  className="w-full h-full object-cover"
-                />
+            
               </div>
               <h3 className="text-[#001730] font-semibold text-lg">Lease Contracts</h3>
             </div>
@@ -290,11 +276,7 @@ export default function Rent() {
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
               <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
-                <img
-                  src="/Icon Container.png"   // 🔹 replace with your image path
-                  alt="icon"
-                  className="w-full h-full object-cover"
-                />
+                
               </div>
 
               <h3 className="text-[#001730] font-semibold text-lg">
@@ -312,13 +294,7 @@ export default function Rent() {
           {/* Card 5 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
-                <img
-                  src="/Icon Container.png"   // 🔹 replace with your image path
-                  alt="icon"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              
               <h3 className="text-[#001730] font-semibold text-lg">
                 Facility Management
               </h3>
@@ -334,13 +310,7 @@ export default function Rent() {
           {/* Card 6 */}
           <div className="glass-effect rounded-lg shadow-sm hover:shadow-md transition-all p-6 bg-[#EEEEEE]">
             <div className="flex items-center mb-4">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E8ECF5] text-[#001730] font-bold text-lg mr-3 overflow-hidden">
-                <img
-                  src="/Icon Container.png"   // 🔹 replace with your image path
-                  alt="icon"
-                  className="w-full h-full object-cover"
-                />
-              </div>
+             
 
               <h3 className="text-[#001730] font-semibold text-lg">
                 Quality Control

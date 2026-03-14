@@ -78,11 +78,8 @@ export default function Rent() {
               </div>
 
             </div>
-          </div>
 
-
-          {/* Contact Team Button - Below the box */}
-          <div className="mt-4 lg:mt-6">
+            <div className="mt-4 lg:mt-6">
             <div className="flex-shrink-0 lg:mr-40">
               <button className="btn-details text-[12px]" onClick={() => window.location.href = '/contact'}>
                 <span>Speak to a Sales Advisor</span>
@@ -90,6 +87,10 @@ export default function Rent() {
               </button>
             </div>
           </div>
+          </div>
+
+
+        
         </div>
 
       </section>
@@ -97,7 +98,8 @@ export default function Rent() {
 
    
       <FeaturedProperties 
-      title="Explore a selection of homes and investment-ready properties currently available for sale. Compare key details, shortlist your favourites, and book a viewing when you’re ready."
+      title="Explore a selection of homes and investment-ready properties "
+      description="currently available for sale. Compare key details, shortlist your favourites, and book a viewing when you’re ready."
         priceType="sale"
         limit={4}
         status="published"

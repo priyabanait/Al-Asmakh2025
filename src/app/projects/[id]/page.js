@@ -826,45 +826,40 @@ export default function Sale({ priceType: initialPriceType = "rent" }) {
 
 
 <div className="flex items-center bg-[#F5F7FA] gap-4  mt-5">
-          {/* Label on left */}
-          {/* <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
-            {viewMode === "properties" ? "Viewing properties" : "Viewing agents"}
-          </div> */}
-
-          {/* Center line */}
+       
           <div className="flex-1 h-[1px] bg-gray-300 hidden sm:block"></div>
 
           {/* Properties / Agents buttons (glass style) */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setViewMode("properties")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
-                ${
-                  viewMode === "properties"
-                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-                    : "text-gray-600"
-                }`}
-            >
-              <FaHome size={14} />
-              <span>Properties</span>
-            </button>
+          <div className="flex items-center justify-center lg:justify-start gap-2 w-full lg:w-auto">
+  <button
+    onClick={() => setViewMode("properties")}
+    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+      ${
+        viewMode === "properties"
+          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+          : "text-gray-600"
+      }`}
+  >
+    <FaHome size={14} />
+    <span>Properties</span>
+  </button>
 
-            {/* Divider */}
-            <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
+  <div className="h-4 w-[1px] bg-gray-300 mx-0.5 hidden sm:block"></div>
 
-            <button
-              onClick={() => setViewMode("agents")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
-                ${
-                  viewMode === "agents"
-                    ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
-                    : "text-gray-600"
-                }`}
-            >
-              <FaUser size={14} />
-              <span>Agents</span>
-            </button>
-          </div>
+  <button
+    onClick={() => setViewMode("agents")}
+    className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-semibold transition-all
+      ${
+        viewMode === "agents"
+          ? "border border-white/40 backdrop-blur-md bg-[#e3e2d8]/40 text-[#001730] shadow-[0_4px_14px_rgba(0,0,0,0.15)]"
+          : "text-gray-600"
+      }`}
+  >
+    <FaUser size={14} />
+    <span>Agents</span>
+  </button>
+</div>
+
         </div>
 
 

@@ -736,22 +736,30 @@ export default function Profit() {
 
                       {/* Content */}
                       <div className="text-left relative">
-                        {/* <h3 className="text-[#001730] ml-10 lg:ml-0 font-semibold text-sm lg:text-lg mb-2
-                                     flex items-center justify-between">
-                          {t.name}
-                          <Image
-                            src="/SVG.png"
-                            alt="quote"
-                            width={16}
-                            height={16}
-                            className="lg:w-5 lg:h-5 object-contain"
-                          />
-                        </h3> */}
+                       
 
-                        <p className="text-gray-600 ml-10 lg:ml-0 text-xs lg:text-sm leading-relaxed">
+                        <p className="text-gray-600 ml-10 lg:ml-0 text-sm lg:text-sm leading-relaxed">
                           {t.text}
+
+
+                          <div className="absolute right-0 top-0 z-0">
+                <Image
+                  src="/images_pages/Vector.png"
+                  alt="Vector decoration"
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+              </div>
+
                         </p>
+
+
+
                       </div>
+
+
+                  
                     </div>
                   ))}
                 </motion.div>

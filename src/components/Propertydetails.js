@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React, { useRef, useState, useEffect, Suspense } from "react";
-import { ArrowLeft, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { FaArrowRight, FaArrowLeft, FaChevronUp, FaChevronDown, FaBath } from "react-icons/fa6";
 import { FaBed, FaRulerCombined, FaCar, FaCouch, FaBuilding, FaRegSquare, FaWifi, FaSwimmingPool, FaDumbbell, FaParking, FaSnowflake, FaDog, FaShieldAlt, FaTv, FaUtensils, FaArrowUp } from "react-icons/fa";
 import { Md360 } from "react-icons/md";
@@ -148,7 +148,7 @@ function PropertyDetailsContent() {
         ? property.priceAmount 
         : parseFloat(property.priceAmount) || 0;
       price = `${priceValue.toLocaleString()} ${currency}${frequencyStr}`;
-      priceLabel = frequency === "monthly" ? "Per Month" :
+      priceLabel = frequency === "monthly" ? "Price" :
         frequency === "weekly" ? "Per Week" :
           frequency === "daily" ? "Per Day" : "";
     }
@@ -329,12 +329,11 @@ function PropertyDetailsContent() {
     });
   };
 
+
   if (loading) {
     return (
       <div className="w-full bg-[#F5F7FA] p-4 sm:p-6 mt-20 min-h-screen flex items-center justify-center">
-        <div className="text-center text-gray-500">
-          <p className="text-xl">Loading property details...</p>
-        </div>
+        <Loader2 className="w-8 h-8 text-[#001730] animate-spin" />
       </div>
     );
   }
@@ -918,7 +917,7 @@ function PropertyDetailsContent() {
                           width={300}
                           height={400}
                           alt={agentName}
-                          className="h-full w-full rounded-[5px] object-fill"
+                          className="h-full w-full rounded-[5px] object-cover"
                           unoptimized={agent.profilePicture?.startsWith('http')}
                         />
                       ) : (

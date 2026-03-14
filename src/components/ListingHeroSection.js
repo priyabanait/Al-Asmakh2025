@@ -155,7 +155,7 @@ export default function ListingHeroSection({
 
         {/* 🔍 Search Bar (Half on BG, Half outside) */}
         {/* Mobile Version */}
-        <div className="absolute left-1/2 bottom-0 mb-5 transform -translate-x-1/2 translate-y-1/2 z-20 w-[90%] lg:hidden">
+        <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-1/2 z-20 w-[90%] mb-12 lg:hidden">
           <div className="space-y-3">
             {/* Transaction Type Selector - Separate Box */}
             <div className="border border-white/10 backdrop-blur-sm bg-white/20 rounded-md border-[#8C8C8C66] p-3 shadow-md">
@@ -240,8 +240,8 @@ export default function ListingHeroSection({
               </div>
             </div>
 
-            {/* Status Indicator */}
-            <div className="text-center text-gray-600 text-sm font-medium pt-3 pb-2">
+            {/* Status Indicator - Hidden on mobile, visible on desktop */}
+            <div className="hidden lg:block text-center text-gray-600 text-sm  font-medium pt-3 pb-2">
               {loading
                 ? "Loading..."
                 : `Showing ${propertiesCount} of ${totalProperties}`}

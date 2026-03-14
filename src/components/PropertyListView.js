@@ -12,6 +12,11 @@ import { FaList, FaBed, FaRulerCombined } from "react-icons/fa";
 import CompareButton from "./CompareButton";
 import CompareModal from "./CompareModal";
 import InteractivePropertyMap from "./InteractivePropertyMap";
+import { TbView360Number } from "react-icons/tb";
+import { HiOutlineSquare2Stack } from "react-icons/hi2";
+import { RiHotelBedLine } from "react-icons/ri";
+import { BiBath } from "react-icons/bi";
+import { useRouter } from "next/navigation";
 
 export default function PropertyListView({ properties = [], totalProperties = 0 }) {
     const [viewMode, setViewMode] = useState("LIST"); // "LIST" or "MAP"
@@ -31,11 +36,11 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
         <div className="py-4 lg:py-4">
             {/* Header Bar (desktop only) */}
             <div className="border-gray-200 px-2 lg:px-4">
-                <div className="hidden lg:flex max-w-full mb-4 bg-white mx-auto items-center gap-4">
+                <div className="hidden lg:flex max-w-full mb-4  mx-auto items-center gap-4">
                     {/* Showing Count (Left) */}
-                    <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
+                    {/* <div className="text-gray-400 text-sm font-medium whitespace-nowrap">
                         Showing {properties.length} of {totalProperties || properties.length}
-                    </div>
+                    </div> */}
 
                     {/* CENTER LINE */}
                     <div className="flex-1 h-[1px] bg-gray-300"></div>
@@ -96,13 +101,15 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                             (property.images && property.images[0] && (property.images[0].url || property.images[0])) ||
                             "/placeholder-property.jpg";
 
+                        const router = useRouter();
                         return (
                             <div
                                 key={id}
-                                className="w-full mt-10 p-4 bg-[#E9E9E9] border border-gray-200 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex-shrink-0"
+                                onClick={() => router.push(`/propertydetails?id=${id}`)}
+                                className="w-full cursor-pointer mt-10 p-4 bg-[#E9E9E9] border border-gray-200 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex-shrink-0"
                             >
                                 {/* Image Section */}
-                                <div className="relative w-full h-[180px] xl:h-[220px]">
+                                <div className="relative w-full h-[200px] xl:h-[260px]">
                                     <Image
                                         src={imageSrc}
                                         alt={title}
@@ -123,7 +130,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                 boxShadow: "0 4px 16px 0 rgba(31, 38, 135, 0.2)",
                                             }}
                                         >
-                                            <span className="text-white font-semibold text-[10px] lg:text-xs uppercase tracking-wide">
+                                            <span className="text-[#001730] font-bold text-[10px] lg:text-[10px] uppercase tracking-wide">
                                                 {property.priceType === "sale"
                                                     ? "SALE"
                                                     : property.priceType === "rent" || property.priceType === "lease"
@@ -144,7 +151,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                 boxShadow: "0 4px 16px 0 rgba(31, 38, 135, 0.2)",
                                             }}
                                         >
-                                            <Md360 className="text-white w-3 h-3 lg:w-4 lg:h-4" />
+                                            <TbView360Number className="text-[#062e59] w-4 h-5 lg:w-10 lg:h-5" />
                                         </div>
                                     </div>
 
@@ -161,7 +168,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
 
                                 {/* Property Info */}
                                 <div className="py-2">
-                                    <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2 min-h-[2.5rem] lg:min-h-[3.125rem]">
+                                    <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2 min-h-[1.5rem] lg:min-h-[3.125rem]">
                                         {title}
                                     </h3>
 
@@ -176,17 +183,17 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                     {/* Bed/Bath/Area Info */}
                                     <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
                                         <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                                            <FaBed className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                                            <RiHotelBedLine className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                                             <span>{bedrooms}</span>
                                         </div>
 
                                         <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                                            <FaBath className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                                            <BiBath className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                                             <span>{bathrooms}</span>
                                         </div>
 
                                         <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
-                                            <FaRulerCombined className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                                            <HiOutlineSquare2Stack className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
                                             <span>{Number(area || 0).toFixed(0)}</span>
                                         </div>
                                     </div>
@@ -199,7 +206,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                             {price}
                                         </p>
 
-                                        <button className="bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                                        <button className="w-[150px] md:w-auto bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
                                             <Link
                                                 href={`/propertydetails?id=${id}`}
                                                 className="flex items-center gap-2 w-full"
@@ -207,7 +214,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                 <span>Details</span>
                                                 <FaArrowRight
                                                     size={12}
-                                                    className="w-3 h-3 lg:w-[16px] ml-6 lg:ml-10"
+                                                    className="w-3 h-3 lg:w-[16px] ml-16 lg:ml-10 "
                                                 />
                                             </Link>
                                         </button>
@@ -227,8 +234,9 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                     key={property.id}
                                     data-property-id={property.id}
                                     onClick={() => setSelectedPropertyId(property.id)}
-                                    className={`bg-[#E9E9E9] rounded-md mt-2 shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer ${selectedPropertyId === property.id ? 'ring-2 ring-[#001730] ring-offset-2' : ''
+                                    className={`cursor-pointer bg-[#E9E9E9] rounded-md mt-2 shadow-md overflow-hidden hover:shadow-lg transition-shadow ${selectedPropertyId === property.id ? 'ring-2 ring-[#001730] ring-offset-2' : ''
                                         }`}
+                                        href={`/propertydetails?id=${property.id}`}
                                 >
                                     <div className="flex p-4 rounded-md">
                                         {/* Image Section - Left */}
@@ -239,6 +247,44 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                 fill
                                                 className="object-cover rounded-md"
                                             />
+                                            
+                                            {/* Glass Effect Overlay with Property Type and 360° Icon */}
+                                            <div className="absolute top-0 left-0 right-0 flex justify-between items-start p-1.5 lg:p-2">
+                                                {/* Property Type Badge - Glass Effect */}
+                                                <div
+                                                    className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30"
+                                                    style={{
+                                                        background: "rgba(255, 255, 255, 0.15)",
+                                                        backdropFilter: "blur(8px)",
+                                                        WebkitBackdropFilter: "blur(8px)",
+                                                        boxShadow: "0 4px 16px 0 rgba(31, 38, 135, 0.2)",
+                                                    }}
+                                                >
+                                                    <span className="text-[#001730] font-bold text-[10px] lg:text-[10px] uppercase tracking-wide">
+                                                        {property.priceType === "sale"
+                                                            ? "SALE"
+                                                            : property.priceType === "rent" || property.priceType === "lease"
+                                                                ? "RENT"
+                                                                : property.priceType === "marketing"
+                                                                    ? "MARKETING"
+                                                                    : property.priceType?.toUpperCase() || "RENT"}
+                                                    </span>
+                                                </div>
+
+                                                {/* 360° Icon Badge - Glass Effect */}
+                                                <div
+                                                    className="px-2 py-1 lg:px-2.5 lg:py-1 rounded-md backdrop-blur-sm border border-white/30 flex items-center justify-center"
+                                                    style={{
+                                                        background: "rgba(255, 255, 255, 0.15)",
+                                                        backdropFilter: "blur(8px)",
+                                                        WebkitBackdropFilter: "blur(8px)",
+                                                        boxShadow: "0 4px 16px 0 rgba(31, 38, 135, 0.2)",
+                                                    }}
+                                                >
+                                                    <TbView360Number className="text-[#062e59] w-4 h-5 lg:w-10 lg:h-5" />
+                                                </div>
+                                            </div>
+
                                             {/* Share Button Overlay */}
                                             <div className="absolute bottom-2 right-2 z-10">
                                                 <ShareButton
@@ -253,40 +299,49 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                         {/* Details Section - Right */}
                                         <div className="flex-1 p-4 flex flex-col justify-between">
                                             <div>
-                                                <h3 className="text-lg font-bold text-[#001730] mb-1">
-                                                    {property.title}
+                                                <h3 className="font-semibold text-[#001730] text-sm lg:text-lg mb-1 leading-snug line-clamp-2 min-h-[1.5rem] lg:min-h-[3.125rem]">
+                                                    {property.title || property.titleEn || "Property"}
                                                 </h3>
 
+                                                {/* Location */}
                                                 <div className="flex items-center text-[#001730] text-sm mb-3">
                                                     <MapPin size={12} className="mr-2" />
-                                                    <span>{property.location}</span>
+                                                    <span className="line-clamp-1 text-xs md:text-xs lg:text-sm">
+                                                        {property.location || ""}
+                                                    </span>
                                                 </div>
-                                                <div className="grid grid-cols-3 gap-2 lg:gap-4 text-[#001730] text-sm mb-4">
+
+                                                {/* Bed/Bath/Area Info */}
+                                                <div className="grid grid-cols-3 gap-2 lg:gap-3 text-[#001730] text-xs lg:text-sm mb-3 lg:mb-4">
                                                     {/* Beds */}
-                                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                                        <FaBed className="w-[18px] h-[18px] text-[#001730]" />
-                                                        <span className="text-xs lg:text-sm">{property.bedrooms}</span>
+                                                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                                                        <RiHotelBedLine className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                                                        <span>{property.beds || property.bedrooms || 0}</span>
                                                     </div>
 
                                                     {/* Baths */}
-                                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                                        <FaBath className="w-[18px] h-[18px] text-[#001730]" />
-                                                        <span className="text-xs lg:text-sm">{property.bathrooms}</span>
+                                                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                                                        <BiBath className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                                                        <span>{property.baths || property.bathrooms || 0}</span>
                                                     </div>
 
                                                     {/* Area */}
-                                                    <div className="flex items-center gap-1 bg-gray-50 shadow p-2 px-4 rounded-md justify-center">
-                                                        <FaRulerCombined className="w-[18px] h-[18px] text-[#001730]" />
-                                                        <span className="text-xs lg:text-sm">{property.area}</span>
+                                                    <div className="flex items-center justify-center gap-1 bg-[#F5F5F5] shadow p-1.5 lg:p-2 rounded-md">
+                                                        <HiOutlineSquare2Stack className="w-3.5 h-3.5 lg:w-[18px] lg:h-[18px] text-[#212633]" />
+                                                        <span>{Number(property.area || property.size || 0).toFixed(0)}</span>
                                                     </div>
                                                 </div>
                                                 <div className="w-[100%] h-[0.5px] bg-gray-300 my-3"></div>
                                             </div>
                                             <div className="flex items-center justify-between gap-2">
-                                                <p className="text-lg font-bold text-[#001730] m-0">
-                                                    {property.price} QAR
+                                                <p className="text-base md:text-base lg:text-base xl:text-lg font-semibold text-[#001730]">
+                                                    {property.price && typeof property.price === "string" && property.price.includes("QAR")
+                                                        ? property.price
+                                                        : property.price
+                                                            ? `${property.price} QAR`
+                                                            : "Price on request"}
                                                 </p>
-                                                <button className="bg-[#001730] text-white text-[12px] font-medium px-3 md:px-4 lg:px-5 xl:px-5 2xl:px-6 3xl:px-7 4xl:px-8 5xl:px-10 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
+                                                <button className="w-[150px] md:w-auto bg-[#001730] text-white text-[12px] px-3 md:px-4 lg:px-5 xl:px-5 py-1.5 lg:py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52]">
                                                     <Link
                                                         href={`/propertydetails?id=${property.id}`}
                                                         className="flex items-center gap-2 w-full"
@@ -294,7 +349,7 @@ export default function PropertyListView({ properties = [], totalProperties = 0 
                                                         <span>Details</span>
                                                         <FaArrowRight
                                                             size={12}
-                                                            className="w-3 h-3 lg:w-[16px] ml-10"
+                                                            className="w-3 h-3 lg:w-[16px] ml-16 lg:ml-10"
                                                         />
                                                     </Link>
                                                 </button>

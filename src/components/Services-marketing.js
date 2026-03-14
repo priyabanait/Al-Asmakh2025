@@ -155,10 +155,8 @@ export default function Rent() {
                 <p className="subheading text-[#001730]">Client Satisfaction</p>
               </div>
             </div>
-          </div>
 
-          {/* Contact Team Button - Below the box */}
-          <div className="mt-4 lg:mt-6">
+            <div className="mt-4 lg:mt-6">
             <div className="flex-shrink-0 lg:mr-40 ">
               <button
                 className="btn-details text-[12px]"
@@ -169,6 +167,10 @@ export default function Rent() {
               </button>
             </div>
           </div>
+          </div>
+
+          {/* Contact Team Button - Below the box */}
+         
         </div>
 
         {/* <div className="absolute right-0 bottom-0 h-full w-[40%] hidden md:block">
