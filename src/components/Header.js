@@ -56,6 +56,34 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Inject CSS animations for mobile menu
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const styleId = 'mobile-menu-animations'
+      if (!document.getElementById(styleId)) {
+        const style = document.createElement('style')
+        style.id = styleId
+        style.textContent = `
+          @keyframes slideUpFadeIn {
+            0% {
+              opacity: 0;
+              transform: translateY(28px) scale(0.96);
+            }
+            60% {
+              opacity: 1;
+              transform: translateY(-2px) scale(1.01);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+          }
+        `
+        document.head.appendChild(style)
+      }
+    }
+  }, [])
+
   // Ensure header background color stays consistent when sidebar opens/closes
   useEffect(() => {
     if (headerRef.current) {
@@ -411,15 +439,16 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Backdrop Overlay - With closing animation - Below header */}
+      {/* Backdrop Overlay - Smooth fade in/out */}
       {(mobileMenuOpen || isClosing) && (
         <div
-          className={`fixed inset-0  z-[45] transition-opacity duration-600 ease-in-out ${isClosing ? 'opacity-0' : 'opacity-100'
-            }`}
+          className={`fixed inset-0 bg-black/50 z-[45] ${isClosing ? 'opacity-0' : 'opacity-100'}`}
           onClick={closeMobileMenu}
           style={{
             pointerEvents: isClosing ? 'none' : 'auto',
-            transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'opacity 0.6s cubic-bezier(0.22,1,0.36,1)',
+            backdropFilter: 'blur(2px)',
+            WebkitBackdropFilter: 'blur(2px)',
           }}
         />
       )}
@@ -428,34 +457,34 @@ export default function Header() {
       {(mobileMenuOpen || isClosing) && (
         <div
           className={`fixed top-0 h-screen w-[80%] max-w-[400px] z-50 
-            transform transition-all duration-600 ease-in-out
+            transform transition-all duration-[700ms] ease-[cubic-bezier(0.22,1,0.36,1)]
           ${language === 'ar'
               ? 'left-0'
               : 'right-0'
             }
           ${language === 'ar'
-              ? (isClosing ? '-translate-x-full opacity-0 scale-95' : 'translate-x-0 opacity-100 scale-100')
-              : (isClosing ? 'translate-x-full opacity-0 scale-95' : 'translate-x-0 opacity-100 scale-100')
+              ? (isClosing ? '-translate-x-full opacity-0 scale-95 translate-y-3' : 'translate-x-0 opacity-100 scale-100 translate-y-0')
+              : (isClosing ? 'translate-x-full opacity-0 scale-95 translate-y-3' : 'translate-x-0 opacity-100 scale-100 translate-y-0')
             }`}
           style={{
-            background: 'rgba(107, 107, 107, 0.87)',
+            background: 'rgb(12 12 32 / 87%)',
             borderRadius: language === 'ar' ? '0 5px 0 0' : '5px 0 0 0',
             boxShadow: isClosing
               ? '0 4px 30px rgba(0, 0, 0, 0.05)'
-              : '0 4px 30px rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(18.5px)',
-            WebkitBackdropFilter: 'blur(18.5px)',
+              : '0 20px 60px rgba(0,0,0,0.25)',
+            backdropFilter: 'blur(22px) saturate(140%)',
+            WebkitBackdropFilter: 'blur(22px) saturate(140%)',
             border: '1px solid rgba(107, 107, 107, 0.96)',
             pointerEvents: isClosing ? 'none' : 'auto',
-            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), scale 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: 'transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), scale 0.85s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.85s cubic-bezier(0.16, 1, 0.3, 1), rotate 0.85s cubic-bezier(0.16, 1, 0.3, 1)',
             transformOrigin: language === 'ar' ? 'left center' : 'right center',
             top: 0,
             right: language === 'ar' ? 'auto' : 0,
             left: language === 'ar' ? 0 : 'auto',
           }}
         >
-          <div className="relative h-full flex flex-col text-white" style={{ padding: '24px 0 24px 24px' }}>
-            {/* Close Icon on Start - Mobile */}
+          <div className="relative h-full flex flex-col text-white items-center justify-center" style={{ padding: '24px' }}>
+            {/* Close Icon - Mobile */}
             <button
               onClick={closeMobileMenu}
               className={`absolute top-6 md:hidden p-2 rounded-md hover:bg-white/20 transition-all duration-300 z-10 ${language === 'ar' ? 'right-6' : 'left-6'
@@ -465,40 +494,39 @@ export default function Header() {
               <IoClose className="h-6 w-6 text-white" />
             </button>
 
-            {/* Logo Section - Align to End */}
-            <div className="flex flex-col items-end mb-6 w-full pr-6">
-              <div className="relative w-[140px]">
-                <Image
-                  src="/images/w-alasmakh.png"
-                  alt="Al-Asmakh Logo"
-                  width={140}
-                  height={50}
-                  className="object-contain mb-3"
-                />
-              </div>
-              <div className="w-60 border-b border-white/30 mt-3" />
-            </div>
-
-            {/* Menu Content - Scrollable */}
+            {/* Menu Content - Scrollable with smooth fade in - Centered */}
             <div
-              className={`flex-1 overflow-y-auto overflow-x-hidden transition-opacity duration-600 ${isClosing ? 'opacity-0' : 'opacity-100'
-                }`}
+              className={`flex-1 overflow-y-auto overflow-x-hidden flex items-center justify-center ${isClosing ? 'opacity-0' : 'opacity-100'}`}
               style={{
-                transitionDelay: isClosing ? '0ms' : '0ms',
-                transition: 'opacity 0.6s ease-in-out',
+                transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transitionDelay: isClosing ? '0ms' : '0.2s',
                 paddingRight: '0',
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'rgba(255, 255, 255, 0.3) transparent',
               }}
             >
-              {/* Navigation Menu Items with Dropdowns */}
-              <div className="flex flex-col gap-3 pr-0">
-                {menuItems.map((item) => {
+              {/* Navigation Menu Items with Dropdowns - Stagger Animation - Centered */}
+              <div className="flex flex-col gap-3 items-center w-full">
+                {menuItems.map((item, index) => {
                   const hasDropdown = dropdowns[item.key] && dropdowns[item.key].length > 0
                   const isMobileDropdownOpen = mobileActiveDropdown === item.key
+                  const staggerDelay = isClosing ? 0 : index * 0.06 // 60ms delay between items for more natural reveal
 
                   return (
-                    <div key={item.key} className="flex flex-col gap-2">
+                    <div 
+                      key={item.key} 
+                      className="flex flex-col gap-2 w-full items-center"
+                      style={{
+                        opacity: isClosing ? 0 : 1,
+                        transform: isClosing ? 'translateY(10px)' : 'translateY(0)',
+                        transition: isClosing 
+                          ? `opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) ${(menuItems.length - index - 1) * 0.03}s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) ${(menuItems.length - index - 1) * 0.03}s`
+                          : 'none',
+                        animation: !isClosing && mobileMenuOpen 
+                          ? `slideUpFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${staggerDelay}s both`
+                          : 'none',
+                      }}
+                    >
                       <button
                         onClick={() => {
                           if (hasDropdown) {
@@ -507,12 +535,12 @@ export default function Header() {
                             handleMobileMenuItemClick(item)
                           }
                         }}
-                        className="w-56 ms-auto py-3 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
+                        className="w-full max-w-[280px] py-3 px-4 rounded-lg text-center font-normal text-white transition-all duration-300
                                  bg-[rgba(160, 166, 176, 0.4)] hover:bg-[rgba(160, 166, 176, 0.5)] 
                                  border border-white/20 flex items-center justify-between shadow-sm"
                         style={{ fontSize: '15px' }}
                       >
-                        <span>{item.label}</span>
+                        <span className="flex-1 text-center">{item.label}</span>
                         {hasDropdown && (
                           <IoIosArrowDown
                             className={`w-4 h-4 text-white transition-transform duration-300 ${isMobileDropdownOpen ? 'rotate-180' : ''}`}
@@ -522,12 +550,12 @@ export default function Header() {
 
                       {/* Mobile Dropdown Items */}
                       {hasDropdown && isMobileDropdownOpen && (
-                        <div className="w-56 ms-0 flex flex-col gap-2 pl-2">
+                        <div className="w-full max-w-[280px] flex flex-col gap-2">
                           {dropdowns[item.key].map((dropdownItem, index) => (
                             <button
                               key={index}
                               onClick={() => handleMobileDropdownItemClick(dropdownItem)}
-                              className="w-full py-2 px-4 rounded-lg text-start font-normal text-white transition-all duration-300
+                              className="w-full py-2 px-4 rounded-lg text-center font-normal text-white transition-all duration-300
                                        border border-white/10 flex items-center justify-between shadow-sm"
                               style={{ 
                                 fontSize: '14px',
@@ -540,7 +568,7 @@ export default function Header() {
                                 e.currentTarget.style.backgroundColor = 'rgb(42 44 57 / 87%)';
                               }}
                             >
-                              <span>{dropdownItem.label}</span>
+                              <span className="flex-1 text-center">{dropdownItem.label}</span>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
@@ -558,53 +586,101 @@ export default function Header() {
                     </div>
                   )
                 })}
-              </div>
 
-              {/* Change Language Section */}
-              <div className="flex flex-col gap-3 ">
-                <h2 className="text-base font-normal text-white mb-2 ms-auto">Change Language</h2>
-
-                {/* Box Switch */}
-                <div className="flex items-center gap-2 ms-auto w-56">
+                {/* Language Selector as Menu Item */}
+                <div 
+                  className="flex flex-col gap-2 w-full items-center"
+                  style={{
+                    opacity: isClosing ? 0 : 1,
+                    transform: isClosing ? 'translateY(10px)' : 'translateY(0)',
+                    transition: isClosing 
+                      ? `opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) ${(menuItems.length) * 0.03}s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) ${(menuItems.length) * 0.03}s`
+                      : 'none',
+                    animation: !isClosing && mobileMenuOpen 
+                      ? `slideUpFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${menuItems.length * 0.06}s both`
+                      : 'none',
+                  }}
+                >
                   <button
-                    onClick={() => switchLanguage('en')}
-                    disabled={isTranslating}
-                    className={`px-4 py-2 rounded-md transition-all duration-300 font-medium ${language === 'en'
-                      ? 'bg-white text-[#001730] shadow-md'
-                      : 'bg-[rgba(160, 166, 176, 0.4)] text-white border border-white/20'
-                      } ${isTranslating ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/30'}`}
+                    onClick={() => {
+                      const isLanguageOpen = mobileActiveDropdown === 'LANGUAGE'
+                      toggleMobileDropdown(isLanguageOpen ? null : 'LANGUAGE')
+                    }}
+                    className="w-full max-w-[280px] py-3 px-4 rounded-lg text-center font-normal text-white transition-all duration-300
+                             bg-[rgba(160, 166, 176, 0.4)] hover:bg-[rgba(160, 166, 176, 0.5)] 
+                             border border-white/20 flex items-center justify-between shadow-sm"
                     style={{ fontSize: '15px' }}
                   >
-                    English
+                    <span className="flex-1 text-center">LANGUAGE</span>
+                    <IoIosArrowDown
+                      className={`w-4 h-4 text-white transition-transform duration-300 ${mobileActiveDropdown === 'LANGUAGE' ? 'rotate-180' : ''}`}
+                    />
                   </button>
 
-                  <button
-                    onClick={() => switchLanguage('ar')}
-                    disabled={isTranslating}
-                    className={`px-4 py-2 rounded-md transition-all duration-300 font-medium ${language === 'ar'
-                      ? 'bg-white text-[#001730] shadow-md'
-                      : 'bg-[rgba(160, 166, 176, 0.4)] text-white border border-white/20'
-                      } ${isTranslating ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/30'}`}
-                    style={{ fontSize: '15px' }}
-                  >
-                    Arabic
-                  </button>
-
-                  {isTranslating && (
-                    <div className="ms-2">
-                      <svg
-                        className="animate-spin h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
+                  {/* Language Options Dropdown */}
+                  {mobileActiveDropdown === 'LANGUAGE' && (
+                    <div className="w-full max-w-[280px] flex flex-col gap-2">
+                      <button
+                        onClick={() => {
+                          switchLanguage('en')
+                          toggleMobileDropdown(null)
+                        }}
+                        disabled={isTranslating}
+                        className={`w-full py-2.5 px-4 rounded-lg text-center font-normal text-white transition-all duration-300
+                                 border flex items-center justify-center gap-2 shadow-sm ${
+                                  language === 'en'
+                                    ? 'bg-[rgba(160, 166, 176, 0.5)] border-white/40'
+                                    : 'bg-[rgb(42,44,57/87%)] border-white/10 hover:bg-[rgb(42,44,57/95%)]'
+                                } ${isTranslating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        style={{ fontSize: '14px' }}
                       >
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        />
-                      </svg>
+                        <span>English</span>
+                        {language === 'en' && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          switchLanguage('ar')
+                          toggleMobileDropdown(null)
+                        }}
+                        disabled={isTranslating}
+                        className={`w-full py-2.5 px-4 rounded-lg text-center font-normal text-white transition-all duration-300
+                                 border flex items-center justify-center gap-2 shadow-sm ${
+                                  language === 'ar'
+                                    ? 'bg-[rgba(160, 166, 176, 0.5)] border-white/40'
+                                    : 'bg-[rgb(42,44,57/87%)] border-white/10 hover:bg-[rgb(42,44,57/95%)]'
+                                } ${isTranslating ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        style={{ fontSize: '14px' }}
+                      >
+                        <span>Arabic</span>
+                        {language === 'ar' && (
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+
+                      {isTranslating && (
+                        <div className="flex items-center justify-center py-2">
+                          <svg
+                            className="animate-spin h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

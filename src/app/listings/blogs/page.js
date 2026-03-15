@@ -14,3 +14,7 @@ export default function BuyPage() {
   )
 }
 
+// Note: For Next.js App Router, you can export generateMetadata from a separate file
+// or create a layout.js file in the same directory. Since this is a client component,
+// metadata should be handled in a parent layout or a separate metadata file.
+// See example-seo-page.js for a server component example.
