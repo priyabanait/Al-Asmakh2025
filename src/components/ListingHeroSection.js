@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { FaDollarSign } from "react-icons/fa";
 import SpeechToTextModal from "./SpeechToTextModal";
+import { getApiUrl } from "../config/api";
 
 export default function ListingHeroSection({
   backgroundImage = "/images_pages/listings.png",
@@ -31,12 +32,29 @@ export default function ListingHeroSection({
   // Mobile-only view mode: "LIST" (default) or "MAP"
   mobileViewMode = "LIST",
   onMobileViewModeChange,
+  // Pass selected filters to MoreFiltersModal
+  selectedFilters: externalSelectedFilters,
+  onSelectedFiltersChange,
 }) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [showSpeechModal, setShowSpeechModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const dropdownRefs = useRef({});
+  
+  // Dynamic filter options from API
+  const [filterOptions, setFilterOptions] = useState({
+    "Property Type": ["All Property Types", "Apartment", "Villa", "Townhouse", "Penthouse", "Studio"],
+    Location: ["All Areas"],
+    Beds: ["All Bedrooms", "Studio", "1", "2", "3", "4", "5", "5+"],
+    Baths: ["All Bathrooms", "No bathroom", "1", "2", "3", "4", "5", "5+"],
+    Price: ["All Prices"],
+  });
+  
+  // Price range state for slider
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 100000 });
+  const [showPriceRange, setShowPriceRange] = useState(false);
+  const [priceRangeInputs, setPriceRangeInputs] = useState({ min: 0, max: 100000 });
 
   // Update search query when initialSearchQuery prop changes
   useEffect(() => {
@@ -45,23 +63,95 @@ export default function ListingHeroSection({
     }
   }, [initialSearchQuery]);
 
-  // Filter options (desktop top filter bar)
-  // Include an "All" option so user can reset each filter back to "All ..."
-  const filterOptions = {
-    "Property Type": ["All Property Types", "Apartment", "Villa", "Townhouse", "Penthouse", "Studio"],
-    Location: ["All Areas", "Doha", "Lusail", "West Bay", "Pearl Qatar", "Al Waab"],
-    Beds: ["All Bedrooms", "Studio", "1", "2", "3", "4", "5", "5+"],
-    Baths: ["All Bathrooms", "No bathroom", "1", "2", "3", "4", "5", "5+"],
-    Price: ["All Prices", "0-5000", "5000-10000", "10000-20000", "20000-50000", "50000+"],
-  };
+  // Fetch areas from API
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        const apiUrl = getApiUrl("api/v1/areas/list");
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.areas && Array.isArray(data.areas)) {
+            const areaNames = data.areas
+              .map(area => area.area_name || area.name || area.area_title)
+              .filter(Boolean)
+              .sort();
+            setFilterOptions(prev => ({
+              ...prev,
+              Location: ["All Areas", ...areaNames],
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching areas:", error);
+        // Keep fallback locations
+        setFilterOptions(prev => ({
+          ...prev,
+          Location: ["All Areas", "Doha", "Lusail", "West Bay", "Pearl Qatar", "Al Waab"],
+        }));
+      }
+    };
+    fetchAreas();
+  }, []);
 
-  const [selectedFilters, setSelectedFilters] = useState({
+  // Fetch property types from properties (extract unique types)
+  useEffect(() => {
+    const fetchPropertyTypes = async () => {
+      try {
+        const apiUrl = getApiUrl("api/v1/properties?page=1&limit=1000&status=published");
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+          const data = await response.json();
+          const properties = data.properties || [];
+          const uniqueTypes = new Set();
+          properties.forEach(prop => {
+            if (prop.type) {
+              // Map backend types to display names
+              const typeMap = {
+                apartment: "Apartment",
+                villa: "Villa",
+                townhouse: "Townhouse",
+                penthouse: "Penthouse",
+                studio: "Studio",
+                commercial: "Commercial",
+                office: "Office",
+                luxury: "Penthouse",
+              };
+              const displayName = typeMap[prop.type.toLowerCase()] || prop.type;
+              uniqueTypes.add(displayName);
+            }
+          });
+          const sortedTypes = Array.from(uniqueTypes).sort();
+          setFilterOptions(prev => ({
+            ...prev,
+            "Property Type": ["All Property Types", ...sortedTypes],
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching property types:", error);
+        // Keep default types
+      }
+    };
+    fetchPropertyTypes();
+  }, []);
+
+  // Use external selectedFilters if provided, otherwise use internal state
+  const [internalSelectedFilters, setInternalSelectedFilters] = useState({
     "Property Type": null,
     Location: null,
     Beds: null,
     Baths: null,
     Price: null,
   });
+  
+  const selectedFilters = externalSelectedFilters || internalSelectedFilters;
+  
+  // Sync external filters to internal state
+  useEffect(() => {
+    if (externalSelectedFilters) {
+      setInternalSelectedFilters(externalSelectedFilters);
+    }
+  }, [externalSelectedFilters]);
 
   // Close dropdown when clicking outside (only checks the currently open dropdown)
   useEffect(() => {
@@ -94,7 +184,23 @@ export default function ListingHeroSection({
       ...selectedFilters,
       [filterName]: isAllOption ? null : value,
     };
-    setSelectedFilters(newFilters);
+    
+    // Reset price range inputs when "All Prices" is selected
+    if (filterName === "Price" && isAllOption) {
+      setPriceRangeInputs({ min: 0, max: 100000 });
+      setPriceRange({ min: 0, max: 100000 });
+    }
+    
+    // Update internal state if not using external filters
+    if (!externalSelectedFilters) {
+      setInternalSelectedFilters(newFilters);
+    }
+    
+    // Notify parent component of filter changes
+    if (onSelectedFiltersChange) {
+      onSelectedFiltersChange(newFilters);
+    }
+    
     setOpenDropdown(null);
     
     console.log(
@@ -110,6 +216,52 @@ export default function ListingHeroSection({
       onFilterChange(newFilters);
     } else {
       console.warn('[ListingHeroSection] onFilterChange is not provided!');
+    }
+  };
+  
+  const handlePriceRangeApply = () => {
+    const priceValue = `${priceRangeInputs.min}-${priceRangeInputs.max}`;
+    const newFilters = {
+      ...selectedFilters,
+      Price: priceValue,
+    };
+    
+    if (!externalSelectedFilters) {
+      setInternalSelectedFilters(newFilters);
+    }
+    
+    if (onSelectedFiltersChange) {
+      onSelectedFiltersChange(newFilters);
+    }
+    
+    setShowPriceRange(false);
+    setOpenDropdown(null);
+    
+    if (onFilterChange) {
+      onFilterChange(newFilters);
+    }
+  };
+  
+  const handlePriceRangeReset = () => {
+    const newFilters = {
+      ...selectedFilters,
+      Price: null,
+    };
+    
+    if (!externalSelectedFilters) {
+      setInternalSelectedFilters(newFilters);
+    }
+    
+    if (onSelectedFiltersChange) {
+      onSelectedFiltersChange(newFilters);
+    }
+    
+    setPriceRangeInputs({ min: 0, max: 100000 });
+    setShowPriceRange(false);
+    setOpenDropdown(null);
+    
+    if (onFilterChange) {
+      onFilterChange(newFilters);
     }
   };
 
@@ -357,22 +509,135 @@ export default function ListingHeroSection({
                   {/* Dropdown Menu */}
                   {isOpen && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-60 overflow-y-auto">
-                      {filterOptions[label].map((option, optIndex) => (
-                        <button
-                          key={optIndex}
-                          onClick={() => handleFilterSelect(label, option)}
-                          className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${selectedValue === option
-                              ? "bg-[#001730] text-white"
-                              : "text-gray-700"
-                            } ${optIndex === 0 ? "rounded-t-md" : ""
-                            } ${optIndex === filterOptions[label].length - 1
-                              ? "rounded-b-md"
-                              : ""
-                            }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
+                      {label === "Price" ? (
+                        <div className="p-4">
+                          <div className="mb-4">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-sm font-medium text-gray-700">Price Range</span>
+                              <button
+                                onClick={handlePriceRangeReset}
+                                className="text-xs text-[#001730] hover:underline"
+                              >
+                                Reset
+                              </button>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="block text-xs text-gray-600 mb-1">Min Price</label>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max={priceRangeInputs.max}
+                                  value={priceRangeInputs.min}
+                                  onChange={(e) => {
+                                    const val = Math.max(0, Math.min(parseInt(e.target.value) || 0, priceRangeInputs.max));
+                                    setPriceRangeInputs(prev => ({ ...prev, min: val }));
+                                    setPriceRange(prev => ({ ...prev, min: val }));
+                                  }}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#001730]"
+                                  placeholder="0"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs text-gray-600 mb-1">Max Price</label>
+                                <input
+                                  type="number"
+                                  min={priceRangeInputs.min}
+                                  value={priceRangeInputs.max}
+                                  onChange={(e) => {
+                                    const val = Math.max(priceRangeInputs.min, parseInt(e.target.value) || 100000);
+                                    setPriceRangeInputs(prev => ({ ...prev, max: val }));
+                                    setPriceRange(prev => ({ ...prev, max: val }));
+                                  }}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#001730]"
+                                  placeholder="100000"
+                                />
+                              </div>
+                              <div className="pt-2">
+                                <label className="block text-xs text-gray-600 mb-1">Min: {priceRange.min.toLocaleString()}</label>
+                                <input
+                                  type="range"
+                                  min="0"
+                                  max={priceRange.max}
+                                  step="1000"
+                                  value={priceRange.min}
+                                  onChange={(e) => {
+                                    const val = Math.min(parseInt(e.target.value), priceRange.max);
+                                    setPriceRange(prev => ({ ...prev, min: val }));
+                                    setPriceRangeInputs(prev => ({ ...prev, min: val }));
+                                  }}
+                                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#001730]"
+                                />
+                              </div>
+                              <div className="pt-2">
+                                <label className="block text-xs text-gray-600 mb-1">Max: {priceRange.max.toLocaleString()}</label>
+                                <input
+                                  type="range"
+                                  min={priceRange.min}
+                                  max="100000"
+                                  step="1000"
+                                  value={priceRange.max}
+                                  onChange={(e) => {
+                                    const val = Math.max(parseInt(e.target.value), priceRange.min);
+                                    setPriceRange(prev => ({ ...prev, max: val }));
+                                    setPriceRangeInputs(prev => ({ ...prev, max: val }));
+                                  }}
+                                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#001730]"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 pt-2 border-t">
+                            <button
+                              onClick={handlePriceRangeApply}
+                              className="flex-1 px-4 py-2 bg-[#001730] text-white rounded-md text-sm font-medium hover:bg-[#022d5e] transition"
+                            >
+                              Apply
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowPriceRange(false);
+                                setOpenDropdown(null);
+                              }}
+                              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-300 transition"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                          <div className="mt-3 pt-3 border-t">
+                            <div className="text-xs text-gray-600 mb-2">Quick Select:</div>
+                            {filterOptions[label].slice(1).map((option, optIndex) => (
+                              <button
+                                key={optIndex}
+                                onClick={() => handleFilterSelect(label, option)}
+                                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-100 transition rounded ${selectedValue === option
+                                    ? "bg-[#001730] text-white"
+                                    : "text-gray-700"
+                                  }`}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        filterOptions[label].map((option, optIndex) => (
+                          <button
+                            key={optIndex}
+                            onClick={() => handleFilterSelect(label, option)}
+                            className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 transition ${selectedValue === option
+                                ? "bg-[#001730] text-white"
+                                : "text-gray-700"
+                              } ${optIndex === 0 ? "rounded-t-md" : ""
+                              } ${optIndex === filterOptions[label].length - 1
+                                ? "rounded-b-md"
+                                : ""
+                              }`}
+                          >
+                            {option}
+                          </button>
+                        ))
+                      )}
                     </div>
                   )}
                 </div>

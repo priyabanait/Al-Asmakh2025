@@ -36,6 +36,14 @@ export default function Sale({
   const [mobileViewMode, setMobileViewMode] = useState("LIST"); // "LIST" or "MAP"
   const [selectedPropertyId, setSelectedPropertyId] = useState(null);
   const [mapLoading, setMapLoading] = useState(true);
+  // Track selected filters from ListingHeroSection for syncing with MoreFiltersModal
+  const [selectedFilters, setSelectedFilters] = useState({
+    "Property Type": null,
+    Location: null,
+    Beds: null,
+    Baths: null,
+    Price: null,
+  });
 
   // Update priceType when prop changes
   useEffect(() => {
@@ -298,6 +306,8 @@ export default function Sale({
         initialSearchQuery={initialSearchQuery || searchQuery}
         mobileViewMode={mobileViewMode}
         onMobileViewModeChange={setMobileViewMode}
+        selectedFilters={selectedFilters}
+        onSelectedFiltersChange={setSelectedFilters}
       />
 
       {/* Mobile Map View (only when Map View is active on mobile) */}
@@ -384,6 +394,8 @@ export default function Sale({
         onClose={() => setShowMoreFilters(false)}
         onShowResults={handleMoreFiltersSearch}
         priceType={priceType}
+        selectedFilters={selectedFilters}
+        onSelectedFiltersChange={setSelectedFilters}
       />
 
       <DreamPropertySection />

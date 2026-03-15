@@ -884,6 +884,26 @@ function PropertyDetailsContent() {
                 let languages = 'English, Arabic, Spanish';
                 if (Array.isArray(agent.languages) && agent.languages.length > 0) {
                   languages = agent.languages.join(', ');
+                } else if (agent.languages && typeof agent.languages === 'string') {
+                  languages = agent.languages;
+                }
+
+                // Specialities
+                let specialities = 'Not specified';
+                if (agent.specialties) {
+                  if (Array.isArray(agent.specialties) && agent.specialties.length > 0) {
+                    specialities = agent.specialties.join(', ');
+                  } else if (typeof agent.specialties === 'string') {
+                    // Handle comma-separated string
+                    specialities = agent.specialties.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+                  }
+                } else if (agent.specialization) {
+                  // Alternative field name (legacy)
+                  if (Array.isArray(agent.specialization)) {
+                    specialities = agent.specialization.join(', ');
+                  } else if (typeof agent.specialization === 'string') {
+                    specialities = agent.specialization.split(',').map(s => s.trim()).filter(Boolean).join(', ');
+                  }
                 }
 
                 return (
@@ -942,15 +962,17 @@ function PropertyDetailsContent() {
                           <p className="text-gray-500 text-xs">Property Agent</p>
                         </div>
 
-                        {/* Location */}
+                        {/* Specialities */}
                         <div className="relative mt-4">
                           <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
-                            Location:
+                            Specialities:
                           </p>
                           <p className="bg-white mt-1 p-2 sm:p-3 shadow-md rounded-[5px] text-xs text-gray-700">
-                            {agentLocation}
+                            {specialities}
                           </p>
                         </div>
+
+                        
 
                         {/* Languages */}
                         <div className="relative mt-3">

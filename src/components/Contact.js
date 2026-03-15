@@ -17,8 +17,9 @@ export default function MeetOurAgents() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const agentsPerPage = 20;
+  const mobileAgentsPerPage = 10; // 10 agents per page on mobile
   const [isMobile, setIsMobile] = useState(false);
-  const [mobileVisibleCount, setMobileVisibleCount] = useState(10);
+  const [mobileCurrentPage, setMobileCurrentPage] = useState(1);
 
   // Desktop filter dropdown state
   const [openDesktopFilter, setOpenDesktopFilter] = useState(null);
@@ -145,10 +146,20 @@ export default function MeetOurAgents() {
   };
 
   const filteredAgents = getFilteredAgents();
-  const displayedAgents =
-    isMobile && filteredAgents.length > 0
-      ? filteredAgents.slice(0, mobileVisibleCount)
-      : filteredAgents;
+  
+  // Calculate mobile pagination
+  const mobileTotalPages = Math.ceil(filteredAgents.length / mobileAgentsPerPage);
+  const mobileStartIndex = (mobileCurrentPage - 1) * mobileAgentsPerPage;
+  const mobileEndIndex = mobileStartIndex + mobileAgentsPerPage;
+  
+  // Reset mobile page to 1 when filters change
+  useEffect(() => {
+    setMobileCurrentPage(1);
+  }, [selectedLocation, selectedSpeciality, selectedLanguage]);
+  
+  const displayedAgents = isMobile
+    ? filteredAgents.slice(mobileStartIndex, mobileEndIndex)
+    : filteredAgents;
 
   // Close filters when clicking outside
   useEffect(() => {
@@ -235,7 +246,7 @@ export default function MeetOurAgents() {
         <div className="hidden lg:flex absolute w-full justify-center bottom-10 lg:bottom-[-32px] z-20">
           <div className="flex w-full border border-white/10 backdrop-blur-[10px] bg-white/20 lg:mx-10 p-4 rounded-md shadow-md gap-4 justify-center items-center">
             {/* Filter Items */}
-            {["Location", "Specialities", "Languages"].map((label, index) => {
+            {["Specialities", "Languages"].map((label, index) => {
               const isOpen = openDesktopFilter === label;
 
               const getIcon = () => {
@@ -649,89 +660,180 @@ export default function MeetOurAgents() {
         )}
 
         {/* Pagination Controls */}
-        {!loading && agents.length > 0 && totalPages > 1 && (
-          <div className="container mx-auto px-4 sm:px-6 md:px-6 mt-8 sm:mt-12">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              {/* Showing count */}
-              <div className="text-gray-600 text-sm">
-                Showing {((currentPage - 1) * agentsPerPage) + 1} to {Math.min(currentPage * agentsPerPage, totalAgents)} of {totalAgents} agents
-              </div>
+        {!loading && agents.length > 0 && (
+          <>
+            {/* Mobile Pagination - Shows when on mobile and filtered agents exist */}
+            {isMobile && filteredAgents.length > 0 && mobileTotalPages > 1 && (
+              <div className="container mx-auto px-4 sm:px-6 md:px-6 mt-8 sm:mt-12 lg:hidden">
+                <div className="flex flex-col items-center gap-4">
+                  {/* Showing count */}
+                  <div className="text-gray-600 text-sm text-center">
+                    Showing {mobileStartIndex + 1} to {Math.min(mobileEndIndex, filteredAgents.length)} of {filteredAgents.length} agents
+                  </div>
 
-              {/* Pagination buttons */}
-              <div className="flex items-center gap-2">
-                {/* Previous button */}
-                <button
-                  onClick={() => {
-                    if (currentPage > 1) {
-                      setCurrentPage(currentPage - 1);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                  }}
-                  disabled={currentPage === 1}
-                  className={`px-3 py-2 rounded-md border ${currentPage === 1
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
-                      : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
-                    }`}
-                >
-                  <ChevronLeft size={20} />
-                </button>
-
-                {/* Page numbers */}
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => {
-                          setCurrentPage(pageNum);
+                  {/* Pagination buttons */}
+                  <div className="flex items-center gap-2">
+                    {/* Previous button */}
+                    <button
+                      onClick={() => {
+                        if (mobileCurrentPage > 1) {
+                          setMobileCurrentPage(mobileCurrentPage - 1);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        className={`px-3 py-2 min-w-[40px] rounded-md border text-sm font-medium ${currentPage === pageNum
-                            ? 'bg-[#001730] text-white border-[#001730]'
-                            : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
-                          }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
+                        }
+                      }}
+                      disabled={mobileCurrentPage === 1}
+                      className={`px-3 py-2 rounded-md border ${mobileCurrentPage === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                        }`}
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    {/* Page numbers - Show fewer on mobile */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(3, mobileTotalPages) }, (_, i) => {
+                        let pageNum;
+                        if (mobileTotalPages <= 3) {
+                          pageNum = i + 1;
+                        } else if (mobileCurrentPage <= 2) {
+                          pageNum = i + 1;
+                        } else if (mobileCurrentPage >= mobileTotalPages - 1) {
+                          pageNum = mobileTotalPages - 2 + i;
+                        } else {
+                          pageNum = mobileCurrentPage - 1 + i;
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => {
+                              setMobileCurrentPage(pageNum);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={`px-3 py-2 min-w-[40px] rounded-md border text-sm font-medium ${mobileCurrentPage === pageNum
+                                ? 'bg-[#001730] text-white border-[#001730]'
+                                : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Next button */}
+                    <button
+                      onClick={() => {
+                        if (mobileCurrentPage < mobileTotalPages) {
+                          setMobileCurrentPage(mobileCurrentPage + 1);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
+                      disabled={mobileCurrentPage === mobileTotalPages}
+                      className={`px-3 py-2 rounded-md border ${mobileCurrentPage === mobileTotalPages
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                        }`}
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+
+                  {/* Current page info */}
+                  <div className="text-gray-600 text-sm">
+                    Page {mobileCurrentPage} of {mobileTotalPages}
+                  </div>
                 </div>
-
-                {/* Next button */}
-                <button
-                  onClick={() => {
-                    if (currentPage < totalPages) {
-                      setCurrentPage(currentPage + 1);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                  }}
-                  disabled={currentPage === totalPages}
-                  className={`px-3 py-2 rounded-md border ${currentPage === totalPages
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
-                      : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
-                    }`}
-                >
-                  <ChevronRight size={20} />
-                </button>
               </div>
+            )}
 
-              {/* Current page info */}
-              <div className="text-gray-600 text-sm">
-                Page {currentPage} of {totalPages}
+            {/* Desktop Pagination - Shows when on desktop and totalPages > 1 */}
+            {!isMobile && totalPages > 1 && (
+              <div className="container mx-auto px-4 sm:px-6 md:px-6 mt-8 sm:mt-12 hidden lg:block">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  {/* Showing count */}
+                  <div className="text-gray-600 text-sm">
+                    Showing {((currentPage - 1) * agentsPerPage) + 1} to {Math.min(currentPage * agentsPerPage, totalAgents)} of {totalAgents} agents
+                  </div>
+
+                  {/* Pagination buttons */}
+                  <div className="flex items-center gap-2">
+                    {/* Previous button */}
+                    <button
+                      onClick={() => {
+                        if (currentPage > 1) {
+                          setCurrentPage(currentPage - 1);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-2 rounded-md border ${currentPage === 1
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                        }`}
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    {/* Page numbers */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => {
+                              setCurrentPage(pageNum);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className={`px-3 py-2 min-w-[40px] rounded-md border text-sm font-medium ${currentPage === pageNum
+                                ? 'bg-[#001730] text-white border-[#001730]'
+                                : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                              }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Next button */}
+                    <button
+                      onClick={() => {
+                        if (currentPage < totalPages) {
+                          setCurrentPage(currentPage + 1);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-2 rounded-md border ${currentPage === totalPages
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200'
+                          : 'bg-white text-[#001730] border-gray-300 hover:bg-gray-50 transition'
+                        }`}
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+
+                  {/* Current page info */}
+                  <div className="text-gray-600 text-sm">
+                    Page {currentPage} of {totalPages}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
       </section>
       <DreamPropertySection />

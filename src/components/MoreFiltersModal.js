@@ -19,6 +19,9 @@ export default function MoreFiltersModal({
   // When true, clicking "Show Results" will navigate to /listings/search with filters as query params
   // instead of performing the search here. This is used on the homepage Hero search.
   navigateToSearchPage = false,
+  // Selected filters from ListingHeroSection to sync
+  selectedFilters: externalSelectedFilters = null,
+  onSelectedFiltersChange = null,
 }) {
   const router = useRouter();
   const [openSections, setOpenSections] = useState({
@@ -89,6 +92,56 @@ export default function MoreFiltersModal({
   useEffect(() => {
     setPriceType(propPriceType);
   }, [propPriceType]);
+
+  // Sync external selectedFilters to internal state
+  useEffect(() => {
+    if (externalSelectedFilters && isOpen) {
+      // Map ListingHeroSection filters to MoreFiltersModal state
+      if (externalSelectedFilters["Property Type"]) {
+        const typeMap = {
+          "Apartment": "Apartment",
+          "Villa": "Villa",
+          "Penthouse": "Penthouse",
+          "Townhouse": "Townhouse",
+          "Studio": "Studio",
+        };
+        const mappedType = typeMap[externalSelectedFilters["Property Type"]] || externalSelectedFilters["Property Type"];
+        // propertyTypes is defined later in the file, so we'll set it directly
+        setSelectedPropertyType(mappedType);
+      }
+      
+      if (externalSelectedFilters["Location"]) {
+        setLocationSearch(externalSelectedFilters["Location"]);
+      }
+      
+      if (externalSelectedFilters["Beds"]) {
+        const bedsValue = externalSelectedFilters["Beds"];
+        if (bedsValue === "Studio") {
+          setSelectedBedrooms(["Studio"]);
+        } else if (bedsValue && bedsValue !== "All Bedrooms") {
+          setSelectedBedrooms([bedsValue]);
+        }
+      }
+      
+      if (externalSelectedFilters["Baths"]) {
+        const bathsValue = externalSelectedFilters["Baths"];
+        if (bathsValue === "No bathroom") {
+          setSelectedBathrooms(["0"]);
+        } else if (bathsValue && bathsValue !== "All Bathrooms") {
+          setSelectedBathrooms([bathsValue]);
+        }
+      }
+      
+      if (externalSelectedFilters["Price"]) {
+        const priceValue = externalSelectedFilters["Price"];
+        if (priceValue && priceValue !== "All Prices" && priceValue.includes("-")) {
+          const [min, max] = priceValue.split("-");
+          setMinPrice(parseInt(min) || 1000);
+          setMaxPrice(parseInt(max) || 10000000);
+        }
+      }
+    }
+  }, [externalSelectedFilters, isOpen]);
 
   // Check Elasticsearch availability on mount (only needed when we execute search here)
   useEffect(() => {

@@ -797,7 +797,9 @@ export default function TowerDetailsPage() {
                           ? new Date(proj.projectCompletionDate).getFullYear().toString()
                           : (proj.projectDate
                               ? new Date(proj.projectDate).getFullYear().toString()
-                              : '')
+                              : (proj.createdAt
+                                  ? new Date(proj.createdAt).getFullYear().toString()
+                                  : ''))
 
                         const units = proj.listingsCount || proj.propertiesCount || "N/A"
 
@@ -869,7 +871,15 @@ export default function TowerDetailsPage() {
 
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                   <p className="text-base sm:text-lg font-bold text-[#001730] m-0">
-                                    Price on request
+                                    {(() => {
+                                      const minPrice = proj.minimumPrice
+                                      if (minPrice !== null && minPrice !== undefined && minPrice > 0) {
+                                        const currency = proj.priceCurrency || 'QAR'
+                                        const formattedPrice = Math.round(minPrice).toLocaleString()
+                                        return `${formattedPrice} ${currency}`
+                                      }
+                                      return 'Price on request'
+                                    })()}
                                   </p>
                                   <button className="bg-[#001730] text-white text-[12px] font-medium px-4 py-2 rounded-md flex items-center justify-between shadow-lg transition-all duration-300 hover:bg-[#002d52] w-full sm:w-auto">
                                     <Link

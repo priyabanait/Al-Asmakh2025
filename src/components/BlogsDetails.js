@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { useBlog, useBlogs } from "../hooks/useBlogs";
 
 export default function BlogHero() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const blogId = searchParams?.get("id");
 
   // Fetch the current blog
@@ -63,8 +64,8 @@ export default function BlogHero() {
 
   return (
     <div>
-      <div className="relative w-full h-[70vh] md:h-[70vh]">
-        {/* BACKGROUND IMAGE */}
+      <div className="relative w-full aspect-video">
+        {/* BACKGROUND IMAGE - 16:9 ratio */}
         <Image
           src={blog.image || "/Image (12).png"}
           alt={blog.title}
@@ -83,13 +84,13 @@ export default function BlogHero() {
         {/* TOP BAR */}
         <div className="absolute top-16 left-2 flex items-center justify-between w-full px-0.5">
           {/* BACK BUTTON */}
-          <Link
-            href="/listings/blogs"
+          <button
+            onClick={() => router.push("/listings/blogs")}
             className="flex items-center gap-2 bg-[#001730] text-white px-4 py-2 rounded-md hover:bg-[#1b3a70] transition"
           >
             <FaArrowLeft size={18} />
             <span className="text-sm lg:ml-20 ml-4 font-medium">Back</span>
-          </Link>
+          </button>
 
           {/* DATE + TAG */}
           <div className="flex flex-col mt-10 mr-4 items-end gap-2 w-32">
@@ -103,7 +104,7 @@ export default function BlogHero() {
         </div>
 
         {/* CENTER TITLE (Desktop only to avoid duplicate title on mobile) */}
-        <div className="absolute bottom-10 w-full text-center px-4 hidden md:block">
+        <div className="absolute bottom-10 w-full text-center px-4 hidden lg:block">
           <h1 className="text-3xl md:text-4xl font-semibold text-white">
             {blog.title}
           </h1>
@@ -112,8 +113,8 @@ export default function BlogHero() {
 
       {/* BLOG CONTENT */}
       <div className="lg:px-20 px-4 py-8">
-        {/* Main title (shown on all devices; hero title is desktop-only) */}
-        <h1 className="text-2xl lg:text-3xl font-semibold mt-8 mb-4 text-[#001730]">
+        {/* Main title (shown on mobile only; hero title is desktop-only) */}
+        <h1 className="text-2xl lg:text-3xl font-semibold mt-8 mb-4 text-[#001730] lg:hidden">
           {blog.title}
         </h1>
 
@@ -158,7 +159,7 @@ export default function BlogHero() {
                 key={relatedBlog.id || i}
                 className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
               >
-                <div className="relative w-full h-80 lg:h-80">
+                <div className="relative w-full aspect-video">
                   <Link href={`/BlogsDetails?id=${relatedBlog.id}`}>
                     <Image
                       src={relatedBlog.image || '/Image.png'}
@@ -189,7 +190,7 @@ export default function BlogHero() {
                       <div
                         className="text-white text-xs sm:text-sm md:text-base leading-relaxed opacity-90"
                         dangerouslySetInnerHTML={{
-                          __html: relatedBlog.description.replace(/<p[^>]*>/gi, '<div>').replace(/<\/p>/gi, '</div>'),
+                          __html: relatedBlog.description,
                         }}
                       />
                     )}
@@ -201,28 +202,70 @@ export default function BlogHero() {
         </>
       )}
 
-      {/* CTA SECTION */}
-      <section className="py-8 bg-gray-100">
-        <div className="mx-auto px-4 sm:px-6 md:px-12">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            <div className="flex-1">
-              <h2 className="text-[30px] font-semibold text-[#001730] mb-2">
-                Ready to Invest in Luxury ?
-              </h2>
-              <div className="w-[60%] h-[0.5px] bg-gray-300 my-2"></div>
-              <p className="text-base text-[#333333] leading-relaxed">
-              Get in touch with our expert team to discover exclusive investment opportunities and available units in our premium luxury developments. Your dream property is just a click away. Whether you're looking for a new home, a strategic investment, or expert real estate advice, Al Asmakh is here to assist you every step of the way
-              </p>
+      {/* CONTACT SECTION - Matching agent contact design */}
+      <section className="bg-gray-100 py-8 px-4 sm:px-6 lg:px-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-[10px] shadow-md overflow-hidden flex flex-col lg:flex-row items-start w-full">
+            {/* LEFT IMAGE */}
+            <div className="w-full lg:w-1/2 rounded-[10px] relative flex-shrink-0 h-48 sm:h-52 lg:min-h-[300px] lg:max-h-[300px] p-3 sm:p-4 lg:pr-0 lg:mr-0">
+              <div className="h-full w-full bg-gradient-to-br from-[#001730] to-[#0B1F3A] flex items-center justify-center rounded-[5px]">
+                <div className="text-center text-white p-6">
+                  <h3 className="text-xl sm:text-2xl font-semibold mb-2">Al Asmakh Real Estate</h3>
+                  <div className="w-[30%] h-[0.2px] bg-gray-400 my-2 mx-auto"></div>
+                  <p className="text-gray-300 text-sm">Expert Real Estate Services</p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex-shrink-0">
-              <Link href="/contact">
-                <button className="bg-[#001730] text-white px-8 py-4 rounded-lg font-medium text-lg hover:bg-[#002d52] transition-all duration-300 flex items-center gap-3 shadow-lg">
-                  Contact Expert
-                  <FaArrowRight size={16} />
-                </button>
-              </Link>
-              <p className="text-center text-sm mt-2">Explore Available Units</p>
+            {/* RIGHT DETAILS */}
+            <div className="w-full lg:w-1/2 p-3 sm:p-4 flex flex-col">
+              <div>
+                <div className="shadow-md bg-white text-center p-2 sm:p-3 rounded-[5px]">
+                  <h3 className="text-sm sm:text-base font-semibold text-[#001730] mb-1">
+                    Contact Our Experts
+                  </h3>
+                  <div className="w-[30%] h-[0.2px] bg-gray-400 my-1 mx-auto"></div>
+                  <p className="text-gray-500 text-xs">Get Professional Assistance</p>
+                </div>
+
+                {/* Description */}
+                <div className="relative mt-4">
+                  <p className="absolute top-[-9px] text-xs text-gray-400 ml-2">
+                    About:
+                  </p>
+                  <p className="bg-white mt-1 p-2 sm:p-3 shadow-md rounded-[5px] text-xs text-gray-700">
+                    Get in touch with our expert team to discover exclusive investment opportunities and available units in our premium luxury developments. Your dream property is just a click away.
+                  </p>
+                </div>
+              </div>
+
+              {/* BUTTONS */}
+              <div className="mt-3 flex flex-col gap-2">
+                <div className="flex gap-2">
+                  <a
+                    href="tel:+97412345678"
+                    className="flex-1 bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition"
+                  >
+                    Call Us
+                    <FaArrowRight size={12} />
+                  </a>
+
+                  <a
+                    href="mailto:info@alasmakhrealestate.com"
+                    className="flex-1 bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition"
+                  >
+                    Send email
+                    <FaArrowRight size={12} />
+                  </a>
+                </div>
+
+                <Link href="/contact">
+                  <button className="w-full bg-[#001730] text-white py-1.5 sm:py-2 rounded-[5px] flex justify-between items-center px-3 text-[12px] hover:opacity-90 transition">
+                    Contact Expert
+                    <FaArrowRight size={12} />
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
